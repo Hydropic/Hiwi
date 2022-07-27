@@ -3,7 +3,7 @@ close all
 
 %multistart method: starts one optim. wihtout validation-> better input
 %path to optim with validation (validation=sloshing/schwappen)
-% [x,fval,eflag,output] = multistart_optim(10, 0.3);
+%[x,fval,eflag,output] = multistart_optim(10, 0.3);
 
 % manual setup of one optimation
 KSetUp;
@@ -32,7 +32,7 @@ opts = optimoptions(@fmincon, ...
     "EnableFeasibilityMode",true, ...
     "SubproblemAlgorithm",'factorization', ...
     "PlotFcn",["optimplotfunccount","optimplotfvalconstr","optimplotconstrviolation","optimplotstepsize","optimplotfirstorderopt"], ...
-    "Display",'iter');
+    "Display",'iter','ConstraintTolerance',400);
 % "EnableFeasibilityMode",true, ...
 %    "EnableFeasibilityMode",true, ...
 
@@ -50,7 +50,9 @@ problem = createOptimProblem('fmincon',...
     'ub',max_values, ...
     'options',opts);
     
-[x,fval,eflag,output] = fmincon(problem);
+%[x,fval,eflag,output] = fmincon(problem);
+ms = MultiStart;
+[x,f] = run(ms,problem,2);
 
 %Plotting output
 if ~isempty(output.bestfeasible)
@@ -144,14 +146,14 @@ for i=1:size(base_points,2) %for every axis
      % KEEP VELOCITY 0 (START/END)
 %      ceq(end+1) = td(place(1)) - 0;
 %      ceq(end+1) = td(place(size(base_points,1))) - 0;
-    % c(end+1) = abs(td(place(1)) - 0) - precision;
-     c(end+1) = abs(td(place(size(base_points,1))) - 0) - precision;   
+       c(end+1) = abs(td(place(1)) - 0) - precision;
+       c(end+1) = abs(td(place(size(base_points,1))) - 0) - precision;   
 
      % KEEP START AND END- POINTS 
 %      ceq(end+1) = base_points(1,i) - input_backup(1,i); %TODO ggf als kellenposition
 %      ceq(end+1) = base_points(size(base_points,1),i) - input_backup(size(base_points,1),i);
-    % c(end+1) = abs(base_points(1,i) - input_backup(1,i)) - precision;
-    % c(end+1) = abs(base_points(size(base_points,1),i) - input_backup(size(base_points,1),i)) - precision;
+       c(end+1) = abs(base_points(1,i) - input_backup(1,i)) - precision;
+       c(end+1) = abs(base_points(size(base_points,1),i) - input_backup(size(base_points,1),i)) - precision;
 
      % ALL POINTS BOUNDS
 % 	 ceq(end+1) = sum(t>max_jointangle(i))-0;%joint angle
@@ -165,14 +167,14 @@ for i=1:size(base_points,2) %for every axis
      
      % BASEPOINTS BOUNDS
      for j=1:size(base_points,1) %for every point on every axis
-       % c(end+1) = base_points(j,i) - max_jointangle(i);%joint angle
-       % c(end+1) = min_jointangle(i) - base_points(j,i);
-       % c(end+1) = td(place(j)) - max_velocity(i);%velocity
-       % c(end+1) = min_velocity(i) - td(place(j));
-      %  c(end+1) = tdd(place(j)) - max_acceleration(i);%acceleration
-       % c(end+1) = min_acceleration(i) - tdd(place(j));   
-      %  c(end+1) = tddd(place(j)) - max_jerk(i);%jerk
-      %  c(end+1) = min_jerk(i) - tddd(place(j));   
+        c(end+1) = base_points(j,i) - max_jointangle(i);%joint angle
+        c(end+1) = min_jointangle(i) - base_points(j,i);
+        c(end+1) = td(place(j)) - max_velocity(i);%velocity
+        c(end+1) = min_velocity(i) - td(place(j));
+        c(end+1) = tdd(place(j)) - max_acceleration(i);%acceleration
+        c(end+1) = min_acceleration(i) - tdd(place(j));   
+        c(end+1) = tddd(place(j)) - max_jerk(i);%jerk
+        c(end+1) = min_jerk(i) - tddd(place(j));   
      end
 end
 
