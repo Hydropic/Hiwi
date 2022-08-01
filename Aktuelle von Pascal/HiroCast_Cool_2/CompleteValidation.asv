@@ -13,7 +13,7 @@ ceq = [];
 schritte = 50;
 
 % Setting variance for acceleration
-variance_a = 0.7; 
+variance_a = 1.5; 
 variance_z = 10;
 
 % Loading simulation data (column names differ slightly from regression Model)
@@ -21,9 +21,6 @@ simulation_data = readtable('simulationData.txt');
 simulation_data.Properties.VariableNames = {'rotationX','rotationY','rotationZ','directionX','directionY','directionZ','horizChange','vertChange','acceleration'};
 
 % Loading the trained Regression Model
-
-
-
 load("regressionKat.mat")
 
 
@@ -98,30 +95,14 @@ for i=1:length(t1)
     % Apply constraints only here:
     if ismember(i,place1)
         %constraints for table bounds
-        c(end+1)= rx - max(simulation_data.rotationX); %X
-        c(end+1)= min(simulation_data.rotationX) - rx;
-        c(end+1)= ry - max(simulation_data.rotationY); %Y
-        c(end+1)= min(simulation_data.rotationY) - ry;
-        c(end+1) = abs(start_z - rz) - variance_z; %Z
-        c(end+1)= acceleration - (max(simulation_data.acceleration)/1000); %A
-        c(end+1)= (min(simulation_data.acceleration)/1000) - acceleration;
-    end
-        
+          c(end+1)= rx - max(simulation_data.rotationX); %X
+          c(end+1)= min(simulation_data.rotationX) - rx;
+          c(end+1)= ry - max(simulation_data.rotationY); %Y
+          c(end+1)= min(simulation_data.rotationY) - ry;
+          c(end+1) = abs(start_z - rz) - variance_z; %Z
+          c(end+1)= acceleration - (max(simulation_data.acceleration)/1000); %A
+          c(end+1)= (min(simulation_data.acceleration)/1000) - acceleration;
 
-        
-
-    % Anhängen der Daten an die Arrays
-    rotationX(end+1,1)=rx;
-    rotationY(end+1,1)=ry;
-    directionX(end+1,1)=direction(1);
-    directionY(end+1,1)=direction(2);
-    directionZ(end+1,1)=direction(3);
-    Acceleration(end+1,1)=acceleration;
-
-    %debug_output(i,rx, ry, rz, start_z, acceleration, direction, simulation_data, variance, variance_dir, variance_a);
-end
-
-%%% Winkel Bedingung
        orientierung_mesh = simulation_data(:,1:3);
     
        kelle_orientierung_beschleunigung_neu = [rx ry rz direction(1) direction(2) direction(3) acceleration]; % Rx Ry Rz nx ny nz A
@@ -148,25 +129,42 @@ end
        phi2_min = min(simu_CFD_phi2_k9);
        phi2_max = max(simu_CFD_phi2_k9);
 
-       c(end+1) = phi_1 - phi1_max;
-       c(end+1) = phi1_min - phi_1;
-       c(end+1) = phi_2 - phi2_max;
-       c(end+1) = phi2_min - phi_2;
+          c(end+1) = phi_1 - phi1_max;
+          c(end+1) = phi1_min - phi_1;
+          c(end+1) = phi_2 - phi2_max;
+          c(end+1) = phi2_min - phi_2;
        
        %%%% Winkelbedingung End
+    end
+        
+
+        
+
+    % Anhängen der Daten an die Arrays
+    rotationX(end+1,1)=rx;
+    rotationY(end+1,1)=ry;
+    directionX(end+1,1)=direction(1);
+    directionY(end+1,1)=direction(2);
+    directionZ(end+1,1)=direction(3);
+    Acceleration(end+1,1)=acceleration;
+
+    %debug_output(i,rx, ry, rz, start_z, acceleration, direction, simulation_data, variance, variance_dir, variance_a);
+end
+
+
         %TODO Polarkoordinaten/Vorzugsrichtungsvarianz
     %end
 
 %Predicting the acceleration for every state
 %predictedAcceleration= regressionModel.predictFcn(table(RotationX,RotationY,VectorX,VectorY,VectorZ));
-predictedAcceleration = regressionKat.predictFcn(table(directionX,directionY,directionZ,rotationX,rotationY));
+ predictedAcceleration = regressionkat.predictFcn(table(directionX,directionY,directionZ,rotationX,rotationY));
 % EDITED !!!!!fprintf('Länge predictions: %d\n',length(predictedAcceleration));
 %TODO acceleration is als Betrag oder??
 
 % Setting constraints fot he basepoints
 for i=1:size(base_points,1) 
-    c(end+1) = (predictedAcceleration(place1(i))/1000) - abs(Acceleration(place1(i))) - (variance_a/2);
-    c(end+1) = (-predictedAcceleration(place1(i))/1000) + abs(Acceleration(place1(i))) - (variance_a/2);
+   c(end+1) = (predictedAcceleration(place1(i))/1000) - abs(Acceleration(place1(i))) - (variance_a/2);
+   c(end+1) = (-predictedAcceleration(place1(i))/1000) + abs(Acceleration(place1(i))) - (variance_a/2);
    % fprintf('Ist: %f Soll: %f\n',abs(Acceleration(place1(i))),abs(predictedAcceleration(place1(i))/1000))
 end
 
