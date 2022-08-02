@@ -17,9 +17,9 @@ interpPath = interpolate(rrt,path);
 %Startpunkt wieder mit Aufnehmen, weil interpolate komisch
 interpPath(1,:) = startConfig;
 wpts = interpPath';
-length(wpts);[cos(-pi/2) 0  sin(-pi/2)   0;
-                 0          1   0           -0.5;
-                -sin(-pi/2) 0   cos(-pi/2)  -0.5225;
+length(wpts);[cos(-pi/2) 0  sin(-pi/2)   0;...
+                 0          1   0           -0.5;...
+                -sin(-pi/2) 0   cos(-pi/2)  -0.5225;...
                  0          0   0           1];
 
 %Zeiteinschätzung an der sich minjerkpolytraj orientiert

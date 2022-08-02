@@ -1,4 +1,4 @@
-function [tcppunkt, eulZYX, RichtungInTCP, winkelmatrix] = vorwaertskinematik(achsstellungen,RichtungGlobal)
+function [tcppunkt, eulZYX, eulXYZ, RichtungInTCP, winkelmatrix] = vorwaertskinematik(achsstellungen,RichtungGlobal)
     %Kopien der Matrizen der Roboterkonfiguration (eventuell mit globalen
     %Variablen oder Funktionsübergabe effizienter)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%[Körper 1: Base]%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
@@ -137,6 +137,10 @@ function [tcppunkt, eulZYX, RichtungInTCP, winkelmatrix] = vorwaertskinematik(ac
     winkelmatrixEUL = winkelmatrix(1:3,1:3);
     eulZYX = rotm2eul(winkelmatrixEUL, "ZYX");
     eulZYX = rad2deg(eulZYX);
+
+    eulXYZ = rotm2eul(winkelmatrixEUL,'XYZ');
+    eulXYZ = rad2deg(eulXYZ);
+    
 % % % %     Vektor = [-31;30;58];
 % % % %     Winkel = RotationUmZ(deg2rad(eulZYX(1,1)))*RotationUmY(deg2rad(eulZYX(1,2)))*RotationUmX(deg2rad(eulZYX(1,3)));
 % % % %     Vektor1 = Winkel*Vektor;
