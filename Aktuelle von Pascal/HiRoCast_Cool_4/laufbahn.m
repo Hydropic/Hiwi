@@ -75,7 +75,7 @@ function laufbahn(robot,pfad,runden,preserve_plot)
                 show(robot,-pfad(i,:),"Visuals","off");
 
                 %Pause um Bahn verfolgen zu Können
-                pause(0.5);
+                pause(1);
                 
             else
                 %Diese Option lässt den Roboter die Bahn abfahren(praktisch
@@ -127,7 +127,7 @@ function laufbahn(robot,pfad,runden,preserve_plot)
                 
                 %!!!!!!!!!Achtung achswinkel in vorwaertskinematik gegenläufig!!!!!!!!!!
                 show(robot,pfad(i,:),"PreservePlot",false,"FastUpdate", true);
-                pause(0.5);
+                pause(1);
             end
             drawnow;
             hold on

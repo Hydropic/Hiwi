@@ -144,44 +144,44 @@ function [c,ceq] = constraintFcnValidation(optimization_values, input_AchsStellu
             fprintf('place(%d) [%s] \n',length(place),join(string( place ), ','));
          end
     
-         % KEEP VELOCITY 0 (START/END)
-         ceq(end+1) = veolocity(place(1)) - 0;
-         ceq(end+1) = veolocity(place(size(base_points,1))) - 0;
-% % % % %            c(end+1) = abs(td(place(1)) - 0) - precision;
-% % % % %            c(end+1) = abs(td(place(size(base_points,1))) - 0) -precision;   
-    
-         % KEEP START AND END- POINTS 
-         ceq(end+1) = base_points(1,i) - input_AchsStellung(1,i); %TODO ggf als kellenposition
-         ceq(end+1) = base_points(size(base_points,1),i) - input_AchsStellung(size(base_points,1),i);
-% % % %            c(end+1) = abs(base_points(1,i) - input_AchsStellung(1,i)) - precision;
-% % % %            c(end+1) = abs(base_points(size(base_points,1),i) - input_AchsStellung(size(base_points,1),i)) - precision;
-    
-         % ALL POINTS BOUNDS
-    % 	 ceq(end+1) = sum(t>max_jointangle(i))-0;%joint angle
-    %      ceq(end+1) = sum(t<min_jointangle(i))-0;
-    %      ceq(end+1) = sum(td>max_velocity(i))-0;%velocity
-    %      ceq(end+1) = sum(td<min_velocity(i))-0;
-    %      ceq(end+1) = sum(tdd>max_acceleration(i))-0;%acceleration
-    %      ceq(end+1) = sum(tdd<min_acceleration(i))-0;
-    %      ceq(end+1) = sum(tddd>max_jerk(i))-0;%jerk
-    %      ceq(end+1) = sum(tddd<min_jerk(i))-0;  
-         
-         % BASEPOINTS BOUNDS
-         for j=1:size(base_points,1) %for every point on every axis
-            c(end+1) = base_points(j,i) - max_jointangle(i);%joint angle
-            c(end+1) = min_jointangle(i) - base_points(j,i);
-
-            %Formel prüfen
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %if Wert in Intervall = 0 sonst ungleich null mit grad.
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            ceq(end+1) = veolocity(place(j)) - max_velocity(i);%velocity
-            %%c(end+1) = min_velocity(i) - veolocity(place(j));
-            ceq(end+1) = acceleration(place(j)) - max_acceleration(i);%acceleration
-            %%c(end+1) = min_acceleration(i) - acceleration(place(j));   
-            ceq(end+1) = jerk(place(j)) - max_jerk(i);%jerk
-            %%c(end+1) = min_jerk(i) - jerk(place(j));   
-         end
+% % % % %          % KEEP VELOCITY 0 (START/END)
+% % % % %          ceq(end+1) = veolocity(place(1)) - 0;
+% % % % %          ceq(end+1) = veolocity(place(size(base_points,1))) - 0;
+% % % % % % % % % %            c(end+1) = abs(td(place(1)) - 0) - precision;
+% % % % % % % % % %            c(end+1) = abs(td(place(size(base_points,1))) - 0) -precision;   
+% % % % %     
+% % % % %          % KEEP START AND END- POINTS 
+% % % % %          ceq(end+1) = base_points(1,i) - input_AchsStellung(1,i); %TODO ggf als kellenposition
+% % % % %          ceq(end+1) = base_points(size(base_points,1),i) - input_AchsStellung(size(base_points,1),i);
+% % % % % % % % %            c(end+1) = abs(base_points(1,i) - input_AchsStellung(1,i)) - precision;
+% % % % % % % % %            c(end+1) = abs(base_points(size(base_points,1),i) - input_AchsStellung(size(base_points,1),i)) - precision;
+% % % % %     
+% % % % %          % ALL POINTS BOUNDS
+% % % % %     % 	 ceq(end+1) = sum(t>max_jointangle(i))-0;%joint angle
+% % % % %     %      ceq(end+1) = sum(t<min_jointangle(i))-0;
+% % % % %     %      ceq(end+1) = sum(td>max_velocity(i))-0;%velocity
+% % % % %     %      ceq(end+1) = sum(td<min_velocity(i))-0;
+% % % % %     %      ceq(end+1) = sum(tdd>max_acceleration(i))-0;%acceleration
+% % % % %     %      ceq(end+1) = sum(tdd<min_acceleration(i))-0;
+% % % % %     %      ceq(end+1) = sum(tddd>max_jerk(i))-0;%jerk
+% % % % %     %      ceq(end+1) = sum(tddd<min_jerk(i))-0;  
+% % % % %          
+% % % % %          % BASEPOINTS BOUNDS
+% % % % %          for j=1:size(base_points,1) %for every point on every axis
+% % % % %             c(end+1) = base_points(j,i) - max_jointangle(i);%joint angle
+% % % % %             c(end+1) = min_jointangle(i) - base_points(j,i);
+% % % % % 
+% % % % %             %Formel prüfen
+% % % % %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % % % %             %if Wert in Intervall = 0 sonst ungleich null mit grad.
+% % % % %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % % % %             c(end+1) = veolocity(place(j)) - max_velocity(i);%velocity
+% % % % %             c(end+1) = min_velocity(i) - veolocity(place(j));
+% % % % %             c(end+1) = acceleration(place(j)) - max_acceleration(i);%acceleration
+% % % % %             c(end+1) = min_acceleration(i) - acceleration(place(j));   
+% % % % % % % % % %             c(end+1) = jerk(place(j)) - max_jerk(i);%jerk
+% % % % % % % % % %             c(end+1) = min_jerk(i) - jerk(place(j));   
+% % % % %          end
     end
          
     ceq_string = join(string( find(ceq ~= 0)   ), ',');
@@ -201,7 +201,7 @@ end
 function show_spline(solution, window_title)
     timeintervals = solution(1:size(solution,1)-1,1);
     base_points = solution(:,2:size(solution,2));
-    dlmwrite("basepoints.txt",base_points);
+    dlmwrite("basepoints.txt",base_points); %#ok<*DLMWT> 
     dlmwrite("timeintervals.txt",timeintervals);
 
     figure('name', window_title);

@@ -35,6 +35,15 @@ function [c,ceq] = completeValidation(timeintervals, base_points)
     directionY = [];
     directionZ = [];
     Acceleration = [];
+    EulerZYX = [];
+    BeschlRichtung_Sym = [];
+    Phi1 = [];
+    Phi2 = [];
+    MaxPhi1 = [];
+    MaxPhi2 = [];
+    MinPhi1 = [];
+    MinPhi2 = [];
+
     
     % Computing all the splines (one per axis) and backup rotation to have a z
     % reference rotation
@@ -104,13 +113,20 @@ function [c,ceq] = completeValidation(timeintervals, base_points)
 
 
             %Falsche Werte da um 90° gedreht
-            c(end+1)= rx - max(simulation_data.rotationX); %X
-            c(end+1)= min(simulation_data.rotationX) - rx;
-            c(end+1)= ry - max(simulation_data.rotationY); %Y
-            c(end+1)= min(simulation_data.rotationY) - ry;
-    % % % %         c(end+1) = abs(start_z - rz) - variance_z; %Z
-    % % % %         c(end+1)= acceleration - (max(simulation_data.acceleration)/1000); %A
-    % % % %         c(end+1)= (min(simulation_data.acceleration)/1000) - acceleration;
+% % % % %             c(end+1)= rx - max(simulation_data.rotationX); %X
+% % % % %             c(end+1)= min(simulation_data.rotationX) - rx;
+% % % % %             c(end+1)= ry - max(simulation_data.rotationY); %Y
+% % % % %             c(end+1)= min(simulation_data.rotationY) - ry;
+% % % % %             c(end+1) = abs(start_z - rz) - variance_z; %Z
+% % % % %             c(end+1)= acceleration - (max(simulation_data.acceleration)/1000); %A
+% % % % %             c(end+1)= (min(simulation_data.acceleration)/1000) - acceleration;
+
+
+            phi1_max_tab = max(simulation_data.rotationX);
+            phi2_max_tab = max(simulation_data.rotationY);
+
+            phi1_min_tab = min(simulation_data.rotationX);
+            phi2_min_tab = min(simulation_data.rotationY);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%              
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Winkel Bedingung%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,8 +179,7 @@ function [c,ceq] = completeValidation(timeintervals, base_points)
             beschlRichtung_Sym = rot_Welt_zu_Sym*transpose(beschlRichtung);
             beschlRichtung_Sym = beschlRichtung_Sym/sqrt(beschlRichtung_Sym(1,1)^2 + beschlRichtung_Sym(2,1)^2 + beschlRichtung_Sym(3,1)^2);
             beschlRichtung_Sym = transpose(beschlRichtung_Sym);
-            
-            
+                        
 % % % % % %             predictedAcceleration = regressionKat2.predictFcn(table(-eulerZYX(1,2),eulerZYX(1,3),beschlRichtung_Sym(1,1),beschlRichtung_Sym(1,2),beschlRichtung_Sym(1,3),'VariableNames',{'rotx','roty','x_directionX_','x_directionY_','x_directionZ_'})); %rotx roty  x y z
 % % % % % %             ceq(end+1) = ((predictedAcceleration/1000) - abs(acceleration))*10; %Variance ?
                       
@@ -177,21 +192,27 @@ function [c,ceq] = completeValidation(timeintervals, base_points)
             phi2_min = min(simu_CFD_phi2_k9);
             phi2_max = max(simu_CFD_phi2_k9);
         
-            %%%VisualizeAll(robot,p,direction_acc,true)
+            %%VisualizeAll(robot,p,direction_acc,true)
 
             %Eventuell durch Schwappen verarbeitet
             c(end+1) = phi_1 - phi1_max;
             c(end+1) = phi1_min - phi_1;
             c(end+1) = phi_2 - phi2_max;
             c(end+1) = phi2_min - phi_2;
-
-
             
         end
                    
         % Anhängen der Daten an die Arrays
+        EulerZYX(end+1,:) = eulerZYX;
         rotationX(end+1,1)=rx;
         rotationY(end+1,1)=ry;
+        Phi1(end+1,1) = phi_1;%%%%%%%
+        Phi2(end+1,1) = phi_2;
+% % % %         MaxPhi1(end+1,1) = phi1_max_tab;
+% % % %         MaxPhi2(end+1,1) = phi2_max_tab;
+% % % %         MinPhi1(end+1,1) = phi1_min_tab;
+% % % %         MinPhi2(end+1,1) = phi2_min_tab;
+        BeschlRichtung_Sym(end +1,:) = beschlRichtung_Sym;
         directionX(end+1,1)=direction_acc(1);
         directionY(end+1,1)=direction_acc(2);
         directionZ(end+1,1)=direction_acc(3);
@@ -210,10 +231,25 @@ function [c,ceq] = completeValidation(timeintervals, base_points)
     
 
     %als ceq da beschleunigung erforderlich
-    for i=1:size(base_points,1) 
+    for i=1:size(base_points,1)        
+        
+        if Phi1(place1(i),1) > phi1_min_tab && Phi1(place1(i),1) < phi1_max_tab
+            
+            if Phi2(place1(i),1) > phi2_min_tab && Phi2(place1(i),1) < phi2_max_tab
+                predictedAcceleration = regressionKat2.predictFcn(table(-EulerZYX(place1(i),2),EulerZYX(place1(i),3),BeschlRichtung_Sym(place1(i),1),BeschlRichtung_Sym(place1(i),2),BeschlRichtung_Sym(place1(i),3),'VariableNames',{'rotx','roty','x_directionX_','x_directionY_','x_directionZ_'})); %rotx roty  x y z
+                ceq(end+1) = ((predictedAcceleration/1000) - abs(Acceleration(place1(i))))*10; %Variance ?
+            else          
+                ceq(end+1) = (abs(Phi1(place1(i)))+abs(Phi2(place1(i))));
+            end
+        else
+            ceq(end+1) = (abs(Phi1(place1(i)))+abs(Phi2(place1(i))));
+
+        end               
+% % % % % % %         predictedAcceleration = regressionKat2.predictFcn(table(-EulerZYX(place1(i),2),EulerZYX(place1(i),3),BeschlRichtung_Sym(place1(i),1),BeschlRichtung_Sym(place1(i),2),BeschlRichtung_Sym(place1(i),3),'VariableNames',{'rotx','roty','x_directionX_','x_directionY_','x_directionZ_'})); %rotx roty  x y z
+% % % % % % %         ceq(end+1) = ((predictedAcceleration/1000) - abs(acceleration))*10; %Variance ?
       %%%%%ceq(end+1) = ((predictedAcceleration(place1(i))/1000) - abs(Acceleration(place1(i))))*10; %Variance ?
       %%c(end+1) = ((-predictedAcceleration(place1(i))/1000) + abs(Acceleration(place1(i))) - (variance_a/2))*100;
-       %%%%fprintf('Ist: %f Soll: %f\n',abs(Acceleration(place1(i))),abs(predictedAcceleration(place1(i))/1000))
+      %%%%fprintf('Ist: %f Soll: %f\n',abs(Acceleration(place1(i))),abs(predictedAcceleration(place1(i))/1000))
     end
     
     % Sum-Constraint: amount of violations should be =0
@@ -221,7 +257,11 @@ function [c,ceq] = completeValidation(timeintervals, base_points)
     %fprintf('Validation: %d / %d \n',sum(abs(Acceleration(place1(i))) > abs(predictedAcceleration(place1(i))/1000)), length(t1));
     %fprintf('Validation: %d / %d \n',sum(abs(abs(Acceleration(place1(i))) - abs(predictedAcceleration(place1(i))/1000))>variance_a), length(t1));
 end
-    
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%(Debug)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function debug_output(i,rx, ry, rz, start_z, acceleration, direction, simulation_data, variance, variance_dir, variance_a)
     % Debug output    
     fprintf('Iter. %d X:%f Y:%f Z:%f [Z:%f] A:%f dx: %f dy: %f dz: %f\n',i,rx,ry,rz,start_z,acceleration,direction(1),direction(2),direction(3));
