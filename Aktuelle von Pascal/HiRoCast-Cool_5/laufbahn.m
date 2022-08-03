@@ -56,7 +56,7 @@ function laufbahn(robot,pfad,runden,preserve_plot)
             %plottet projezierte vorzugsrichtung in Rot in Weltkoordinaten                
             vorzRPr_Plot = plot3([tcppunkte(i,1),tcppunkte(i,1)+vorzugsrichtung_proj(1)],...
             [tcppunkte(i,2),tcppunkte(i,2)+vorzugsrichtung_proj(2)], ...
-            [tcppunkte(i,3),tcppunkte(i,3)+vorzugsrichtung_proj(3)],'Color','r','LineWidth',2);
+            [tcppunkte(i,3),tcppunkte(i,3)+vorzugsrichtung_proj(3)],'Color','magenta','LineWidth',2);
             tcp = transpose(tcppunkte(i,:));
 
             %Plotten des Korridors

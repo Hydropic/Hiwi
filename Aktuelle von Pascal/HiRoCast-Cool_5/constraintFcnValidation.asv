@@ -66,11 +66,17 @@ function [c,ceq] = constraintFcnValidation(optimization_values, initial_AchsStel
     end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Ausgabe auf der Konsole%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
-    ceq_string = join(string( find(ceq ~= 0)   ), ',');
-    c_string = join(string( find(c > 0)   ), ',');
+ceq_string = join(string( find(ceq ~= 0)   ), ',');
+    c_string = join(string( find(c > 0)   ), ',');   
+    position_c_fail = find(c > 0);
+    c_value_string = [];
+    for z = 1: length(position_c_fail)
+        c_value_string(end+1,1) = c(position_c_fail(i));
+        % position_c_fail(i)
+    end
 
     %ausgabe der anzah der c Bedingungen und die anzahl der verletzten
-    if ismissing(c_string) == false 
+    if ismissing(c_string) == false
         fprintf('c(%d, %d) [%s] \n',length(c),length(find(c-1e-6 > 0)) ,c_string);
     else
         fprintf('Keine Bedingung verletzt')
