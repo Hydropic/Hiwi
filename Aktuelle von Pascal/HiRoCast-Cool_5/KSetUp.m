@@ -134,29 +134,8 @@ robot.DataFormat = 'row';
 
 %%Roboter Anzeigen
 %homeConfiguration(robot) = deg2rad([183.97 -71.08 -108.01 62.40 -58.35 -75.11]);
+figure("Name",'Pose des Roboters','IntegerHandle','off')
 KUKA = show(robot);
 KUKA.XLim = [-4, 4];
 KUKA.YLim = [-4, 4];
-KUKA.ZLim = [0,4.5];
-
-%show(robot, deg2rad([0 -90 100 0 0 0]));
-
-% %before this you have plotted a surface in axis hAx
-% axis(hAx,'equal')
-% %Get X, Y and Z data for plotting the axes...
-% X_range = hAx.XLim(2) - hAx.XLim(1);
-% X_start = hAx.XLim(1);
-% X_delta = X_range/20;
-% 
-% Y_delta = (hAx.YLim(2) - hAx.YLim(1))/20;
-% Y_start = hAx.YLim(1);
-% 
-% Z_delta = (hAx.ZLim(2) - hAx.ZLim(1))/20;
-% Z_start = hAx.ZLim(1);
-% 
-% X_Line = line(hAx,[X_start+X_delta X_start+X_delta*5],[Y_start+Y_delta Y_start+Y_delta],[Z_start+Z_delta Z_start+Z_delta]); % x Line
-% Y_Line = line(hAx,[X_start+X_delta X_start+X_delta],[Y_start+Y_delta Y_start+Y_delta*5],[Z_start+Z_delta Z_start+Z_delta]); % Y Line
-% Z_Line = line(hAx,[X_start+X_delta X_start+X_delta],[Y_start+Y_delta Y_start+Y_delta],[Z_start+Z_delta Z_start+Z_delta*5]); %Z Line
-% X_text = text(hAx,X_start+X_delta*6,Y_start+Y_delta,Z_start+Z_delta,'x');
-% Y_text = text(hAx,X_start+X_delta,Y_start+Y_delta*6,Z_start+Z_delta,'y');
-% Z_text = text(hAx,X_start+X_delta,Y_start+Y_delta,Z_start+Z_delta*6,'z');
+KUKA.ZLim = [0,8];

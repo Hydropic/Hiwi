@@ -1,33 +1,26 @@
 function [c,ceq] = completeValidation(timeintervals, base_points,regression,simulation_data)
     fprintf('Validation spline + base\n');
-    %Validates of a path sloshes
-    %   Input: Basepoints, Computes spline, iterates over all points (extra
+    %Überprüfung der Schwappbedingung und des Korridores
+    %   Input: Basepoints, Computes spline, iterates over all basepoints (extra
     %   cases first and last point), sets constraints on forward kinematics
-    %   Outputs: Constraint Arrays: sum of validation and special values at
-    %   basepoints
+    %   Outputs: Constraint Arrays: sum of validation and special values at basepoints       
     
+    %Leere Constraints erzeugen
     c = [];
     ceq = [];
     
     schritte = 50; %voher 50
 
-    %%Um plotten des Roboters zu ermöglichen ausführen
-    %%KSetUp
+    %Um plotten des Roboters zu ermöglichen ausführen
+    %KSetUp
    
-
     % Setting variance for acceleration
     variance_z = 5;%in Deg
     
-    % Loading simulation data (column names differ slightly from regression Model)    
+    % Anpassen der vNamen in der Tabelle mit den Fluiddaten   
     simulation_data.Properties.VariableNames = {'rotationX','rotationY','rotationZ','directionX','directionY','directionZ','horizChange','vertChange','acceleration'};
-    
-
-    
-   % orientierung_mesh = simulation_data(:,1:3);
-    
+        
     % Creating empty table-arrays
-    rotationX = [];
-    rotationY = [];
     directionX = [];
     directionY = [];
     directionZ = [];
@@ -40,7 +33,6 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
     MaxPhi2 = [];
     MinPhi1 = [];
     MinPhi2 = [];
-
     
     % Computing all the splines (one per axis) and backup rotation to have a z
     % reference rotation
@@ -52,7 +44,7 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
     [achsstellung_A6,~,~,~,~,~] = spline(base_points(:,6),timeintervals,false,schritte);
     [pos_initial, eulerZYX_initial] = vorwaertskinematik(base_points(1,:));
     
-    %stimmt das so?
+    %stimmt das so? Hier fehlt der Zeitliche Verlauf!!!!!!!!!!!!!!!
     MatrixKelleUngekippt = RotationUmZ(eulerZYX_initial(1));
     
     for i=1:length(achsstellung_A1)
@@ -81,28 +73,20 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
             end
         
             % Setting better var names       
-            direction_acc = direction_acc/norm(direction_acc);
-            start_z = eulerZYX_initial(1);
-        
-            %Winkel umrechnen, da Eulerwinkel nicht über 180 Grad gehen, sondern
-            %negative Winkel angeben, was beim Vergleich sonst Probleme macht 
-            %Fall 1: my_z ist positiv und rz ist negativ 
+            direction_acc_welt = direction_acc_welt/norm(direction_acc_welt);
+            start_z = eulerZYX_initial(1);        
         
             % Apply constraints only here:
             
-                %constraints for table bounds
-
-            %Eventuell weglassen, indirekt in phi1 und phi2
-
-
+            %constraints for table bounds
             %Falsche Werte da um 90° gedreht
-% % % %             c(end+1)= rx - max(simulation_data.rotationX); %X
-% % % %             c(end+1)= min(simulation_data.rotationX) - rx;
-% % % %             c(end+1)= ry - max(simulation_data.rotationY); %Y
-% % % %             c(end+1)= min(simulation_data.rotationY) - ry;
-% % % %             c(end+1) = abs(start_z - rz) - variance_z; %Z
-% % % %             c(end+1)= acceleration - (max(simulation_data.acceleration)/1000); %A
-% % % %             c(end+1)= (min(simulation_data.acceleration)/1000) - acceleration;
+%             c(end+1)= rx - max(simulation_data.rotationX); %X
+%             c(end+1)= min(simulation_data.rotationX) - rx;
+%             c(end+1)= ry - max(simulation_data.rotationY); %Y
+%             c(end+1)= min(simulation_data.rotationY) - ry;
+%             c(end+1) = abs(start_z - rz) - variance_z; %Z
+%             c(end+1)= acceleration - (max(simulation_data.acceleration)/1000); %A
+%             c(end+1)= (min(simulation_data.acceleration)/1000) - acceleration;
 
 
             phi1_max_tab = max(simulation_data.rotationX);
@@ -110,10 +94,6 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
 
             phi1_min_tab = min(simulation_data.rotationX);
             phi2_min_tab = min(simulation_data.rotationY);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%              
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Winkel Bedingung%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             %Daten aus der Simulationstabelle Auslesen für phimin 6 phimax
             Daten_Symulationstabelle = simulation_data(:,1:8);        
@@ -132,7 +112,7 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
 
             %Hin Und Rücktransformation von Sym und Welt
             %!!!!!!!!!!!!!!!!!!!!!Systeme um -90° zueiander gedreht!!!!!!!!!!!!!!!!!!                 
-            %rot_Sym_zu_Welt = RotationUmZ(deg2rad(eulerZ_Sym))*RotationUmY(deg2rad(0))*RotationUmX(deg2rad(0));
+            rot_Sym_zu_Welt = RotationUmZ(deg2rad(eulerZ_Sym))*RotationUmY(deg2rad(0))*RotationUmX(deg2rad(0));
             rot_Welt_zu_Sym = transpose(RotationUmX(deg2rad(0)))*transpose(RotationUmY(deg2rad(0)))*transpose(RotationUmZ(deg2rad(eulerZ_Sym)));
             
             %Berechnung der Vorzugsrichtung in Weltkoordinaten
@@ -149,7 +129,7 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
             %Kegel außerhalb des Bereiches um Grad zu ereichen
 
             %berechnung der Winkel phi_1(Rotation in xy-ebene) phi2(winkel zur xy-ebene)
-            phi_1 = CalculateAngleInXYPlane(vorzugsrichtung_proj,direction_acc_welt);
+            phi_1 = CalculateAngleInXYPlane(transpose(vorzugsrichtung_proj),direction_acc_welt);
             phi_2 = 90 - (acos(dot([0 0 1],direction_acc_welt)/(norm(direction_acc_welt)))/pi * 180);
 
             %bei abweichungen von rx und ry die nicht in der Tabelle stehen wird unsinniges ausgegeben
@@ -182,46 +162,44 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
 
                % Anhängen der Daten an die Arrays
             EulerZYX(end+1,:) = eulerZYX;
-            Phi1(end+1,1) = phi_1;%%%%%%%
+            Phi1(end+1,1) = phi_1;
             Phi2(end+1,1) = phi_2;
             MaxPhi1(end+1,1) = phi1_max_tab;
             MaxPhi2(end+1,1) = phi2_max_tab;
             MinPhi1(end+1,1) = phi1_min_tab;
             MinPhi2(end+1,1) = phi2_min_tab;
             BeschlRichtung_Sym(end +1,:) = beschlRichtung_Sym;
-            directionX(end+1,1)=direction_acc(1);
-            directionY(end+1,1)=direction_acc(2);
-            directionZ(end+1,1)=direction_acc(3);
+            directionX(end+1,1)=direction_acc_welt(1);
+            directionY(end+1,1)=direction_acc_welt(2);
+            directionZ(end+1,1)=direction_acc_welt(3);
             Acceleration(end+1,1)=acceleration;
                       
-        end                         
+        end 
+
         %debug_output(i,rx, ry, rz, start_z, acceleration, direction, simulation_data, variance, variance_dir, variance_a);
 
         
     end
-    
-            %TODO Polarkoordinaten/Vorzugsrichtungsvarianz
-        %end
-    
-    %Predicting the acceleration for every state
-%%%     predictedAcceleration = regressionkat.predictFcn(table(directionX,directionY,directionZ,rotationX,rotationY));
-    
-    % Setting constraints fot he basepoints
-    
-
-    %als ceq da beschleunigung erforderlich
+   
+    %als ceq da beschleunigung erforderlich dh ist ein Sollwert bzw. = Value!!!
     for j=1:length(EulerZYX)        
         
         if Phi1(j,1) > phi1_min_tab && Phi1(j,1) < phi1_max_tab
             
             if Phi2(j,1) > phi2_min_tab && Phi2(j,1) < phi2_max_tab
-                predictedAcceleration = regression.regressionKat2.predictFcn(table(-EulerZYX(j,2),EulerZYX(j,3),BeschlRichtung_Sym(j,1),BeschlRichtung_Sym(j,2),BeschlRichtung_Sym(j,3),'VariableNames',{'rotx','roty','x_directionX_','x_directionY_','x_directionZ_'})); %rotx roty  x y z
-                ceq(end+1) = ((predictedAcceleration/1000) - abs(Acceleration(j)))*10; %Variance ?
+                predictedAcceleration = regression.regressionKat4.predictFcn(table(-EulerZYX(j,2),EulerZYX(j,3),BeschlRichtung_Sym(j,1),BeschlRichtung_Sym(j,2),BeschlRichtung_Sym(j,3),'VariableNames',{'rotationX','rotationY','directionX','directionY','directionZ'})); %rotx roty  x y z 
+                ceq(end+1) = ((predictedAcceleration/1000) - abs(Acceleration(j)))*2; %Variance ?
+
+                fprintf('Schwappbedingung, fall im Korridor Erfüllt\n')
+                fprintf(num2str(((predictedAcceleration/1000) - abs(Acceleration(j)))*2,j))
+                fprintf('.\n')
+
+                
             else          
-                ceq(end+1) = (abs(Phi1(j))+abs(Phi2(j)));
+                ceq(end+1) = (abs(Phi1(j))+abs(Phi2(j)))*5;
             end
         else
-            ceq(end+1) = (abs(Phi1(j))+abs(Phi2(j)));
+            ceq(end+1) = (abs(Phi1(j))+abs(Phi2(j)))*5;
 
         end               
 % % % %         predictedAcceleration = regressionKat2.predictFcn(table(-EulerZYX(place1(i),2),EulerZYX(place1(i),3),BeschlRichtung_Sym(place1(i),1),BeschlRichtung_Sym(place1(i),2),BeschlRichtung_Sym(place1(i),3),'VariableNames',{'rotx','roty','x_directionX_','x_directionY_','x_directionZ_'})); %rotx roty  x y z
@@ -237,7 +215,4 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
     %fprintf('Validation: %d / %d \n',sum(abs(abs(Acceleration(place1(i))) - abs(predictedAcceleration(place1(i))/1000))>variance_a), length(t1));
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%(Debug)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

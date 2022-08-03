@@ -51,7 +51,7 @@ for j=1:size(pfad,1)-2
         [acceleration, direction, directionGlobal] = Beschleunigung(pos, pos, posn, (1),m.MatrixKelleUngekippt);
         %Variablen zum Printen im Command Window nochmals aufgeführt
         acceleration
-        beschleunigungsrichtungXYZ = directionGlobal(1:3,:)
+        beschleunigungsrichtungXYZ = directionGlobal(1:3,:);
         hold on
         quiver3(pos(1),pos(2),pos(3),directionGlobal(1),directionGlobal(2),directionGlobal(3));
         %quiver3(pos(1),pos(2),pos(3),directionTCP(1),directionTCP(2),directionTCP(3));

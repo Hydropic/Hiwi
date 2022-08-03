@@ -1,6 +1,6 @@
 close all
 %Variablen
-regression = load("regressionKat2.mat");
+regression = load("regressionKat4.mat");
 simulation_data = readtable('simulationData.txt');
 
 %Load data
@@ -44,7 +44,7 @@ problem = createOptimProblem('fmincon',...
     
 %[x,fval,eflag,output] = fmincon(problem);
 ms = MultiStart;
-[x,f] = run(ms,problem,1);
+[x,f] = run(ms,problem,3);
 
 %Plotting output
 show_spline(x, 'Bad Output');

@@ -30,8 +30,9 @@ function [c,ceq] = constraintFcnValidation(optimization_values, initial_AchsStel
 
     initial_AchsStellung = initial_AchsStellung(:,2:size(optimization_values,2));     
             
-    % TIMEINTERVALS > 0
-    c(end+1:end+length(base_Zeitintervall))= 0-base_Zeitintervall; 
+    % TIMEINTERVALS > 0 <0.5s Auch die virtuellen punkte Berücksichtigt
+    c(end+1:end+length(base_Zeitintervall_mod)) = 0-base_Zeitintervall_mod; 
+    c(end+1:end+length(base_Zeitintervall_mod)) = base_Zeitintervall_mod - 0.5;%Max Zeitinterv.
     
     % schwappbedingung und Korridor 
     [v_c, v_ceq] = completeValidation(base_Zeitintervall, base_Achswinkel,regression_1,simulation_data);
