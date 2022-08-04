@@ -1,3 +1,5 @@
+    numSamples = 20;
+
 
 rrt = manipulatorRRT(robot,{});
 rrt.ValidationDistance = 0.2;
@@ -29,7 +31,7 @@ length(wpts);[cos(-pi/2) 0  sin(-pi/2)   0;...
     %Anzahl an Punkten die minjerkpolytraj ausspuckt
     %Auskommentiert um in OptimalControl mehrere Anläufe mit
     %unterschiedlich vielen Punkten zu starten
-    numSamples = 20;
+
 
 %Pfadoptimierung
 [q,qd,qdd,qddd,pp,tpts,tSamples] = minjerkpolytraj(path',initialGuess,numSamples);
