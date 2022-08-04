@@ -1,11 +1,22 @@
 function [c,ceq] = completeValidation(timeintervals, base_points,regression,simulation_data)
-  
+    fprintf('Validation spline + base\n');
+    %Überprüfung der Schwappbedingung und des Korridores
+    %   Input: Basepoints, Computes spline, iterates over all basepoints (extra
+    %   cases first and last point), sets constraints on forward kinematics
+    %   Outputs: Constraint Arrays: sum of validation and special values at basepoints       
     
     %Leere Constraints erzeugen
     c = [];
-    ceq = [];    
-    schritte = 1; %voher 50
+    ceq = [];
+    
+    schritte = 50; %voher 50
 
+    %Um plotten des Roboters zu ermöglichen ausführen
+    %KSetUp
+   
+    % Setting variance for acceleration
+    variance_z = 5;%in Deg
+    
     % Anpassen der vNamen in der Tabelle mit den Fluiddaten   
     simulation_data.Properties.VariableNames = {'rotationX','rotationY','rotationZ','directionX','directionY','directionZ','horizChange','vertChange','acceleration'};
         
@@ -129,8 +140,8 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
             beschlRichtung_Sym = beschlRichtung_Sym/sqrt(beschlRichtung_Sym(1,1)^2 + beschlRichtung_Sym(2,1)^2 + beschlRichtung_Sym(3,1)^2);
             beschlRichtung_Sym = transpose(beschlRichtung_Sym);
                         
-%             predictedAcceleration = regression.regressionKat2.predictFcn(table(-eulerZYX(1,2),eulerZYX(1,3),beschlRichtung_Sym(1,1),beschlRichtung_Sym(1,2),beschlRichtung_Sym(1,3),'VariableNames',{'rotx','roty','x_directionX_','x_directionY_','x_directionZ_'})); %rotx roty  x y z
-%             ceq(end+1) = ((predictedAcceleration/1000) - abs(acceleration))*10; %Variance ?
+% % % %             predictedAcceleration = regression.regressionKat2.predictFcn(table(-eulerZYX(1,2),eulerZYX(1,3),beschlRichtung_Sym(1,1),beschlRichtung_Sym(1,2),beschlRichtung_Sym(1,3),'VariableNames',{'rotx','roty','x_directionX_','x_directionY_','x_directionZ_'})); %rotx roty  x y z
+% % % %             ceq(end+1) = ((predictedAcceleration/1000) - abs(acceleration))*10; %Variance ?
                       
             simu_CFD_phi1_k9 = table2array(simulation_data(k:(k+8),7));
             simu_CFD_phi2_k9 = table2array(simulation_data(k:(k+8),8));
@@ -142,16 +153,16 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
             phi2_max = max(simu_CFD_phi2_k9);
             
             
-            % VisualizeAll(robot,p,direction_acc,true)
-%             if 4 > abs(eulerZYX(1,2)) && 4 > abs(eulerZYX(1,3))
-%                 % Keine Orientierung der Kelle
-%                 %KSetUp;
-%                 %VisualizeAll(robot,p,direction_acc,true)
-%                 c(end+1) = 0;
-%                 c(end+1) = 0;
-%                 c(end+1) = 0;
-%                 c(end+1) = 0;
-%             else
+            %VisualizeAll(robot,p,direction_acc,true)
+            if 4 > abs(eulerZYX(1,2)) && 4 > abs(eulerZYX(1,3))
+                % Keine Orientierung der Kelle
+                %KSetUp;
+                %VisualizeAll(robot,p,direction_acc,true)
+                c(end+1) = 0;
+                c(end+1) = 0;
+                c(end+1) = 0;
+                c(end+1) = 0;
+            else
                 %Eventuell durch Schwappen verarbeitet
                 c(end+1) = (phi_1) - (phi1_max);
                 c(end+1) = (phi1_min) - (phi_1);
@@ -164,7 +175,7 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
 %                 c(end+1) = (phi1_min*10000) - (phi_1*10000);
 %                 c(end+1) = (phi_2*10000) - (phi2_max*10000);
 %                 c(end+1) = (phi2_min*10000) - (phi_2*10000);
-%             end
+            end
               % Anhängen der Daten an die Arrays
             EulerZYX(end+1,:) = eulerZYX;
             Phi1(end+1,1) = phi_1;
@@ -193,11 +204,11 @@ function [c,ceq] = completeValidation(timeintervals, base_points,regression,simu
             
             if Phi2(j,1) > phi2_min_tab && Phi2(j,1) < phi2_max_tab
                 predictedAcceleration = regression.regressionKat4.predictFcn(table(-EulerZYX(j,2),EulerZYX(j,3),BeschlRichtung_Sym(j,1),BeschlRichtung_Sym(j,2),BeschlRichtung_Sym(j,3),'VariableNames',{'rotationX','rotationY','directionX','directionY','directionZ'})); %rotx roty  x y z 
-                ceq(end+1) = ((predictedAcceleration/1000) - abs(Acceleration(j)))*0.2; %Variance ?
+                ceq(end+1) = ((predictedAcceleration/1000) - abs(Acceleration(j)))*2; %Variance ?
 
-%                 fprintf('Schwappbedingung, fall im Korridor Erfüllt\n')
-%                 fprintf(num2str(((predictedAcceleration/1000) - abs(Acceleration(j)))*2,j))
-%                 fprintf('.\n')
+                fprintf('Schwappbedingung, fall im Korridor Erfüllt\n')
+                fprintf(num2str(((predictedAcceleration/1000) - abs(Acceleration(j)))*2,j))
+                fprintf('.\n')
 
                 
             else          

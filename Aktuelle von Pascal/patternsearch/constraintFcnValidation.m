@@ -1,11 +1,6 @@
 function [c,ceq] = constraintFcnValidation(optimization_values, initial_AchsStellung,regression,simulation_data)
-   
-   [optimization_values, conuterBasePoints, conuterTimeUAchses] = transformValuseToMatrix(optimization_values);
-
+        
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Feste Variablen%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % joint angle    
-    max_jointangle = deg2rad([185,14,144,350,120,350]);
-    min_jointangle = deg2rad([-185,-130,-100,-350,-120,-350]);
 
     % velocity GRAD/SEC
     max_velocity = deg2rad([400,400,400,400,400,400]);
@@ -32,22 +27,18 @@ function [c,ceq] = constraintFcnValidation(optimization_values, initial_AchsStel
 
     initial_AchsStellung = initial_AchsStellung(:,2:size(optimization_values,2));     
             
-    %TIMEINTERVALS > 0 <0.5s Auch die virtuellen punkte Berücksichtigt
-%     c(end+1:end+length(base_Zeitintervall_mod)) = 0-base_Zeitintervall_mod; 
-%     c(end+1:end+length(base_Zeitintervall_mod)) = base_Zeitintervall_mod - 0.5;%Max Zeitinterv.
-    
     % schwappbedingung und Korridor 
-    [v_c, v_ceq] = completeValidation(base_Zeitintervall, base_Achswinkel,regression_1,simulation_data);
+    % [v_c, v_ceq] = completeValidation(base_Zeitintervall, base_Achswinkel,regression_1,simulation_data);
     
-%%%%%%%%%%%%%%Übernemen von c und ceq, die durch CompleteValidation übergeben wurden%%%%%%%%%%%%%%
-    if length(v_c) >= 1
-        c(end+1:end+length(v_c)) = v_c;
-    end
-
-    if length(v_ceq) >= 1
-        ceq(end+1:end+length(v_ceq)) = v_ceq;
-    end
-    
+% %%%%%%%%%%%%%Übernemen von c und ceq, die durch CompleteValidation übergeben wurden%%%%%%%%%%%%%%
+%     if length(v_c) >= 1
+%         c(end+1:end+length(v_c)) = v_c;
+%     end
+% 
+%     if length(v_ceq) >= 1
+%         ceq(end+1:end+length(v_ceq)) = v_ceq;
+%     end
+%     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Kontrollen an den einzelnen achswinkeln%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     for i=1:size(base_Achswinkel_Mod,2) 
          [~,veolocity,acceleration,~,~,splinePunkt] = spline(base_Achswinkel_Mod(:,i),base_Zeitintervall_mod,false);
@@ -57,8 +48,6 @@ function [c,ceq] = constraintFcnValidation(optimization_values, initial_AchsStel
          % BASEPOINTS BOUNDS 720 c's 
          
              for j=1:size(base_Achswinkel,1) %for every point on every axis
-%                 c(end+1) = base_Achswinkel(j,i) - max_jointangle(i);%joint angle
-%                 c(end+1) = min_jointangle(i) - base_Achswinkel(j,i);
                 c(end+1) = veolocity(splinePunkt(j)) - max_velocity(i);%velocity
                 c(end+1) = min_velocity(i) - veolocity(splinePunkt(j));
                 c(end+1) = acceleration(splinePunkt(j)) - max_acceleration(i);%acceleration
@@ -76,7 +65,13 @@ ceq_string = join(string( find(ceq ~= 0)   ), ',');
     for z = 1: length(position_c_fail)
         c_value_string(end+1,1) = c(position_c_fail(z));
     end
-    dfdf = strjoin(string(c_value_string),',');
+
+    position_ceq_fail = find(ceq > 0);
+    ceq_value_string = [];
+    %c_value_string = join(string( find(c > 0)   ), ',');
+    for z = 1: length(position_ceq_fail)
+        ceq_value_string(end+1,1) = ceq(position_ceq_fail(z));
+    end
 
     %ausgabe der anzah der c Bedingungen und die anzahl der verletzten
     if ismissing(c_string) == false
@@ -88,8 +83,8 @@ ceq_string = join(string( find(ceq ~= 0)   ), ',');
         fprintf(num2str(length(c)));
        
     end
-
     if ismissing(ceq_string) == false 
-        fprintf('ceq(%d, %d) [%s] \n',length(ceq),length(find(ceq ~= 0)) ,ceq_string);       
+        %fprintf('ceq(%d, %d) [%s] \n',length(ceq),length(find(ceq ~= 0)) ,ceq_string);  
+        fprintf('ceq(%d, %d) [%s] \n',length(ceq),length(find(ceq-1e-6 > 0)) ,strjoin(string(round(ceq_value_string,1)),', '));
     end  
 end
