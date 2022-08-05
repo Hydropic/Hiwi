@@ -65,7 +65,7 @@ function [tcppunkt, eulZYX, eulXYZ, RichtungInTCP, winkelmatrix] = vorwaertskine
     tform6 = tform6_1*tform6_2;  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%[Körper 7: Kelle]%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
-    R7 = RotationUmZ(deg2rad(90))*RotationUmY(deg2rad(-45))*RotationUmX(deg2rad(-90));%Intrinsisch
+    R7 = RotationUmZ(deg2rad(90))*RotationUmY(deg2rad(-90))*RotationUmX(deg2rad(-90));%Intrinsisch
     R7_ =RotationUmZ(deg2rad(-90))*RotationUmY(deg2rad(-45))*RotationUmX(deg2rad(-90));%Extrinsisch
     V7 = [0 0 0.450];
     tform7 = [R7    V7';

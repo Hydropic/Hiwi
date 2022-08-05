@@ -9,6 +9,13 @@ close all
 % Baut den Roboter und minJerkPath
 KSetUp;
 KPfadgenerator;
+
+example = matfile('SimResults.mat');
+optimized_translational_values = example.x;
+showBahn = optimized_translational_values;
+showBahn(:,1) = [];
+laufbahn(robot,showBahn,1,true)
+
 leer = [];
 %laufbahn(robot,minJerkPath,1,true)
 
@@ -19,7 +26,7 @@ init_ax_values(:,1) = 0.1; %Anfängliche Beschleunigung = 0,3m/s???
 % Defineig options für das Optimalsteuerungsprob.
 opts = optimoptions(@fmincon, ...
     'Algorithm','interior-point', ...
-    "MaxFunctionEvaluations",1000,...
+    "MaxFunctionEvaluations",100000,...
     "MaxIterations",10000, ...
     "StepTolerance",1e-5, ...
     "OptimalityTolerance",1e-5, ...
@@ -69,36 +76,31 @@ problem = createOptimProblem('fmincon',...
     'ub',max_values, ...
     'options',opts);
     
-%[x,fval,eflag,output] = fmincon(problem);
+[x,fval,eflag,output] = fmincon(problem);
 %gs = GlobalSearch( 'FunctionTolerance' ,2e-4, 'NumTrialPoints' ,2000, 'UseParallel' ,true)
-ms = MultiStart('UseParallel',true);
-[x,f] = run(ms,problem,1);
+% ms = MultiStart('UseParallel',true);
+% [x,f] = run(ms,problem,1);
 
+% Save Results
+save('SimResults.mat','x');
 
-
-%Plotting output
+% % Plotting output
 % KSetUp;
 % showBahn = x;
 % showBahn(:,1) = [];
 % laufbahn(robot,showBahn,1,true)
 %show_spline(x, 'Bad Output');
 
-%% ==============Überprüfen der Schwappbedingung====================
-for i = 1:5
-[optimized_transAndRot_values] = optimisationTrowelOrientation(x);
-x = optimized_transAndRot_values;
-end
-
 function objective = optimization_task(optimization_values)
     timeintervals = optimization_values(1:size(optimization_values,1)-1,1);
     base_points = optimization_values(:,2:size(optimization_values,2));
     objective = sum(timeintervals); 
-    for i=1:size(base_points,2)
+%     for i=1:size(base_points,2)
         %[achsstellung,vilocity,acceleration,yerk,time,splinePunkt] = spline(base_points(:,i),timeintervals,false);
         %0.0001
         objective = objective;
         %+ 0.00001 * trapz((vilocity.^2)); %TODO 
-    end
+%     end
 end
 
         

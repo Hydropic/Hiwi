@@ -38,7 +38,7 @@ function [c,ceq] = constraintFcnValidation(optimization_values, orientationsPend
 
     if callFrom == "pendel"   
         % Orientierung des TCP ermitteln
-        for i= 1:row_initial_values
+        for i= 1:length(optimization_values)
             p = [optimization_values(i, 2), optimization_values(i, 3), optimization_values(i, 4), optimization_values(i, 5), optimization_values(i, 6), optimization_values(i, 7)];
             [pos, eulerZYX,eulerXYZ, y_direction] = vorwaertskinematik(p);
         
@@ -49,10 +49,10 @@ function [c,ceq] = constraintFcnValidation(optimization_values, orientationsPend
         end    
 
         %Vergleich der Orientierung der Kelle mit der Auslenkung des Pendels
-        for i = 1:length(optimized_translational_values_TCP)
-            ceq(end+1) = orientationsPendulum(i, 2) - ptimized_translational_values_TCP_orientation(i, 2);
-            ceq(end+1) = orientationsPendulum(i, 3) - ptimized_translational_values_TCP_orientation(i, 3);
-            ceq(end+1) = orientationsPendulum(i, 4) - ptimized_translational_values_TCP_orientation(i, 4);
+        for i = 1:length(optimization_values)
+            ceq(end+1) = orientationsPendulum(i, 2) - optimized_translational_values_TCP_orientation(i, 2);
+            ceq(end+1) = orientationsPendulum(i, 3) - optimized_translational_values_TCP_orientation(i, 3);
+            %ceq(end+1) = orientationsPendulum(i, 4) - optimized_translational_values_TCP_orientation(i, 4);
         end
     end
     
