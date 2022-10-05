@@ -16,9 +16,10 @@ function [orientation_xy] = determinationAccelerationTCP(optimized_translational
         end
         acceleration_xy(:,i) = acceleration;
     end
-    plot(acceleration_xy(:,1), acceleration_xy(:,4))
-    hold on;
-    plot(acceleration_xy(:,1), acceleration_xy(:,3))
+%     figure
+%     plot(acceleration_xy(:,1), acceleration_xy(:,4))
+%     hold on;
+%     plot(acceleration_xy(:,1), acceleration_xy(:,3))
     for t = 1:length(acceleration_xy)
         orientation_xy(t,1) = acceleration_xy(t,1);
         orientation_xy(t,2) = rad2deg(atan(acceleration_xy(t,2)/(9.81+acceleration_xy(t,4))));

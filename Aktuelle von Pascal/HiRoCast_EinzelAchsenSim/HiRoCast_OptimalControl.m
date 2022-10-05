@@ -14,23 +14,24 @@ middleTwoConfig  = deg2rad([20.02, -60.61, 180.26, 71.82, -81.59, -24.3]);
 middleTwoConfigPosition = 15;
 
 %% ======== Simulation konfigurieren ======================================
-booleanFormTCP = 1;
+booleanFormTCP = 0;
     splineDiscretization = 20;
     maxIterationsSplineTCP = 10;
     visualizeTCPPath = 1;
     saveEMI = 1;
     
-booleanManualPostProcessing = 1;
+booleanManualPostProcessing = 0;
 
 booleanTimeOpimizationTure = 0;
     maxIterations = 40;
     timeStepSize = 0.06; % nicht unter 0.05
 
-booleanSloshingKompensationTrans = 0;
+booleanSloshingKompensationTrans = 1;
+    numOfIterations = 30;
 
 booleanSloshingKompensationRot = 0;
 
-booleanVisualisation = 1;
+booleanVisualisation = 0;
 
 %% ======== Optimierung: Beschl.-Profil TCP u. Erzeugung: Base-Points =====
 if booleanFormTCP
@@ -95,15 +96,7 @@ end
 
 %% ======== Optimierung: Achse 6 ==========================================
 if booleanSloshingKompensationTrans
-    for iterations = booleanSloshingKompensationTrans:booleanSloshingKompensationRot
-        if iterations == 1
-            setToNullOrientation = true;
-        elseif iterations == 2
-            setToNullOrientation = false;
-        else
-        end
-        
-        [x,fval,eflag,output] = optimisationTrowelOrientation(setToNullOrientation, startConfig, goalConfig)
+        [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations, startConfig, goalConfig)
         
         example = matfile('SimResults.mat');
         optimized_translational_values_load = example.x;
@@ -113,7 +106,6 @@ if booleanSloshingKompensationTrans
         x = optimized_translational_values_load;
     
         save('SimResults.mat','x','-v7.3');
-    end
 end    
 
 %% ======== CFD ===========================================================
