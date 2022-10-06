@@ -1,4 +1,4 @@
-function [c,ceq] = constraintFcnValidation_spline(optimization_values, splineDiscretization, startConfig, middleOneConfig, goalConfig)
+function [c,ceq] = constraintFcnValidation_spline(optimization_values, splineDiscretization, startConfig, middleOneConfig, goalConfig, max_values, min_values)
 ceq =[];
 c=[];
 %% =========Feste Variablen==========================================
@@ -63,25 +63,22 @@ c=[];
     min_spline_dd_x = min(qdd_xyz(:,1))
     min_spline_dd_y = min(qdd_xyz(:,2))
     min_spline_dd_z = min(qdd_xyz(:,3))
-
-    max_values = [2 3]
-    min_values = [-2 -3]   
       
-        c(end+1) = max_spline_d_x - max_values(1)
-        c(end+1) = max_spline_d_y - max_values(1)
-        c(end+1) = max_spline_d_z - max_values(1)
+        c(end+1) = max_spline_d_x - max_values(2,1)
+        c(end+1) = max_spline_d_y - max_values(2,2)
+        c(end+1) = max_spline_d_z - max_values(2,3)
     
-        c(end+1) = min_values(1) - min_spline_d_x 
-        c(end+1) = min_values(1) - min_spline_d_y
-        c(end+1) = min_values(1) - min_spline_d_z
+        c(end+1) = min_values(2,1) - min_spline_d_x 
+        c(end+1) = min_values(2,2) - min_spline_d_y
+        c(end+1) = min_values(2,3) - min_spline_d_z
     
-        c(end+1) = max_spline_dd_x - max_values(2)
-        c(end+1) = max_spline_dd_y - max_values(2)
-        c(end+1) = max_spline_dd_z - max_values(2)
+        c(end+1) = max_spline_dd_x - max_values(3,1)
+        c(end+1) = max_spline_dd_y - max_values(3,2)
+        c(end+1) = max_spline_dd_z - max_values(3,3)
     
-        c(end+1) = min_values(2) - min_spline_dd_x
-        c(end+1) = min_values(2) - min_spline_dd_y
-        c(end+1) = min_values(2) - min_spline_dd_z
+        c(end+1) = min_values(3,1) - min_spline_dd_x
+        c(end+1) = min_values(3,2) - min_spline_dd_y
+        c(end+1) = min_values(3,3) - min_spline_dd_z
 
 %% =========Ausgabe auf der Konsole=============================     
     c_string = join(string( find(c > 0)   ), ',');   

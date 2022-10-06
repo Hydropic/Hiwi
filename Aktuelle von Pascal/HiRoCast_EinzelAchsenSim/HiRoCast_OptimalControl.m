@@ -13,10 +13,18 @@ middleTwoConfigUse = false;
 middleTwoConfig  = deg2rad([20.02, -60.61, 180.26, 71.82, -81.59, -24.3]);
 middleTwoConfigPosition = 15;
 
+middleConfigs = [97.076249, -61.042625, 114.372749, -171.202400, 53.654381, 84.759359;
+                97.076249, -61.042625, 114.372749, -171.202400, 53.654381, 84.759359;
+                97.076249, -61.042625, 114.372749, -171.202400, 53.654381, 84.759359];
+
+middleConfigsPositions = [12;
+                          15; 
+                          18];
+
 %% ======== Simulation konfigurieren ======================================
-booleanFormTCP = 0;
+booleanFormTCP = 1;
     splineDiscretization = 20;
-    maxIterationsSplineTCP = 10;
+    maxIterationsSplineTCP = 60;
     visualizeTCPPath = 1;
     saveEMI = 1;
     
