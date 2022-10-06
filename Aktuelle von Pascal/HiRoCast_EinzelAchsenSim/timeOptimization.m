@@ -149,20 +149,6 @@ clearvars -except timeStepSize maxIterations axis seriesSim rseriesSimTrue start
         [x,fval,eflag,output] = fmincon(problem);
         
         optiResuls = [fval, output.constrviolation]
-    
-        %% =========Winkelausschlag aus Pendelmodell=============================== 
-        % [position_TCP, angleTCP, optimization_values, optimized_translational_values_clear] = prepairValuse_5_6(x, 1);
-        
-        % % Pendelsimulation aufrufen
-        % [path_angular_deflection_old] = pendelSimulation(position_TCP); % path_angular_deflection = [Zeit, rotation um y, Rotation um x]
-        % 
-        % [timeSmoothSpline, smoothSpline_y, smoothSpline_x] = drawSpline(path_angular_deflection_old);
-        %     for w = 1:length(x)
-        %         [pos, eulerZYX,eulerXYZ, y_direction] = vorwaertskinematik(x(w,2:7));
-        %         x(w,6) = eulerZYX(2);
-        %         x(w,7) = eulerZYX(3);
-        %     end
-        %     show_spline(x, 'y (um Achse 6), x (um Achse 5)');
     end
 
 

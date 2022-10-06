@@ -10,6 +10,7 @@ function [optimized_translational_values_oriented, path_angular_deflection] = ma
         end 
     end
     optimized_translational_values_oriented = optimized_translational_values_sumTime;
+
 %     figure;
 %     plot(path_angular_deflection);
     
@@ -55,6 +56,7 @@ function [optimized_translational_values_oriented, path_angular_deflection] = ma
             ee   =  cos(deg2rad(angle_yx_xy(1, 1)))
             eee  =  cos(deg2rad(angle_xx_yy(1, 1)))
             eeee =  cos(deg2rad(angle_yx_xy(1, 1)))
+
             path_angular_deflection_TCP_xx = timesMinusOne_xx*cos(deg2rad(angle_xx_yy(1, 1))) * path_angular_deflection(idx(1), 2);
             path_angular_deflection_TCP_yx = timesMinusOne_yx*cos(deg2rad(angle_xx_yy(1, 1)-90)) * path_angular_deflection(idx(1), 3);
 
@@ -68,25 +70,27 @@ function [optimized_translational_values_oriented, path_angular_deflection] = ma
             plotAcceleration(x,:) = [optimized_translational_values_oriented(x, 1), path_angular_deflection_TCP_x, path_angular_deflection_TCP_y]
 
             
-                % Achs 6 gleich der Auslenkung des Pendels in y
-                optimized_translational_values_oriented(x, 7) = optimized_translational_values(x, 7) + deg2rad(path_angular_deflection_TCP_y); % TODO: Fixen Wert entfernen      
+            % Achs 6 gleich der Auslenkung des Pendels in y
+            optimized_translational_values_oriented(x, 7) = deg2rad(path_angular_deflection_TCP_y);
+
+            % Achs 5 gleich der Auslenkung des Pendels in x
+            optimized_translational_values_oriented(x, 6) = deg2rad(path_angular_deflection_TCP_x);
+
+%             % Achs 6 gleich der Auslenkung des Pendels in y
+%             optimized_translational_values_oriented(x, 7) = optimized_translational_values(x, 7) + deg2rad(path_angular_deflection_TCP_y);
+% 
+%             % Achs 5 gleich der Auslenkung des Pendels in x
+%             optimized_translational_values_oriented(x, 6) = optimized_translational_values(x, 6) + deg2rad(path_angular_deflection_TCP_x);
 
             % Achs 4 gleich dem gradienten von Anfang bis Endposition
-            optimized_translational_values_oriented(x, 5) = optimized_translational_values(x, 5); % TODO: Fixen Wert entfernen
+            optimized_translational_values_oriented(x, 5) = optimized_translational_values(x, 5);
         end
-       
-%        figure;
-%        plot(plotAcceleration(:,1), plotAcceleration(:,2), 'm')
-%        hold on
-%        plot(plotAcceleration(:,1), plotAcceleration(:,3), 'k')
-%        hold on
-  % Zeitintervalle werden von Summe auf Intervalle zurückgesetzt  
+
   optimized_translational_values_oriented(:,1) = optimized_translational_values(:,1);
 
   %% ================ Ausgleichskurve ==============================
   [timeSmoothSpline, smoothSpline_y, smoothSpline_x] = drawSpline(optimized_translational_values_oriented, plotAcceleration);
-   
-    
+       
     for  w = 1:3
         if length(smoothSpline_x) > length(smoothSpline_y)
             smoothSpline_y(end+1) = 0
@@ -94,16 +98,22 @@ function [optimized_translational_values_oriented, path_angular_deflection] = ma
             smoothSpline_x(end+1) = 0
         end
     end
-    
+
     for x = 1:length(optimized_translational_values_oriented)
         [val_x,idx_x]=min(abs(optimized_translational_values_sumTime(x,1)-timeSmoothSpline));
         [val_y,idx_y]=min(abs(optimized_translational_values_sumTime(x,1)-timeSmoothSpline));
 
-
-            % Achs 6 gleich der Auslenkung des Pendels in y
-            optimized_translational_values_oriented(x, 7) = optimized_translational_values(x, 7) + deg2rad(smoothSpline_y(idx_y)); % TODO: Fixen Wert entfernen           
+        % Achs 6 gleich der Auslenkung des Pendels in y
+        optimized_translational_values_oriented(x, 7) = optimized_translational_values(x, 7) + deg2rad(smoothSpline_y(idx_y));
     end
 
+%     figure
+%     plot(timeSmoothSpline, deg2rad(smoothSpline_y), 'b')
+%     hold off;
+%     plot(optimized_translational_values_sumTime(:,1), optimized_translational_values(:,7), 'g')
+%     hold on;
+%     plot(optimized_translational_values_sumTime(:,1), optimized_translational_values_oriented(:, 7), 'r')
+%     hold on;
 
     path_angular_deflection = [timeSmoothSpline', smoothSpline_y', smoothSpline_x'];
 end

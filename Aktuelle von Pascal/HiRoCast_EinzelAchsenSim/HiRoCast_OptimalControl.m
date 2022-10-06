@@ -101,7 +101,7 @@ if booleanSloshingKompensationTrans
         example = matfile('SimResults.mat');
         optimized_translational_values_load = example.x;
         
-        optimized_translational_values_load(:,7) = x(:,3)
+        optimized_translational_values_load(:,7) = x(:,1)
 
         x = optimized_translational_values_load;
     
