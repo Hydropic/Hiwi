@@ -1,4 +1,4 @@
-function [x, optiResuls] = splineOptimization(maxIterations, splineDiscretization, startConfig, middleOneConfig, goalConfig)
+function [x, optiResuls] = splineOptimization(maxIterations, splineDiscretization, startConfig, middleOneConfig, goalConfig, min_values, max_values, jerkBoundaries, checkAreaJerk)
 
     % set initial Valuse
 
@@ -34,19 +34,13 @@ function [x, optiResuls] = splineOptimization(maxIterations, splineDiscretizatio
         "PlotFcn",["optimplotfunccount","optimplotfvalconstr","optimplotconstrviolation","optimplotstepsize","optimplotfirstorderopt"], ...
         "Display",'iter','ConstraintTolerance',0.00018);
 
-    min_values = [0 0.1 1.0; 
-                  -2.2 -2.2 -2.2; 
-                  -6.5 -2.5 -8.0]
 
-    max_values = [0 2.3 3.5; 
-                  2.2 2.2 2.2; 
-                  6.5 2.5 8.0]
     
     optimization_values = init_ax_values;
     problem = createOptimProblem('fmincon',...
         'x0',init_ax_values, ...
         'objective',@optimization_task,...
-        'nonlcon', @(optimization_values)constraintFcnValidation_spline(optimization_values, splineDiscretization, startConfig, middleOneConfig, goalConfig, max_values, min_values), ...
+        'nonlcon', @(optimization_values)constraintFcnValidation_spline(optimization_values, splineDiscretization, startConfig, middleOneConfig, goalConfig, max_values, min_values, jerkBoundaries, checkAreaJerk), ...
         'lb',min_values,...
         'ub',max_values, ...
         'options',opts);

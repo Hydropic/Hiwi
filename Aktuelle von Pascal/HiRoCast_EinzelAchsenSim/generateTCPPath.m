@@ -1,4 +1,4 @@
-function [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoints, splineDiscretization, visualizeTCPPath)
+function [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoints, splineDiscretization, visualizeTCPPath, min_values, max_values, jerkBoundaries)
 
     tvec = 0:0.01:optimization_values(1, 3);
     tpts = optimization_values(1, 1:3);
@@ -46,32 +46,54 @@ function [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoin
     min_spline_dd_y = min(qdd_xyz(:,2))
     min_spline_dd_z = min(qdd_xyz(:,3))
 
-    max_values = [2 3]
-    min_values = [-2 -3]
     if visualizeTCPPath
         figure('units','normalized','outerposition',[0 0 1 1])
-        subplot(3,1,1)
+
+        subplot(4,1,1)
         plot(tvec, q_xyz)
         xline(tpts(2))
         xlabel('t')
         ylabel('Positions')
-        legend('X','Y')
-        subplot(3,1,2)
+        legend('X','Y','Z')
+
+        min_values, max_values
+
+        subplot(4,1,2)
         plot(tvec, qd_xyz)
         xlabel('t')
         ylabel('Velocities')
         xline(tpts(2))
-        yline(2)
-        yline(-2)
-        legend('X','Y')
-        subplot(3,1,3)
+        yline(max_values(2,1), 'b')
+        yline(min_values(2,1), 'b')
+        yline(max_values(2,2), 'r')
+        yline(min_values(2,2), 'r')
+        yline(max_values(2,3), 'y')
+        yline(min_values(2,3), 'y')
+        legend('X','Y','Z') 
+
+        subplot(4,1,3)        
         plot(tvec, qdd_xyz)
         xlabel('t')
         ylabel('acceleration')
         xline(tpts(2))
-        yline(3)
-        yline(-3)
-        legend('X','Y') 
+        yline(max_values(3,1), 'b')
+        yline(min_values(3,1), 'b')
+        yline(max_values(3,2), 'r')
+        yline(min_values(3,2), 'r')
+        yline(max_values(3,3), 'y')
+        yline(min_values(3,3), 'y')
+        legend('X','Y','Z') 
+
+        qddd_xyz = diff(qdd_xyz);
+        qddd_xyz(end+1,:) = qddd_xyz(end,:);
+        subplot(4,1,4)
+        plot(tvec, qddd_xyz)
+        xlabel('t')
+        ylabel('Jerk')
+        xline(tpts(2))
+        yline(jerkBoundaries, 'b')
+        yline(-jerkBoundaries, 'b')
+        legend('X','Y','Z') 
     end
     timeLine = lin_xx_x_x; 
     Position_xyz = [transpose(lin_yy_x_x), transpose(lin_yy_x_y), transpose(lin_yy_x_z)];

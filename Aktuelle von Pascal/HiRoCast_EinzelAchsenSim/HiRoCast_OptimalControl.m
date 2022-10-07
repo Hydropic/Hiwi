@@ -24,14 +24,14 @@ middleConfigsPositions = [12;
 %% ======== Simulation konfigurieren ======================================
 booleanFormTCP = 1;
     splineDiscretization = 20;
-    maxIterationsSplineTCP = 60;
+    maxIterationsSplineTCP = 50;
     visualizeTCPPath = 1;
     saveEMI = 1;
     
 booleanManualPostProcessing = 0;
 
 booleanTimeOpimizationTure = 0;
-    maxIterations = 40;
+    maxIterations = 60;
     timeStepSize = 0.06; % nicht unter 0.05
 
 booleanSloshingKompensationTrans = 1;
@@ -43,12 +43,21 @@ booleanVisualisation = 0;
 
 %% ======== Optimierung: Beschl.-Profil TCP u. Erzeugung: Base-Points =====
 if booleanFormTCP
+    jerkBoundaries = 0.3
+    checkAreaJerk = 0.2
+    min_values = [0 0.6 1.0; 
+              -3.2 -3.2 -3.2; 
+              -6.5 -2.5 -7.0]
+
+    max_values = [0 2.3 3.5; 
+                  3.2 3.2 3.2; 
+                  6.5 2.5 7.0]
     
     % Zeitinervalle und Position der Kollisionspunkte optimieren
-    [x, optiResuls] = splineOptimization(maxIterationsSplineTCP, splineDiscretization, startConfig, middleOneConfig, goalConfig)  
+    [x, optiResuls] = splineOptimization(maxIterationsSplineTCP, splineDiscretization, startConfig, middleOneConfig, goalConfig, min_values, max_values, jerkBoundaries, checkAreaJerk) 
 
     % Speichern der Ergebnisse in EMI Format
-    [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x, splineDiscretization, startConfig, middleOneConfig, middleTwoConfig, goalConfig, middleOneConfigUse, middleTwoConfigUse, middleOneConfigPosition, middleTwoConfigPosition)
+    [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x, splineDiscretization, startConfig, middleOneConfig, middleTwoConfig, goalConfig, middleOneConfigUse, middleTwoConfigUse, middleOneConfigPosition, middleTwoConfigPosition, min_values, max_values, jerkBoundaries)
 
     % Generieren aller Bais-Points
     [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, startConfig, middleOneConfig, middleTwoConfig, goalConfig, middleOneConfigUse, middleTwoConfigUse, middleOneConfigPosition, middleTwoConfigPosition)

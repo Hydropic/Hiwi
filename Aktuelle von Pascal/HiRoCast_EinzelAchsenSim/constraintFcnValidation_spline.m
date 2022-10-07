@@ -1,4 +1,4 @@
-function [c,ceq] = constraintFcnValidation_spline(optimization_values, splineDiscretization, startConfig, middleOneConfig, goalConfig, max_values, min_values)
+function [c,ceq] = constraintFcnValidation_spline(optimization_values, splineDiscretization, startConfig, middleOneConfig, goalConfig, max_values, min_values, jerkBoundaries, checkAreaJerk)
 ceq =[];
 c=[];
 %% =========Feste Variablen==========================================
@@ -15,7 +15,7 @@ c=[];
     end
 
     
-    tvec = 0:0.01:optimization_values(1, 3);
+    tvec = 0:0.08:optimization_values(1, 3);
     tpts = optimization_values(1, 1:3);
     % tpts = [0,1.2,2.3];
 
@@ -27,11 +27,10 @@ c=[];
     AccelerationBoundaryCondition_y = [0 optimization_values(3, 2) 0]
     AccelerationBoundaryCondition_z = [0 optimization_values(3, 3) 0]
 
-    numSamples = 100;
-    % [q,qd,qdd,tvec,pp] = trapveltraj(wayPoints(1,:),numSamples,"EndTime",5)
     [q_x,qd_x,qdd_x,pp_x] = quinticpolytraj(wayPoints(1,:), tpts, tvec, "VelocityBoundaryCondition", VelocityBoundaryCondition_x,"AccelerationBoundaryCondition",AccelerationBoundaryCondition_x)
     [q_y,qd_y,qdd_y,pp_y] = quinticpolytraj(wayPoints(2,:), tpts, tvec, "VelocityBoundaryCondition", VelocityBoundaryCondition_y,"AccelerationBoundaryCondition",AccelerationBoundaryCondition_y)
     [q_z,qd_z,qdd_z,pp_z] = quinticpolytraj(wayPoints(3,:), tpts, tvec, "VelocityBoundaryCondition", VelocityBoundaryCondition_z,"AccelerationBoundaryCondition",AccelerationBoundaryCondition_z)
+
 
     q_xyz = [transpose(q_x), transpose(q_y), transpose(q_z)];
     qd_xyz = [transpose(qd_x), transpose(qd_y), transpose(qd_z)];
@@ -48,6 +47,34 @@ c=[];
     lin_xx_x_z = linspace(0, tvec(1, end), splineDiscretization);
     lin_yy_x_z = spline(tvec(1, :), q_xyz(:, 3), lin_xx_x_z);
 
+    qddd_xyz = diff(qdd_xyz);
+
+    % Ruck Differenz an Kollisionspunkt    
+    diffValue(1:length(qddd_xyz), 1:width(qddd_xyz)) = 0;
+    for a = 1:width(qddd_xyz)
+        diffValue(1, a) = 0
+        for h = 2:length(qddd_xyz)
+            diffValue(h,a) = qddd_xyz(h,a) - qddd_xyz(h-1,a)
+        end
+    end
+
+    % Nur den Ruck in der Nähe des Kollisionspunktes aufnehmen
+    timePoint = optimization_values(1, 2)
+    diffValuePoint = [];
+    for a = 1:width(qddd_xyz)
+        counter = 1;
+        for w = 1:width(tvec)
+            if tvec(w) < timePoint + checkAreaJerk && tvec(w) > timePoint - checkAreaJerk
+                    diffValuePoint(counter,a) = qddd_xyz(w,a)
+                    counter = counter +1;
+            end
+        end
+    end
+
+
+%     figure
+%     plot(diffValue)
+
     max_spline_d_x = max(qd_xyz(:,1))
     max_spline_d_y = max(qd_xyz(:,2))
     max_spline_d_z = max(qd_xyz(:,3))
@@ -63,6 +90,22 @@ c=[];
     min_spline_dd_x = min(qdd_xyz(:,1))
     min_spline_dd_y = min(qdd_xyz(:,2))
     min_spline_dd_z = min(qdd_xyz(:,3))
+% 
+%     max_spline_ddd_x = max(qddd_xyz(:,1))
+%     max_spline_ddd_y = max(qddd_xyz(:,2))
+%     max_spline_ddd_z = max(qddd_xyz(:,3))
+% 
+%     min_spline_ddd_x = min(qddd_xyz(:,1))
+%     min_spline_ddd_y = min(qddd_xyz(:,2))
+%     min_spline_ddd_z = min(qddd_xyz(:,3))
+
+    max_spline_ddd_x = max(diffValuePoint(:,1))
+    max_spline_ddd_y = max(diffValuePoint(:,2))
+    max_spline_ddd_z = max(diffValuePoint(:,3))
+
+    min_spline_ddd_x = min(diffValuePoint(:,1))
+    min_spline_ddd_y = min(diffValuePoint(:,2))
+    min_spline_ddd_z = min(diffValuePoint(:,3))
       
         c(end+1) = max_spline_d_x - max_values(2,1)
         c(end+1) = max_spline_d_y - max_values(2,2)
@@ -79,6 +122,14 @@ c=[];
         c(end+1) = min_values(3,1) - min_spline_dd_x
         c(end+1) = min_values(3,2) - min_spline_dd_y
         c(end+1) = min_values(3,3) - min_spline_dd_z
+
+        c(end+1) = max_spline_ddd_x - jerkBoundaries
+        c(end+1) = max_spline_ddd_y - jerkBoundaries
+        c(end+1) = max_spline_ddd_z - jerkBoundaries
+
+        c(end+1) = -jerkBoundaries - min_spline_ddd_x
+        c(end+1) = -jerkBoundaries - min_spline_ddd_y
+        c(end+1) = -jerkBoundaries - min_spline_ddd_z
 
 %% =========Ausgabe auf der Konsole=============================     
     c_string = join(string( find(c > 0)   ), ',');   

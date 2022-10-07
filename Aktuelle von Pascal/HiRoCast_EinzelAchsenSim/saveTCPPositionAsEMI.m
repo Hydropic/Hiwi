@@ -1,4 +1,4 @@
-function [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x, splineDiscretization, startConfig, middleOneConfig, middleTwoConfig, goalConfig, middleOneConfigUse, middleTwoConfigUse, middleOneConfigPosition, middleTwoConfigPosition)  
+function [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x, splineDiscretization, startConfig, middleOneConfig, middleTwoConfig, goalConfig, middleOneConfigUse, middleTwoConfigUse, middleOneConfigPosition, middleTwoConfigPosition, min_values, max_values, jerkBoundaries)  
     optimization_values = x;
 
     achsstellungen(1,:) = startConfig
@@ -11,7 +11,7 @@ function [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveE
         wayPoints(:,p) = tcppunkt(:,1)
     end
 
-    [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoints, splineDiscretization, visualizeTCPPath)
+    [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoints, splineDiscretization, visualizeTCPPath, min_values, max_values, jerkBoundaries)
 
     if saveEMI
         optimized_translational_values_sameDistances(:, 1) = transpose(timeLine);
