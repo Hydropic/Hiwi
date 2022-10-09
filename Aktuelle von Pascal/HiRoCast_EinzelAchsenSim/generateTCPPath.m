@@ -1,15 +1,15 @@
 function [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoints, splineDiscretization, visualizeTCPPath, min_values, max_values, jerkBoundaries)
 
-    tvec = 0:0.01:optimization_values(1, 3);
-    tpts = optimization_values(1, 1:3);
+    tvec = 0:0.03:optimization_values(1, end);
+    tpts = [0, optimization_values(1,:)]
 
-    VelocityBoundaryCondition_x = [0 optimization_values(2, 1) 0]
-    VelocityBoundaryCondition_y = [0 optimization_values(2, 2) 0]
-    VelocityBoundaryCondition_z = [0 optimization_values(2, 3) 0]
+    VelocityBoundaryCondition_x = [0, optimization_values(2,:)]
+    VelocityBoundaryCondition_y = [0, optimization_values(3,:)]
+    VelocityBoundaryCondition_z = [0, optimization_values(4,:)]
 
-    AccelerationBoundaryCondition_x = [0 optimization_values(3, 1) 0]
-    AccelerationBoundaryCondition_y = [0 optimization_values(3, 2) 0]
-    AccelerationBoundaryCondition_z = [0 optimization_values(3, 3) 0]
+    AccelerationBoundaryCondition_x = [0, optimization_values(5,:)]
+    AccelerationBoundaryCondition_y = [0, optimization_values(6,:)]
+    AccelerationBoundaryCondition_z = [0, optimization_values(7,:)]
 
     [q_x,qd_x,qdd_x,pp_x] = quinticpolytraj(wayPoints(1,:), tpts, tvec, "VelocityBoundaryCondition", VelocityBoundaryCondition_x,"AccelerationBoundaryCondition",AccelerationBoundaryCondition_x)
     [q_y,qd_y,qdd_y,pp_y] = quinticpolytraj(wayPoints(2,:), tpts, tvec, "VelocityBoundaryCondition", VelocityBoundaryCondition_y,"AccelerationBoundaryCondition",AccelerationBoundaryCondition_y)
@@ -51,7 +51,9 @@ function [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoin
 
         subplot(4,1,1)
         plot(tvec, q_xyz)
-        xline(tpts(2))
+        for l = 2:length(tpts)-1
+            xline(tpts(l))
+        end
         xlabel('t')
         ylabel('Positions')
         legend('X','Y','Z')
@@ -60,7 +62,9 @@ function [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoin
         plot(tvec, qd_xyz)
         xlabel('t')
         ylabel('Velocities')
-        xline(tpts(2))
+        for l = 2:length(tpts)-1
+            xline(tpts(l))
+        end
         yline(max_values(2,1), 'b')
         yline(min_values(2,1), 'b')
         yline(max_values(2,2), 'r')
@@ -73,7 +77,9 @@ function [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoin
         plot(tvec, qdd_xyz)
         xlabel('t')
         ylabel('acceleration')
-        xline(tpts(2))
+        for l = 2:length(tpts)-1
+            xline(tpts(l))
+        end
         yline(max_values(3,1), 'b')
         yline(min_values(3,1), 'b')
         yline(max_values(3,2), 'r')
@@ -88,7 +94,9 @@ function [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoin
         plot(tvec, qddd_xyz)
         xlabel('t')
         ylabel('Jerk')
-        xline(tpts(2))
+        for l = 2:length(tpts)-1
+            xline(tpts(l))
+        end
         yline(jerkBoundaries, 'b')
         yline(-jerkBoundaries, 'b')
         legend('X','Y','Z') 

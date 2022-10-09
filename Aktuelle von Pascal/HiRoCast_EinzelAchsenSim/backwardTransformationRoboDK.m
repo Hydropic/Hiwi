@@ -1,4 +1,4 @@
-function [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, startConfig, middleOneConfig, middleTwoConfig, goalConfig, middleOneConfigUse, middleTwoConfigUse, middleOneConfigPosition, middleTwoConfigPosition)
+function [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, startConfig, middleConfigs, goalConfig)
     numSamples = 20;
     % TODO: Orientierung Z so ermitteln, dass Beschleunigung in X-Richtung maximal
     [minJerkPath] = pfadGeneratorSimple(splineDiscretization, startConfig, goalConfig, numSamples, middleOneConfigUse, middleOneConfig, middleOneConfigPosition, middleTwoConfigUse, middleTwoConfig, middleTwoConfigPosition)

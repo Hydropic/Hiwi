@@ -1,11 +1,8 @@
-function [c,ceq] = constraintFcnValidation_spline(optimization_values, splineDiscretization, startConfig, middleOneConfig, goalConfig, max_values, min_values, jerkBoundaries)
-ceq =[];
-c=[];
-%% =========Feste Variablen==========================================
-
-    achsstellungen(1,:) = startConfig
-    achsstellungen(2,:) = middleOneConfig
-    achsstellungen(3,:) = goalConfig
+function [c,ceq] = constraintFcnValidation_spline(optimization_values, splineDiscretization, axesPointConfigs, max_values, min_values, jerkBoundaries)
+    ceq =[];
+    c=[];
+    %% =========Feste Variablen==========================================
+    achsstellungen = axesPointConfigs.'
 
     wayPoints = [];
 
@@ -13,31 +10,45 @@ c=[];
         [tcppunkt, eulZYX, eulXYZ, RichtungInTCP, winkelmatrix] = vorwaertskinematik(achsstellungen(p,:))
         wayPoints(:,p) = tcppunkt(:,1)
     end
-
     
-    tvec = 0:0.03:optimization_values(1, 3);
-    tpts = optimization_values(1, 1:3);
-    % tpts = [0,1.2,2.3];
+    for t = 1:width(optimization_values)-1
+        if optimization_values(1,t) <= 0
+            optimization_values(1,t) = 0
+        end
+    end
 
-    VelocityBoundaryCondition_x = [0 optimization_values(2, 1) 0]
-    VelocityBoundaryCondition_y = [0 optimization_values(2, 2) 0]
-    VelocityBoundaryCondition_z = [0 optimization_values(2, 3) 0]
+    tvec = 0:0.08:optimization_values(1, end);
+    tpts = [0, optimization_values(1,:)]
 
-    AccelerationBoundaryCondition_x = [0 optimization_values(3, 1) 0]
-    AccelerationBoundaryCondition_y = [0 optimization_values(3, 2) 0]
-    AccelerationBoundaryCondition_z = [0 optimization_values(3, 3) 0]
+    VelocityBoundaryCondition_x = [0, optimization_values(2,:)]
+    VelocityBoundaryCondition_y = [0, optimization_values(3,:)]
+    VelocityBoundaryCondition_z = [0, optimization_values(4,:)]
 
+    AccelerationBoundaryCondition_x = [0, optimization_values(5,:)]
+    AccelerationBoundaryCondition_y = [0, optimization_values(6,:)]
+    AccelerationBoundaryCondition_z = [0, optimization_values(7,:)]
+
+    % Check, if Time is rising on every Point
+    timeRising = false;
+    for t = 1:width(optimization_values)-1
+        if optimization_values(1,t) >= optimization_values(1,t+1)
+            timeRising = true
+            break
+        else
+            timeRising = false
+        end
+    end
+
+    if timeRising == false
     [q_x,qd_x,qdd_x,pp_x] = quinticpolytraj(wayPoints(1,:), tpts, tvec, "VelocityBoundaryCondition", VelocityBoundaryCondition_x,"AccelerationBoundaryCondition",AccelerationBoundaryCondition_x)
     [q_y,qd_y,qdd_y,pp_y] = quinticpolytraj(wayPoints(2,:), tpts, tvec, "VelocityBoundaryCondition", VelocityBoundaryCondition_y,"AccelerationBoundaryCondition",AccelerationBoundaryCondition_y)
     [q_z,qd_z,qdd_z,pp_z] = quinticpolytraj(wayPoints(3,:), tpts, tvec, "VelocityBoundaryCondition", VelocityBoundaryCondition_z,"AccelerationBoundaryCondition",AccelerationBoundaryCondition_z)
-
 
     q_xyz = [transpose(q_x), transpose(q_y), transpose(q_z)];
     qd_xyz = [transpose(qd_x), transpose(qd_y), transpose(qd_z)];
     qdd_xyz = [transpose(qdd_x), transpose(qdd_y), transpose(qdd_z)];
     pp_xyz = [transpose(pp_x), transpose(pp_y), transpose(pp_z)];
-    
-    
+     
     lin_xx_x_x = linspace(0, tvec(1, end), splineDiscretization);
     lin_yy_x_x = spline(tvec(1, :), q_xyz(:, 1), lin_xx_x_x);
 
@@ -58,30 +69,46 @@ c=[];
         end
     end
 
-    % Nur den Ruck in der Nähe des Kollisionspunktes aufnehmen
-    timePoint = optimization_values(1, 2)
-    diffValuePoint = [];
-
-    % Determine all values around the time
-    diffValues_pos = tvec - timePoint
-    diffValues_neg = tvec - timePoint
-    diffValues_pos(diffValues_pos > 0) = -inf;
-    diffValues_neg(diffValues_neg < 0) = inf;
-    [~, indexOfMax_pos] = max(diffValues_pos)
-    [~, indexOfMax_neg] = min(diffValues_neg)
-    maxValue_pos = tvec(indexOfMax_pos)
-    maxValue_neg = tvec(indexOfMax_neg)
-
-    diffValuePoint(1,:) = qddd_xyz(indexOfMax_pos-2,:);
-    diffValuePoint(2,:) = qddd_xyz(indexOfMax_pos-1,:);
-    diffValuePoint(3,:) = qddd_xyz(indexOfMax_pos,:);
-    diffValuePoint(4,:) = qddd_xyz(indexOfMax_neg,:);
-    diffValuePoint(5,:) = qddd_xyz(indexOfMax_neg+1,:);
-    diffValuePoint(6,:) = qddd_xyz(indexOfMax_neg+2,:);
+    for timePoint = 1:width(optimization_values)-1
+        % Nur den Ruck in der Nähe des Kollisionspunktes aufnehmen
+        timePoint = optimization_values(1, timePoint)
+        diffValuePoint = [];
     
+        % Determine all values around the time
+        diffValues_pos = tvec - timePoint
+        diffValues_neg = tvec - timePoint
+        diffValues_pos(diffValues_pos > 0) = -inf;
+        diffValues_neg(diffValues_neg < 0) = inf;
+        [~, indexOfMax_pos] = max(diffValues_pos)
+        [~, indexOfMax_neg] = min(diffValues_neg)
+        maxValue_pos = tvec(indexOfMax_pos)
+        maxValue_neg = tvec(indexOfMax_neg)
+    
+        diffValuePoint(1,:) = qddd_xyz(indexOfMax_pos-2,:);
+        diffValuePoint(2,:) = qddd_xyz(indexOfMax_pos-1,:);
+        diffValuePoint(3,:) = qddd_xyz(indexOfMax_pos,:);
+        diffValuePoint(4,:) = qddd_xyz(indexOfMax_neg,:);
+        diffValuePoint(5,:) = qddd_xyz(indexOfMax_neg+1,:);
+        diffValuePoint(6,:) = qddd_xyz(indexOfMax_neg+2,:);
+    
+        max_spline_ddd_x = max(diffValuePoint(:,1))
+        max_spline_ddd_y = max(diffValuePoint(:,2))
+        max_spline_ddd_z = max(diffValuePoint(:,3))
+    
+        min_spline_ddd_x = min(diffValuePoint(:,1))
+        min_spline_ddd_y = min(diffValuePoint(:,2))
+        min_spline_ddd_z = min(diffValuePoint(:,3))
+    
+            c(end+1) = max_spline_ddd_x - jerkBoundaries
+            c(end+1) = max_spline_ddd_y - jerkBoundaries
+            c(end+1) = max_spline_ddd_z - jerkBoundaries
+    
+            c(end+1) = -jerkBoundaries - min_spline_ddd_x
+            c(end+1) = -jerkBoundaries - min_spline_ddd_y
+            c(end+1) = -jerkBoundaries - min_spline_ddd_z
+    end
 
-%     figure
-%     plot(diffValue)
+
 
     max_spline_d_x = max(qd_xyz(:,1))
     max_spline_d_y = max(qd_xyz(:,2))
@@ -98,23 +125,7 @@ c=[];
     min_spline_dd_x = min(qdd_xyz(:,1))
     min_spline_dd_y = min(qdd_xyz(:,2))
     min_spline_dd_z = min(qdd_xyz(:,3))
-% 
-%     max_spline_ddd_x = max(qddd_xyz(:,1))
-%     max_spline_ddd_y = max(qddd_xyz(:,2))
-%     max_spline_ddd_z = max(qddd_xyz(:,3))
-% 
-%     min_spline_ddd_x = min(qddd_xyz(:,1))
-%     min_spline_ddd_y = min(qddd_xyz(:,2))
-%     min_spline_ddd_z = min(qddd_xyz(:,3))
 
-    max_spline_ddd_x = max(diffValuePoint(:,1))
-    max_spline_ddd_y = max(diffValuePoint(:,2))
-    max_spline_ddd_z = max(diffValuePoint(:,3))
-
-    min_spline_ddd_x = min(diffValuePoint(:,1))
-    min_spline_ddd_y = min(diffValuePoint(:,2))
-    min_spline_ddd_z = min(diffValuePoint(:,3))
-      
         c(end+1) = max_spline_d_x - max_values(2,1)
         c(end+1) = max_spline_d_y - max_values(2,2)
         c(end+1) = max_spline_d_z - max_values(2,3)
@@ -130,14 +141,11 @@ c=[];
         c(end+1) = min_values(3,1) - min_spline_dd_x
         c(end+1) = min_values(3,2) - min_spline_dd_y
         c(end+1) = min_values(3,3) - min_spline_dd_z
-
-        c(end+1) = max_spline_ddd_x - jerkBoundaries
-        c(end+1) = max_spline_ddd_y - jerkBoundaries
-        c(end+1) = max_spline_ddd_z - jerkBoundaries
-
-        c(end+1) = -jerkBoundaries - min_spline_ddd_x
-        c(end+1) = -jerkBoundaries - min_spline_ddd_y
-        c(end+1) = -jerkBoundaries - min_spline_ddd_z
+    else
+        for w = 1:(3*6)
+            c(end+1) = 10; 
+        end
+    end
 
 %% =========Ausgabe auf der Konsole=============================     
     c_string = join(string( find(c > 0)   ), ',');   

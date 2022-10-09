@@ -1,9 +1,8 @@
-function [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x, splineDiscretization, startConfig, middleOneConfig, middleTwoConfig, goalConfig, middleOneConfigUse, middleTwoConfigUse, middleOneConfigPosition, middleTwoConfigPosition, min_values, max_values, jerkBoundaries)  
+function [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries)  
     optimization_values = x;
 
-    achsstellungen(1,:) = startConfig
-    achsstellungen(2,:) = middleOneConfig
-    achsstellungen(3,:) = goalConfig
+    achsstellungen = axesPointConfigs.'
+
     wayPoints = [];
 
     for p = 1:height(achsstellungen)

@@ -2,29 +2,52 @@ close all;
 clear all;
 
 %% ======== Setzen der Start-, End- und Kollisionspunkte ==================
-startConfig = deg2rad([135.299231, -70.046429, 133.215319, -166.669123, 63.794111, 84.026271]);
-goalConfig  = deg2rad([66.749562, -72.967077, 139.240207, -169.369934, 66.636337, 85.743286]);
-
-middleOneConfigUse = true;
-middleOneConfig  = deg2rad([97.076249, -61.042625, 114.372749, -171.202400, 53.654381, 84.759359]);
-middleOneConfigPosition = 12;
-
-middleTwoConfigUse = false;
-middleTwoConfig  = deg2rad([20.02, -60.61, 180.26, 71.82, -81.59, -24.3]);
-middleTwoConfigPosition = 15;
-
-middleConfigs = [97.076249, -61.042625, 114.372749, -171.202400, 53.654381, 84.759359;
+axesPointConfigs = transpose(deg2rad( ...
+               [135.299231, -70.046429, 133.215319, -166.669123, 63.794111, 84.026271;
                 97.076249, -61.042625, 114.372749, -171.202400, 53.654381, 84.759359;
-                97.076249, -61.042625, 114.372749, -171.202400, 53.654381, 84.759359];
+                87.076249, -61.042625, 114.372749, -171.202400, 53.654381, 84.759359;
+                77.076249, -61.042625, 114.372749, -171.202400, 53.654381, 84.759359;
+                66.749562, -72.967077, 139.240207, -169.369934, 66.636337, 85.743286]));
 
-middleConfigsPositions = [12;
-                          15; 
-                          18];
+tpts =                              [1.2 1.6 2.4 3.0];
+
+VelocityBoundaryCondition_x =       [1 0.5 1  0.0]
+AccelerationBoundaryCondition_x =   [-2 -1 -0  0.0]
+
+VelocityBoundaryCondition_y =       [-0.3 0 1  0.0]
+AccelerationBoundaryCondition_y =   [ 2 2 1  0.0]
+
+VelocityBoundaryCondition_z =       [0 0 0  0.0]
+AccelerationBoundaryCondition_z =   [0 0 0  0.0]
+
+% Aufbau Value:
+            % Zeitpunkte
+            % VelocityBoundaryCondition_x
+            % VelocityBoundaryCondition_y
+            % VelocityBoundaryCondition_z
+            % AccelerationBoundaryCondition_x
+            % AccelerationBoundaryCondition_y
+            % AccelerationBoundaryCondition_z
+min_values = [0.2 0.2 0.2 1.0; 
+              -3.2 -3.2 -3.2 0.0;
+              -3.2 -3.2 -3.2 0.0; 
+              -3.2 -3.2 -3.2 0.0; 
+              -6.5 -6.5 -6.5 0.0; 
+              -2.5 -2.5 -2.5 0.0; 
+              -7.0 -7.0 -7.0 0.0]
+
+max_values = [2.8 3.8 4.8 6.0; 
+              3.2 3.2 3.2 0.0; 
+              3.2 3.2 3.2 0.0; 
+              3.2 3.2 3.2 0.0; 
+              6.5 6.5 6.5 0.0; 
+              2.5 2.5 2.5 0.0; 
+              7.0 7.0 7.0 0.0]
 
 %% ======== Simulation konfigurieren ======================================
 booleanFormTCP = 1;
     splineDiscretization = 20;
-    maxIterationsSplineTCP = 40;
+    maxIterationsSplineTCP = 100;
     visualizeTCPPath = 1;
     saveEMI = 1;
     
@@ -43,23 +66,30 @@ booleanVisualisation = 0;
 
 %% ======== Optimierung: Beschl.-Profil TCP u. Erzeugung: Base-Points =====
 if booleanFormTCP
-    jerkBoundaries = 0.08
-    min_values = [0 0.6 1.0; 
-              -3.2 -3.2 -3.2; 
-              -6.5 -2.5 -7.0]
+    % Set up Boundarys für first Simulation
+    jerkBoundaries = 0.1 % Für die Ruckänderung an den Mittelpunkten gilt +- dieser Wert als Max. bzw. Min.
 
-    max_values = [0 2.3 3.5; 
-                  3.2 3.2 3.2; 
-                  6.5 2.5 7.0]
-    
+    VelocityBoundaryCondition_xyz_middle = [VelocityBoundaryCondition_x; VelocityBoundaryCondition_y; VelocityBoundaryCondition_z]
+    AccelerationBoundaryCondition_xyz_middle = [AccelerationBoundaryCondition_x; AccelerationBoundaryCondition_y; AccelerationBoundaryCondition_z]
+
+    % Initiale Werte für die Optimierung setzen
+    init_ax_values = [tpts; 
+                  VelocityBoundaryCondition_xyz_middle; 
+                  AccelerationBoundaryCondition_xyz_middle];
+
+    x = init_ax_values;
+    % Speichern der Ergebnisse in EMI Format
+    [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries)
+
+
     % Zeitinervalle und Position der Kollisionspunkte optimieren
-    [x, optiResuls] = splineOptimization(maxIterationsSplineTCP, splineDiscretization, startConfig, middleOneConfig, goalConfig, min_values, max_values, jerkBoundaries) 
+    [x, optiResuls] = splineOptimization(maxIterationsSplineTCP, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries, init_ax_values) 
 
     % Speichern der Ergebnisse in EMI Format
-    [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x, splineDiscretization, startConfig, middleOneConfig, middleTwoConfig, goalConfig, middleOneConfigUse, middleTwoConfigUse, middleOneConfigPosition, middleTwoConfigPosition, min_values, max_values, jerkBoundaries)
+    [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries)
 
     % Generieren aller Bais-Points
-    [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, startConfig, middleOneConfig, middleTwoConfig, goalConfig, middleOneConfigUse, middleTwoConfigUse, middleOneConfigPosition, middleTwoConfigPosition)
+    [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, startConfig, middleConfigs, goalConfig)
     
     save('SimResults.mat','x','-v7.3');
 end
