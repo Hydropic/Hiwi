@@ -24,7 +24,7 @@ middleConfigsPositions = [12;
 %% ======== Simulation konfigurieren ======================================
 booleanFormTCP = 1;
     splineDiscretization = 20;
-    maxIterationsSplineTCP = 40;
+    maxIterationsSplineTCP = 50;
     visualizeTCPPath = 1;
     saveEMI = 1;
     
@@ -50,7 +50,7 @@ if booleanFormTCP
 
     max_values = [0 2.3 3.5; 
                   3.2 3.2 3.2; 
-                  6.5 2.5 7.0]
+                  6.5 12.5 7.0]
     
     % Zeitinervalle und Position der Kollisionspunkte optimieren
     [x, optiResuls] = splineOptimization(maxIterationsSplineTCP, splineDiscretization, startConfig, middleOneConfig, goalConfig, min_values, max_values, jerkBoundaries) 
