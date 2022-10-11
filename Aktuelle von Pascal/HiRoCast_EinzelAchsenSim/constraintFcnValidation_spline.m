@@ -1,4 +1,4 @@
-function [c,ceq] = constraintFcnValidation_spline(optimization_values, splineDiscretization, axesPointConfigs, max_values, min_values, jerkBoundaries)
+function [c,ceq] = constraintFcnValidation_spline(optimalSplineDiscretization, optimization_values, splineDiscretization, axesPointConfigs, max_values, min_values, jerkBoundaries)
     ceq =[];
     c=[];
     %% =========Feste Variablen==========================================
@@ -19,8 +19,8 @@ function [c,ceq] = constraintFcnValidation_spline(optimization_values, splineDis
         wayPoints(:,p) = tcppunkt(:,1)
     end
     
-
-    tvec = 0:0.03:optimization_values(1, end);
+    interval =  round(optimization_values(1, end)/optimalSplineDiscretization, 3)
+    tvec = 0:interval:optimization_values(1, end);
     tpts = [0, optimization_values(1,:)]
 
     VelocityBoundaryCondition_x = [0, optimization_values(2,:)]

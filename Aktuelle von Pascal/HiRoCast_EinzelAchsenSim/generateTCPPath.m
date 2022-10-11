@@ -1,6 +1,7 @@
 function [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoints, splineDiscretization, visualizeTCPPath, min_values, max_values, jerkBoundaries)
+[breite, hoehe] = size(optimization_values)
 
-if length(optimization_values) == 7
+if breite == 7
        for t = 1:length(optimization_values(1,:))
         if t == 1
             optimization_values(1,t) = optimization_values(1,t)
@@ -97,7 +98,7 @@ if length(optimization_values) == 7
     timeLine = lin_xx_x_x; 
     Position_xyz = [transpose(lin_yy_x_x), transpose(lin_yy_x_y), transpose(lin_yy_x_z)];
 
-elseif length(optimization_values) == 5
+elseif breite == 5
        for t = 1:length(optimization_values(1,:))
         if t == 1
             optimization_values(1,t) = optimization_values(1,t)
@@ -187,7 +188,7 @@ elseif length(optimization_values) == 5
     end
     timeLine = lin_xx_x_x; 
     Position_xyz = [transpose(lin_yy_x_x), transpose(lin_yy_x_y)];
-elseif length(optimization_values) == 3
+elseif breite == 3
        for t = 1:length(optimization_values(1,:))
         if t == 1
             optimization_values(1,t) = optimization_values(1,t)

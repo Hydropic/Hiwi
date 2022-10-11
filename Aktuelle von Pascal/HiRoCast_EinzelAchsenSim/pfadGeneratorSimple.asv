@@ -2,7 +2,7 @@ function [minJerkPath] = pfadGeneratorSimple(splineDiscretization, numSamples, a
     % spline mit allen Punkten (Start, einsMitte, zweiMitte, Ende) erzeugen
     % Die Werter vom Spline anschließend auf die gefürderten Zeitpunke übertragen
     [breite, hoehe] = size(axesPointConfigs)
-    for k = 1:breite
+    for k = 1:hoehe
         % spline aus den Punkten erzeugen
         timeSteps = [];
         for t = 0:length(x_xyz)
@@ -20,7 +20,8 @@ function [minJerkPath] = pfadGeneratorSimple(splineDiscretization, numSamples, a
         % xx = 0:interval:timeLine(end);
         xx = 0:interval:timeLine(end);
         yy = spline(x,y,xx);
-        minJerkPath(k,:) = yy(1,:)
+        minJerkPath = xx(:)
+
     end
 end
 % [breite, hoehe] = size(axesPointConfigs)
