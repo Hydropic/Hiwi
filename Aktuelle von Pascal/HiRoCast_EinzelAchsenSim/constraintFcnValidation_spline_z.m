@@ -24,10 +24,9 @@ function [c,ceq] = constraintFcnValidation_spline(optimization_values, splineDis
     tpts = [0, optimization_values(1,:)]
 
     VelocityBoundaryCondition_x = [0, optimization_values(2,:)]
-    VelocityBoundaryCondition_y = [0, optimization_values(3,:)]
 
-    AccelerationBoundaryCondition_x = [0, optimization_values(4,:)]
-    AccelerationBoundaryCondition_y = [0, optimization_values(5,:)]
+
+    AccelerationBoundaryCondition_x = [0, optimization_values(3,:)]
 
     % Check, if Time is rising on every Point
     timeRising = false;
@@ -41,20 +40,17 @@ function [c,ceq] = constraintFcnValidation_spline(optimization_values, splineDis
     end
 
     if timeRising == false
-    [q_x,qd_x,qdd_x,pp_x] = quinticpolytraj(wayPoints(1,:), tpts, tvec, "VelocityBoundaryCondition", VelocityBoundaryCondition_x,"AccelerationBoundaryCondition",AccelerationBoundaryCondition_x)
-    [q_y,qd_y,qdd_y,pp_y] = quinticpolytraj(wayPoints(2,:), tpts, tvec, "VelocityBoundaryCondition", VelocityBoundaryCondition_y,"AccelerationBoundaryCondition",AccelerationBoundaryCondition_y)
-
-    q_xyz = [transpose(q_x), transpose(q_y)];
-    qd_xyz = [transpose(qd_x), transpose(qd_y)];
-    qdd_xyz = [transpose(qdd_x), transpose(qdd_y)];
-    pp_xyz = [transpose(pp_x), transpose(pp_y)];
+    [q_x,qd_x,qdd_x,pp_x] = quinticpolytraj(wayPoints(3,:), tpts, tvec, "VelocityBoundaryCondition", VelocityBoundaryCondition_x,"AccelerationBoundaryCondition",AccelerationBoundaryCondition_x)
+ 
+    q_xyz = [transpose(q_x)];
+    qd_xyz = [transpose(qd_x)];
+    qdd_xyz = [transpose(qdd_x)];
+    pp_xyz = [transpose(pp_x)];
     
     
     lin_xx_x_x = linspace(0, tvec(1, end), splineDiscretization);
     lin_yy_x_x = spline(tvec(1, :), q_xyz(:, 1), lin_xx_x_x);
 
-    lin_xx_x_y = linspace(0, tvec(1, end), splineDiscretization);
-    lin_yy_x_y = spline(tvec(1, :), q_xyz(:, 2), lin_xx_x_y);
 
     qddd_xyz = diff(diff(qdd_xyz));
 
@@ -89,41 +85,29 @@ function [c,ceq] = constraintFcnValidation_spline(optimization_values, splineDis
         diffValuePoint(6,:) = qddd_xyz(indexOfMax_pos+2,:);
     
         max_spline_ddd_x = max(diffValuePoint(:,1))
-        max_spline_ddd_y = max(diffValuePoint(:,2))
     
         min_spline_ddd_x = min(diffValuePoint(:,1))
-        min_spline_ddd_y = min(diffValuePoint(:,2))
     
             c(end+1) = max_spline_ddd_x - jerkBoundaries
-            c(end+1) = max_spline_ddd_y - jerkBoundaries
     
             c(end+1) = -jerkBoundaries - min_spline_ddd_x
-            c(end+1) = -jerkBoundaries - min_spline_ddd_y
     end
 
     max_spline_d_x = max(qd_xyz(:,1))
-    max_spline_d_y = max(qd_xyz(:,2))
 
     min_spline_d_x = min(qd_xyz(:,1))
-    min_spline_d_y = min(qd_xyz(:,2))
 
     max_spline_dd_x = max(qdd_xyz(:,1))
-    max_spline_dd_y = max(qdd_xyz(:,2))
 
     min_spline_dd_x = min(qdd_xyz(:,1))
-    min_spline_dd_y = min(qdd_xyz(:,2))
 
         c(end+1) = max_spline_d_x - max_values(2,1)
-        c(end+1) = max_spline_d_y - max_values(2,2)
     
         c(end+1) = min_values(2,1) - min_spline_d_x 
-        c(end+1) = min_values(2,2) - min_spline_d_y
     
         c(end+1) = max_spline_dd_x - max_values(3,1)
-        c(end+1) = max_spline_dd_y - max_values(3,2)
     
         c(end+1) = min_values(3,1) - min_spline_dd_x
-        c(end+1) = min_values(3,2) - min_spline_dd_y
     else
         for w = 1:(3*6)
             c(end+1) = 10; 
