@@ -1,5 +1,7 @@
 function [optimized_translational_values_oriented, path_angular_deflection] = matchPendelPathData(path_angular_deflection,optimized_translational_values, xOrientationNull, yOrientationNull)
 
+    % AUFGABE: DIE STELLUNG DER KELLE UND DIE NOTWENDIGE AUSLENKUNG ZUM
+    % AUSGLEICHEN DES WAPPENS ADDIEREN
     % Zeitintervalle werden aufsummiert
     optimized_translational_values_sumTime = optimized_translational_values;
     for k = 1:length(optimized_translational_values)
@@ -107,13 +109,13 @@ function [optimized_translational_values_oriented, path_angular_deflection] = ma
         optimized_translational_values_oriented(x, 7) = optimized_translational_values(x, 7) + deg2rad(smoothSpline_y(idx_y));
     end
 
-%     figure
-%     plot(timeSmoothSpline, deg2rad(smoothSpline_y), 'b')
-%     hold off;
-%     plot(optimized_translational_values_sumTime(:,1), optimized_translational_values(:,7), 'g')
-%     hold on;
-%     plot(optimized_translational_values_sumTime(:,1), optimized_translational_values_oriented(:, 7), 'r')
-%     hold on;
+    figure
+    plot(timeSmoothSpline, deg2rad(smoothSpline_y), 'b')
+    hold off;
+    plot(optimized_translational_values_sumTime(:,1), optimized_translational_values(:,7), 'g')
+    hold on;
+    plot(optimized_translational_values_sumTime(:,1), optimized_translational_values_oriented(:, 7), 'r')
+    hold on;
 
     path_angular_deflection = [timeSmoothSpline', smoothSpline_y', smoothSpline_x'];
 end

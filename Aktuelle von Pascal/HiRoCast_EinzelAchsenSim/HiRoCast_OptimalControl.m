@@ -3,33 +3,31 @@ clear all;
 
 %% ======== Setzen der Start-, End- und Kollisionspunkte ==================
 axesPointConfigs = transpose(deg2rad( ...
-               [172.878447, -47.894415, 90.739178, -131.159795, 54.639091, 56.495088;
-                149.706722, -69.944576, 109.414811, -157.564321, 41.697767, 72.865636;
-                120.805660, -58.687349, 115.013096, -196.905741, 57.483511, 99.278817;
-                122.819557, -51.233913, 98.175757, -196.458086, 48.135560, 101.153011; 
-                118.851467, -49.850591, 95.089809, -188.626866, 45.565149, 96.062976;
-                120.347325, -43.142199, 80.217109, -135.838764, 46.486483, 56.231087;
-                126.403354, -42.521835, 78.847105, -98.153414, 79.082204, 37.105757;
-                116.071597, -61.403480, 121.292350, -150.507205, 63.215841, 75.700915;
-                147.526735, -32.143818, 77.214188, -114.254677, 67.716896, 49.916964]));
+               [137.113917, -50.020898, 95.469279, -123.499925, 61.481928, 54.195993;
+                114.610471, -76.854244, 119.815419, -146.093857, 48.291774, 65.906197;
+                80.868859, -66.045040, 132.379939, -189.953423, 66.652709, 93.978336;
+                82.410186, -59.431507, 116.722884, -188.998553, 57.613160, 94.848339; 
+                77.608274, -58.491769, 114.564882, -182.881707, 56.106680, 91.607913;
+                78.929890, -52.725884, 101.514595, -138.195382, 56.862399, 63.948663;
+                85.880409, -51.738553, 99.303763, -96.756601, 83.860758, 47.927961;
+                75.419236, -68.607998, 138.858956, -148.042386, 73.059001, 79.697323;
+                62.074593, -34.121021, 104.137621, -209.422911, 72.424992, 99.664834]));
 
-tpts =                              [0.59449308069551	1.043651613947915	1.543651613947915	2.043651613947915	2.543651613947915	3.043651613947915	3.543651613947915	4.043651613947915];
-
-timeSteps = [];
-for t = 1:length(tpts)
-    if t == 1
-        timeSteps(t) = tpts(1, 1)
-    else
-        timeSteps(t) = tpts(1, t) - tpts(1, t-1)
-    end
-end
+timeSteps = [0.69449308069551 ...	
+             0.69449308069551 ...		
+             0.89449308069551 ...	
+             0.89449308069551 ...	
+             0.89449308069551 ...	
+             0.99449308069551 ...	
+             0.979449308069551 ...	
+             1.29449308069551];
 
 VelocityBoundaryCondition_x =       [1.89324092806605	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	0.0]
 AccelerationBoundaryCondition_x =   [1.32791857795363	-3.31940823068824	-3.31940823068824	-3.31940823068824	-3.31940823068824	-3.31940823068824	-3.31940823068824	0.0]
 
 
 VelocityBoundaryCondition_y =       [-1.95367961344194	-1.18494663299643	-1.18494663299643	-1.18494663299643	-1.18494663299643	-1.18494663299643	-1.18494663299643	0.0]
-AccelerationBoundaryCondition_y =   [-2.90067458258856	4.48604587496325	4.48604587496325	4.48604587496325	4.48604587496325	4.48604587496325	4.48604587496325	0.0]
+AccelerationBoundaryCondition_y =   [-2.90067458258856	4.48604587496325	4.48604587496325	4.548604587496325	4.48604587496325	4.48604587496325	4.48604587496325	0.0]
 
 VelocityBoundaryCondition_xyz_middle = [VelocityBoundaryCondition_x; VelocityBoundaryCondition_y]
 AccelerationBoundaryCondition_xyz_middle = [AccelerationBoundaryCondition_x; AccelerationBoundaryCondition_y]
@@ -38,26 +36,25 @@ AccelerationBoundaryCondition_xyz_middle = [AccelerationBoundaryCondition_x; Acc
             % Zeitpunkte
             % VelocityBoundaryCondition_x
             % VelocityBoundaryCondition_y
-            % VelocityBoundaryCondition_z
             % AccelerationBoundaryCondition_x
             % AccelerationBoundaryCondition_y
-            % AccelerationBoundaryCondition_z
+
 min_values = [0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3; 
-              -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 0.0;
-              -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 0.0; 
-              -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 0.0; 
-              -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 0.0]
+              -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 0.0;
+              -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 0.0;
+              -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 0.0;
+              -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 0.0]
 
 max_values = [2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0; 
-              6.5 6.5 6.5 6.5 6.5 6.5 6.5 0.0; 
-              6.5 6.5 6.5 6.5 6.5 6.5 6.5 0.0;  
-              6.5 6.5 6.5 6.5 6.5 6.5 6.5 0.0; 
-              6.5 6.5 6.5 6.5 6.5 6.5 6.5 0.0]
+              4.5 4.5 4.5 4.5 4.5 4.5 4.5 0.0; 
+              4.5 4.5 4.5 4.5 4.5 4.5 4.5 0.0;
+              4.5 4.5 4.5 4.5 4.5 4.5 4.5 0.0;
+              4.5 4.5 4.5 4.5 4.5 4.5 4.5 0.0]
 
 %% ======== Simulation konfigurieren ======================================
 booleanFormTCP = 1;
     splineDiscretization = 20;
-    maxIterationsSplineTCP = 30;
+    maxIterationsSplineTCP = 50;
     visualizeTCPPath = 1;
     saveEMI = 0;
     
@@ -67,7 +64,7 @@ booleanTimeOpimizationTure = 0;
     maxIterations = 20;
     timeStepSize = 0.06; % nicht unter 0.05
 
-booleanSloshingKompensationTrans = 1;
+booleanSloshingKompensationTrans = 0;
     numOfIterations = 30;
 
 booleanSloshingKompensationRot = 0;
@@ -85,7 +82,7 @@ if booleanFormTCP
 
     % Visualisieren der TCP-Bahn u. Speichern der Ergebnisse im EMI Format
     [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, init_ax_values, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries)
-    for t =1:3
+    for t =1:6
     % Zeitinervalle und Position der Kollisionspunkte optimieren
     [x_xy, optiResuls] = splineOptimization(optimalSplineDiscretization, maxIterationsSplineTCP, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries, init_ax_values) 
 
@@ -101,12 +98,12 @@ if booleanFormTCP
     AccelerationBoundaryCondition_xyz_middle = [AccelerationBoundaryCondition_x]
 
     min_values = [x_xy(1,:); 
-              -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 0.0; 
-              -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 -6.5 0.0]
+              -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 0.0; 
+              -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 0.0]
 
     max_values = [x_xy(1,:); 
-                  6.5 6.5 6.5 6.5 6.5 6.5 6.5 0.0;  
-                  6.5 6.5 6.5 6.5 6.5 6.5 6.5 0.0]
+                  4.5 4.5 4.5 4.5 4.5 4.5 4.5 0.0;  
+                  4.5 4.5 4.5 4.5 4.5 4.5 4.5 0.0]
 
     % Initiale Werte für die Optimierung setzen
     init_ax_values = [x_xy(1,:); VelocityBoundaryCondition_xyz_middle; AccelerationBoundaryCondition_xyz_middle];   
@@ -178,7 +175,7 @@ end
 
 %% ======== Optimierung: Achse 6 ==========================================
 if booleanSloshingKompensationTrans
-        [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations, startConfig, goalConfig)
+        [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations)
         
         example = matfile('SimResults.mat');
         optimized_translational_values_load = example.x;

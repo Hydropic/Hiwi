@@ -20,7 +20,8 @@ function [minJerkPath] = pfadGeneratorSimple(splineDiscretization, numSamples, a
         % xx = 0:interval:timeLine(end);
         xx = 0:interval:timeLine(end);
         yy = spline(x,y,xx);
-        minJerkPath(k,:) = yy(1,:)
+%         figure(yy)
+%         minJerkPath(k,:) = yy(1,:)
     end
 end
 % [breite, hoehe] = size(axesPointConfigs)

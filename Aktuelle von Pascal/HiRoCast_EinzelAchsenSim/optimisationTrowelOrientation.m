@@ -1,4 +1,4 @@
-function [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations, setToNullOrientation, startConfig, goalConfig)
+function [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations, setToNullOrientation)
 
     global init_optimization_values;
     example = matfile('SimResults.mat');
@@ -8,9 +8,8 @@ function [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations, 
     [path_angular_deflection_old] = determinationAccelerationTCP(optimized_translational_values);
 
     [optimized_translational_values_oriented, path_angular_deflection] = matchPendelPathData(path_angular_deflection_old,optimized_translational_values);
-    % optimized_translational_values_oriented --> gibt an, wie die Achse 6
-    % orentiert werden müsste um die Ausgleichsbewegungn zu realisieren
 
+    % Setzen der initialen und optimalen Orientierung der Achse 6
     init_optimization_values = optimized_translational_values_oriented(:,7);
 
     % global sumAngularDifference;
@@ -37,8 +36,8 @@ function [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations, 
     max_jointangle = deg2rad([350]);
     min_jointangle = deg2rad([-350]);
 
-    max_values(1:20) = max_jointangle;
-    min_values(1:20) = min_jointangle;
+    max_values(1:20, 1) = max_jointangle;
+    min_values(1:20, 1) = min_jointangle;
 
     %% =========Optimierung Achswinkelstellungen===========================
     % Optimierung der 5 und 6 Achse mit den Pendelmodellergebnissen
@@ -58,7 +57,7 @@ function [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations, 
     problem = createOptimProblem('fmincon',...
         'x0',init_optimization_values, ...
         'objective',@optimization_task,...
-        'nonlcon', @(optimization_values)constraintFcnValidation(optimization_values, optimized_translational_values_oriented), ...
+        'nonlcon', @(optimization_values)constraintFcnValidation_orientationY(optimization_values, optimized_translational_values_oriented), ...
         'lb',min_values,...
         'ub',max_values, ...
         'options',opts);

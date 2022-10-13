@@ -1,4 +1,4 @@
-function [c,ceq] = constraintFcnValidation(optimization_values, optimized_translational_values_oriented)
+function [c,ceq] = constraintFcnValidation_orientationY(optimization_values, optimized_translational_values_oriented)
 
 %% =========Feste Variablen==========================================
     % velocity GRAD/SEC
@@ -9,7 +9,6 @@ function [c,ceq] = constraintFcnValidation(optimization_values, optimized_transl
     max_acceleration = deg2rad([200,200,200,200,200,200]);
     min_acceleration = deg2rad([-200,-200,-200,-200,-200,-200]);
 
-
     jerkValue = 3000; % um richtig Power zu geben 100000
     % jerk deg/s^3
     max_jerk = deg2rad([jerkValue,jerkValue,jerkValue,jerkValue,jerkValue,jerkValue]);
@@ -19,15 +18,14 @@ function [c,ceq] = constraintFcnValidation(optimization_values, optimized_transl
     ceq=[];
     c=[];
     optimized_translational_values_TCP_orientation = [];
+
     % Unzip optimization input
     base_Zeitintervall = optimized_translational_values_oriented(1:size(optimized_translational_values_oriented,1)-1,1);
     base_Achswinkel = optimized_translational_values_oriented(:,2:size(optimized_translational_values_oriented,2));
-    base_Achswinkel(6,:) = optimization_values(1,:)
-    %initial_AchsStellung = initial_AchsStellung(:,2:size(optimization_values,2));     
-    
+    base_Achswinkel(:,6) = optimization_values(:,1);        
     
 %% =========Kontrollen der einzelnen Achsgrenzen==============
-for w = 1:3
+for w = 6:6
          [path,veolocity,acceleration,jerk,timesSteps,splinePunkt] = splineOptimal(base_Achswinkel(:,w),base_Zeitintervall,false);
 
           % Geschwindigkeit und Beschleunigung am Anfang muss 0 sein
@@ -37,14 +35,14 @@ for w = 1:3
           ceq(end+1) = acceleration(splinePunkt(end));
     
          % BASEPOINTS BOUNDS 720 c's          
-             for j=1:size(base_Achswinkel,1) %for every point on every w
-                c(end+1) = veolocity(splinePunkt(j)) - max_velocity(w);%velocity
-                c(end+1) = min_velocity(w) - veolocity(splinePunkt(j));
-                c(end+1) = acceleration(splinePunkt(j)) - max_acceleration(w);%acceleration
-                c(end+1) = min_acceleration(w) - acceleration(splinePunkt(j)); 
-%                 c(end+1) = jerk(splinePunkt(j)) - max_jerk(w);%jerk
-%                 c(end+1) = min_jerk(w) - jerk(splinePunkt(j));  
-             end            
+         for j=1:size(base_Achswinkel,1) %for every point on every w
+            c(end+1) = veolocity(splinePunkt(j)) - max_velocity(w);%velocity
+            c(end+1) = min_velocity(w) - veolocity(splinePunkt(j));
+            c(end+1) = acceleration(splinePunkt(j)) - max_acceleration(w);%acceleration
+            c(end+1) = min_acceleration(w) - acceleration(splinePunkt(j)); 
+%            c(end+1) = jerk(splinePunkt(j)) - max_jerk(w);%jerk
+%            c(end+1) = min_jerk(w) - jerk(splinePunkt(j));  
+         end            
 end
     
 %% =========Ausgabe auf der Konsole=============================     
