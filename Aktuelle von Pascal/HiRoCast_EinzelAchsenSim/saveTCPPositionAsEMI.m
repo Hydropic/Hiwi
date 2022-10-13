@@ -17,7 +17,7 @@ function [Position_xyz, timeLine,eulerZYX,Beschl_xyz] = saveTCPPositionAsEMI(vis
 
     if saveEMI
         optimized_translational_values_sameDistances(:, 1) = transpose(timeLine);
-        optimized_translational_values_sameDistances(:, 2:4) = 1000*Position_xyz;
+        optimized_translational_values_sameDistances(:, 2:3) = 1000*Position_xyz;
         optimized_translational_values_sameDistances(:, 5) = -90;
         optimized_translational_values_sameDistances(:, 6) = 0;
         optimized_translational_values_sameDistances(:, 7) = +90;
@@ -52,7 +52,7 @@ function [Position_xyz, timeLine,eulerZYX,Beschl_xyz] = saveTCPPositionAsEMI(vis
         mask = cellfun(@(x) any(isa(x,'missing')), example); % using isa instead of ismissing allows white space through
         example(mask) = {['']}
         
-        writecell(example, 'Emily1_TCP_formTransXY.txt','Delimiter',' ')
+        writetable(table(example), 'Emily1_TCP_formTransXY.EMI','FileType','text','Delimiter',' ','QuoteStrings',0,'WriteVariableNames',0)
     end
 end
 
