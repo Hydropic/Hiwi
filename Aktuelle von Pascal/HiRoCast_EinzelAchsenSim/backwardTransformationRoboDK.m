@@ -17,7 +17,7 @@ function [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscre
     addpath('C:\RoboDK\Matlab');
 
     % Ermittlung der Roboterposen in RoboDK
-    [joints] = HiRoCast_rueckweartstransformation(xyzrpw)
+    [joints] = HiRoCast_rueckweartstransformation(xyzrpw);
 
     show_joint2 = [];
 

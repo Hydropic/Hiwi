@@ -1,34 +1,41 @@
 function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointConfigs, splineDiscretization,visualize,optiParam)
+%% Einlesen von Variablen
     
+    %Erstellen von Leeren Zero Arrays
     achsstellungen = axesPointConfigs.';
     optimization_values = [zeros(size(optimization_values,1),1),optimization_values];    
     wayPoints = [];
     zRots = [];
+    tpts = [];
 
+    %Variabeln um "optimirung" von rotZ zu steuern
+    offsetToBorder = optiParam(1);
+    minIter = optiParam(2);
+    maxiter = optiParam(3);
+    span_to_Smooth = optiParam(4); %As value from 0 to 1 
+    stepsize = optiParam(5);
+    widhtStuetzp = optiParam(6);
     grenzSchwappY = optiParam(7);
 
+    
     for p = 1:height(achsstellungen)
         [tcppunkt, eul, ~, ~, ~] = vorwaertskinematik(achsstellungen(p,:));
         wayPoints(:,p) = tcppunkt(:,1);
         zRots(:,p) = eul(1,1);
     end
-        
-    tpts = [];
-
+            
+    %Berechnen der Zeitstempel aus den Zeitintervallen aus der Optimirung
     for i = 1:size(optimization_values,2)
         tpts(i) = sum(optimization_values(1, 1:i));
     end
 
+    %Vektor mit den Timestamps
     tvec = 0:0.001:tpts(1,end); % Uhrsprüngliche Inkrementierung 0.01
 
     %Berechnen der indexe der Stützpunkte und der zeitlichen Varianz
     [ind_tpts_in_tVec,~] = dsearchn(transpose(tvec),transpose(tpts));
         
-%     for i = 1:size(tpts,2)
-%        [ind_tpts_in_tVec,dist] = dsearchn(tpts(1,i),tvec);
-%     end
-
-    % Fallunterscheidung ob z Berücksichtigt wird
+%% Fallunterscheidung ob z Berücksichtigt wird    
     if size(optimization_values,1) == 5
         %X und Y geschwindigkeit bzw beschleunigung
         VelocityBoundaryCondition_x = [optimization_values(2,:)];
@@ -58,8 +65,8 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     q_xyz = [transpose(q_x), transpose(q_y), transpose(q_z)];
     qd_xyz = [transpose(qd_x), transpose(qd_y), transpose(qd_z)];
     qdd_xyz = [transpose(qdd_x), transpose(qdd_y), transpose(qdd_z)];
-
-    %Rot aus geschwindigkeit
+  
+    %% Rot aus geschwindigkeit
     z_Rot_V = atan2d(qd_xyz(:,2),qd_xyz(:,1));
     z_Rot_V(1,1) = z_Rot_V(2,1);
     z_Rot_Acc = atan2d(qdd_xyz(:,2),qdd_xyz(:,1));
@@ -69,7 +76,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     z_Rot_Acc_unfilterd_3 = z_Rot_Acc_unfilterd-180;
     abs_Acc = sqrt(qdd_xyz(:,1).^2+qdd_xyz(:,2).^2);
 
-    %Berechnet gültige Rotationen (upper and lower boundrys)
+%% Berechnet gültige Rotationen (upper and lower boundrys)
     acc_TCP_XY = [];
     winkelGrenz = [];
     lb_1 = [];
@@ -106,7 +113,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     lb_5 = lb_1 -360;
     ub_5 = ub_1 -360;
 
-    %X intervall in dem eine Limitation besteht
+%% X intervall in dem eine Limitation besteht
     timeStmpd_Start = [];
     timeStmpd_End = [];
     
@@ -117,15 +124,12 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
             timeStmpd_End(end+1,1) = tvec(1,y-1);
         end
     end
-    
-    %Berechne beschleunigungen im vorläufigen TCP/ Gleichzeitige optimierung der Rotation
-    acc_TCP_XY = [];
-    violaton = 1;
-    iter = 0;
+
+%% Abschätzen der Maximalen Achsumorientierung
     
 
-
-    %Berechnung inertialer bahn aus Stützpunkten und Geschwindigkeit
+    
+%% Berechnung inertialer bahn aus Stützpunkten und Geschwindigkeit
     for i = 1:size(ind_tpts_in_tVec,1)-1 
         %Berechne Lin
         steigung = (zRots(i+1)-zRots(i))/(tvec(ind_tpts_in_tVec(i+1))-tvec(ind_tpts_in_tVec(i)));
@@ -133,21 +137,16 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
         linsp = transpose(tvec(ind_tpts_in_tVec(i):ind_tpts_in_tVec(i+1)));
         StuetzRot(ind_tpts_in_tVec(i):ind_tpts_in_tVec(i+1),1) = (linsp*steigung)+offset;
     end
-
+    
+%% optimierung der Rotation
+    acc_TCP_XY = [];
+    violaton = 1;
+    iter = 0;
+       
     z_Rot = StuetzRot;
     z_Rot_V_unfilterd = z_Rot;
 
-    %Variabeln um "optimirung" von rotZ zu steuern
-% %     stepsize = 5;
-% %     offsetToBorder = 10;%Positive Variabel !!!!! 
-% %     minIter = 250;
-% %     maxiter = 1000;
-    offsetToBorder = optiParam(1);
-    minIter = optiParam(2);
-    maxiter = optiParam(3);
-    span_to_Smooth = optiParam(4); %As value from 0 to 1 
-    stepsize = optiParam(5);
-    widhtStuetzp = optiParam(6);
+
 
     wight = ones(size(tvec,2),1);
 
@@ -158,41 +157,40 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
         bestBorder = 0;
         currStuetzp = 1;
                 
-        %Filter Loop, der Gültige werte erzwingt
+%Filter Loop, der Gültige werte erzwingt
         for i = 1:size(z_Rot,1)
             
-%STUETZPUNKTE MACHEN PROBLEME
-% % %             %Erzwingt, dass Knotenpunkte berücksichtigt werden
-% % %             if i == ind_tpts_in_tVec(currStuetzp) 
-% % % 
-% % %                 %Intervallbreite um stützpunkt zu gewichten    
-% % %                 if i == 1
-% % %                     minus = 0;
-% % %                     plus = widhtStuetzp;
-% % %     
-% % %                 elseif i == size(z_Rot,1)
-% % %                     minus = -widhtStuetzp;
-% % %                     plus = 0;
-% % %                 else
-% % %                     minus = -widhtStuetzp/2;
-% % %                     plus = widhtStuetzp/2;
-% % %                 end
-% % % 
-% % %                 if z_Rot(i,1) < zRots(currStuetzp) - offsetToBorder*3
-% % %                     z_Rot(i+minus:i+plus,1) = zRots(currStuetzp) - offsetToBorder;
-% % %                     wight(i,1) = 100;
-% % %                     violaton = violaton+1;
-% % %                 elseif z_Rot(i,1) > zRots(currStuetzp) + offsetToBorder*3
-% % %                     z_Rot(i+minus:i+plus,1) = zRots(currStuetzp) + offsetToBorder;
-% % %                     wight(i,1) = 100;
-% % %                     violaton = violaton+1;
-% % %                 end  
-% % %                 
-% % %                 currStuetzp = currStuetzp+1;             
-% % %             end
+            %Erzwingt, dass Knotenpunkte berücksichtigt werden
+            if i == ind_tpts_in_tVec(currStuetzp) 
+
+                %Intervallbreite um stützpunkt zu gewichten    
+                if i == 1
+                    minus = 0;
+                    plus = widhtStuetzp;
+    
+                elseif i == size(z_Rot,1)
+                    minus = -widhtStuetzp;
+                    plus = 0;
+                else
+                    minus = -widhtStuetzp/2;
+                    plus = widhtStuetzp/2;
+                end
+
+                if z_Rot(i,1) < zRots(currStuetzp) - offsetToBorder*4
+                    z_Rot(i+minus:i+plus,1) = zRots(currStuetzp) - offsetToBorder;
+                    wight(i,1) = 100;
+                    violaton = violaton+1;
+                elseif z_Rot(i,1) > zRots(currStuetzp) + offsetToBorder*4
+                    z_Rot(i+minus:i+plus,1) = zRots(currStuetzp) + offsetToBorder;
+                    wight(i,1) = 100;
+                    violaton = violaton+1;
+                end  
+                
+                currStuetzp = currStuetzp+1;             
+            end
             
             acc_TCP_XY(i,1:3) = transpose(RotationDegUmZ(-z_Rot(i,1))*transpose(qdd_xyz(i,:)));
-            %Fallunterscheidung ob RotZ zu klein oder groß
+%Fallunterscheidung ob RotZ zu klein oder groß
             if abs(acc_TCP_XY(i,2)) > grenzSchwappY +0.01 %Zur näheren grenze implementieren
                 %Anzeigen, dass eine violation vorliegt
                 violaton = violaton+1;
@@ -282,11 +280,11 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
             
         end
         
-        %smoothing Funktion die nicht zwangsweise gültige lösung liefert Dafür werden zunächst stützpunkte gelegt, wodurch anschlißend ein Spline gelegt wird
+%smoothing Funktion die nicht zwangsweise gültige lösung liefert Dafür werden zunächst stützpunkte gelegt, wodurch anschlißend ein Spline gelegt wird
         if violaton >= 1
             smoothRot = smooth(z_Rot,span_to_Smooth,'lowess');
-%             fitObj = fit(transpose(tvec(1,1:stepsize:end)),smoothRot(1:stepsize:end,1),'smoothingspline','Weights',wight(1:stepsize:end,1),'SmoothingParam',1);
-%             z_Rot = fitObj(transpose(tvec));
+            fitObj = fit(transpose(tvec(1,1:stepsize:end)),smoothRot(1:stepsize:end,1),'smoothingspline','Weights',wight(1:stepsize:end,1),'SmoothingParam',1);
+            z_Rot = fitObj(transpose(tvec));
             z_Rot = smoothRot;
         end
 
@@ -306,7 +304,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
 % % %     g =  sqrt(acc_TCP_XY(:,1).^2+acc_TCP_XY(:,2).^2);
 % % %     test_Rot = f- g;
  
-    %Erstellung der Variablen mit splineDiscretization vielen Punkten
+%% Erstellung der Output Variablen mit splineDiscretization vielen Punkten
     %Kartesische koord. Position
     linSpacce_ = linspace(0, tvec(1, end), splineDiscretization);
     lin_yy_x_x = spline(tvec(1, :), q_xyz(:, 1), linSpacce_);
@@ -328,6 +326,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     eulerZYX = [transpose(RotZ),zeros(size(RotZ,2),1),zeros(size(RotZ,2),1)];
     Position_xyz = [transpose(lin_yy_x_x), transpose(lin_yy_x_y), transpose(lin_yy_x_z)];
 
+   %% Visualisierung der Ergebnisse   
     if visualize == 1
         %Sprünge um 180° Filtern:
         for i = 2:size(z_Rot,1)-1
