@@ -1,27 +1,23 @@
-function [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, x_xyz, axesPointConfigs)
+function [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, x_xyz, axesPointConfigs,eulerZYX)
     numSamples = 20;
-
-    figure;
-    plot(Position_xyz)
-%     % TODO: Orientierung Z so ermitteln, dass Beschleunigung in X-Richtung maximal
-%     [minJerkPath] = pfadGeneratorSimple(splineDiscretization, numSamples, axesPointConfigs, timeLine, x_xyz)
-% 
-%     minJerkPath = transpose(minJerkPath)
-%     minJerkPathGrad = radtodeg(minJerkPath)
+% %     % TODO: Orientierung Z so ermitteln, dass Beschleunigung in X-Richtung maximal
+% %     [minJerkPath] = pfadGeneratorSimple(splineDiscretization, numSamples, axesPointConfigs, timeLine, x_xyz)
+% % 
+% %     minJerkPath = transpose(minJerkPath)
     for u = 1: length(Position_xyz)
-%         % Orientierung um Z so realisieren, dass die Beschleunigung in  des TCPs
+        % Orientierung um Z so realisieren, dass die Beschleunigung in  des TCPs
 %         [tcppunkt, eulZYX, eulXYZ, RichtungInTCP, winkelmatrix] = vorwaertskinematik(minJerkPath(u,:))
-%         % eulZYX = eulZYX-90;
-%                
-%         angleTCPxyz = [deg2rad(eulZYX(1)), deg2rad(eulZYX(2)), deg2rad(eulZYX(3))];      
-%         angleTCPxyz = [(eulZYX(1)), (eulZYX(2)), (eulZYX(3))];      
-        xyzrpw(:,u) = [1000*Position_xyz(u, 1), 1000*Position_xyz(u, 2), 1000*Position_xyz(u, 3), 0, 0, 0]        
+        % eulZYX = eulZYX-90;
+               
+        angleTCPxyz = [deg2rad(eulerZYX(1)), deg2rad(eulerZYX(2)), deg2rad(eulerZYX(3))];      
+        angleTCPxyz = [(eulerZYX(u,1)), (eulerZYX(u,2)), (eulerZYX(u,3))];      
+        xyzrpw(:,u) = [1000*Position_xyz(u, 1), 1000*Position_xyz(u, 2), 1000*Position_xyz(u, 3), angleTCPxyz(1), angleTCPxyz(2), angleTCPxyz(3)];        
     end
 
     addpath('C:\RoboDK\Matlab');
 
     % Ermittlung der Roboterposen in RoboDK
-    [joints] = HiRoCast_rueckweartstransformation(xyzrpw)
+    [joints] = HiRoCast_rueckweartstransformation(xyzrpw);
 
     show_joint2 = [];
 
