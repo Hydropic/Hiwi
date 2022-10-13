@@ -30,22 +30,22 @@ function [optimized_translational_values_oriented, path_angular_deflection] = ma
             int_gt_0 = @(n) (rem(n,1) == 0) & (n > 0);
 
             positiv = int_gt_0(int64(angle_xx_yy));
-            if angle_xx_yy < 0 && angle_xx_yy > -90 || angle_xx_yy < 360 && angle_xx_yy > 270
+            if angle_xx_yy <= 0 && angle_xx_yy >= -90 || angle_xx_yy <= 360 && angle_xx_yy >= 270
                 timesMinusOne_xx = 1;
                 timesMinusOne_yx = -1;
                 timesMinusOne_yy = 1;
                 timesMinusOne_xy = 1;
-            elseif angle_xx_yy < -90 && angle_xx_yy > -180 || angle_xx_yy < 270 && angle_xx_yy > 180
+            elseif angle_xx_yy <= -90 && angle_xx_yy >= -180 || angle_xx_yy <= 270 && angle_xx_yy >= 180
                 timesMinusOne_xx = -1;
                 timesMinusOne_yx = -1;
                 timesMinusOne_yy = -1;
                 timesMinusOne_xy = 1;
-            elseif angle_xx_yy < -180 && angle_xx_yy > -270 || angle_xx_yy < 180 && angle_xx_yy > 90
+            elseif angle_xx_yy <= -180 && angle_xx_yy >= -270 || angle_xx_yy <= 180 && angle_xx_yy >= 90
                 timesMinusOne_xx = -1;
                 timesMinusOne_yx = 1;
                 timesMinusOne_yy = -1;
                 timesMinusOne_xy = -1;                 
-            elseif angle_xx_yy < -270 && angle_xx_yy > -360 || angle_xx_yy < 90 && angle_xx_yy > 0
+            elseif angle_xx_yy <= -270 && angle_xx_yy >= -360 || angle_xx_yy <= 90 && angle_xx_yy >= 0
                 timesMinusOne_xx = 1;
                 timesMinusOne_yx = 1;
                 timesMinusOne_yy = 1;
@@ -54,10 +54,10 @@ function [optimized_translational_values_oriented, path_angular_deflection] = ma
                 angle_xx_yy = []
                 angle_yx_xy = []
             end
-            e    =  cos(deg2rad(angle_xx_yy(1, 1)))
-            ee   =  cos(deg2rad(angle_yx_xy(1, 1)))
-            eee  =  cos(deg2rad(angle_xx_yy(1, 1)))
-            eeee =  cos(deg2rad(angle_yx_xy(1, 1)))
+%             e    =  cos(deg2rad(angle_xx_yy(1, 1)))
+%             ee   =  cos(deg2rad(angle_yx_xy(1, 1)))
+%             eee  =  cos(deg2rad(angle_xx_yy(1, 1)))
+%             eeee =  cos(deg2rad(angle_yx_xy(1, 1)))
 
             path_angular_deflection_TCP_xx = timesMinusOne_xx*cos(deg2rad(angle_xx_yy(1, 1))) * path_angular_deflection(idx(1), 2);
             path_angular_deflection_TCP_yx = timesMinusOne_yx*cos(deg2rad(angle_xx_yy(1, 1)-90)) * path_angular_deflection(idx(1), 3);
@@ -110,12 +110,13 @@ function [optimized_translational_values_oriented, path_angular_deflection] = ma
     end
 
     figure
-    plot(timeSmoothSpline, deg2rad(smoothSpline_y), 'b')
-    hold off;
-    plot(optimized_translational_values_sumTime(:,1), optimized_translational_values(:,7), 'g')
+    plot(timeSmoothSpline, deg2rad(smoothSpline_y), 'b') % zeigt geglättete nötige Auslenkung
     hold on;
-    plot(optimized_translational_values_sumTime(:,1), optimized_translational_values_oriented(:, 7), 'r')
+    plot(optimized_translational_values_sumTime(:,1), optimized_translational_values(:,7), 'g') % zeigt A6 in 0 Stellung
     hold on;
+    plot(optimized_translational_values_sumTime(:,1), optimized_translational_values_oriented(:, 7), 'r') % zeigt A6 Kurve --> 0 Stellung + geglättete nötige Auslenkung
+    hold on;
+    legend('nötige Auslenkung','A6 in 0 Stellung','A6 --> 0 + nötige Auslenkung') 
 
     path_angular_deflection = [timeSmoothSpline', smoothSpline_y', smoothSpline_x'];
 end

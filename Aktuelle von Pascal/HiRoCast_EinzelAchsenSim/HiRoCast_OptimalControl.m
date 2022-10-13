@@ -3,10 +3,10 @@ clear all;
 
 %% ======== Setzen der Start-, End- und Kollisionspunkte ==================
 axesPointConfigs = transpose(deg2rad( ...
-               [137.113917, -50.020898, 95.469279, -123.499925, 61.481928, 54.195993;
-                114.610471, -76.854244, 119.815419, -146.093857, 48.291774, 65.906197;
-                80.868859, -66.045040, 132.379939, -189.953423, 66.652709, 93.978336;
-                82.410186, -59.431507, 116.722884, -188.998553, 57.613160, 94.848339; 
+               [141.573220, -53.743354, 103.798848, -121.309480, 66.481810, 56.732671;
+                118.203417, -83.621004, 128.715736, -142.868728, 51.528553, 64.777543;
+                80.164116, -68.163911, 137.707543, -190.483666, 69.857463, 93.646028;
+                82.410186, -59.431507, 116.722884, -188.998553, 57.613161, 94.848339; 
                 77.608274, -58.491769, 114.564882, -182.881707, 56.106680, 91.607913;
                 78.929890, -52.725884, 101.514595, -138.195382, 56.862399, 63.948663;
                 85.880409, -51.738553, 99.303763, -96.756601, 83.860758, 47.927961;
@@ -38,32 +38,31 @@ AccelerationBoundaryCondition_xyz_middle = [AccelerationBoundaryCondition_x; Acc
             % VelocityBoundaryCondition_y
             % AccelerationBoundaryCondition_x
             % AccelerationBoundaryCondition_y
-
-
+timeMax = 2.0;
+timeMin = 0.3;
 acc = 5;
 vel = 5;
-min_values = [0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3;... 
-              -vel -vel -vel -vel -vel -vel -vel 0.0;...
-              -vel -vel -vel -vel -vel -vel -vel 0.0;... 
-              -acc -acc -acc -acc -acc -acc -acc 0.0;...
-              -acc -acc -acc -acc -acc -acc -acc 0.0];
 
-max_values = [2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0;... 
+max_values = [timeMax timeMax timeMax timeMax timeMax timeMax timeMax timeMax;... 
               vel vel vel vel vel vel vel 0.0;... 
               vel vel vel vel vel vel vel 0.0;...  
               acc acc acc acc acc acc acc 0.0;... 
               acc acc acc acc acc acc acc 0.0];
 
+min_values = [timeMin timeMin timeMin timeMin timeMin timeMin timeMin timeMin;... 
+              -vel -vel -vel -vel -vel -vel -vel 0.0;...
+              -vel -vel -vel -vel -vel -vel -vel 0.0;... 
+              -acc -acc -acc -acc -acc -acc -acc 0.0;...
+              -acc -acc -acc -acc -acc -acc -acc 0.0];
+
 %% ======== Simulation konfigurieren ======================================
 booleanFormTCP = 1;
-    splineDiscretization = 20;
-    maxIterationsSplineTCP = 50;
+    splineDiscretization = 40;
+    maxIterationsSplineTCP = 40;
     visualizeTCPPath = 1;
     saveEMI = 0;
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%Variablen%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%ZRot%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%ZRot%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     offsetToBorder = 10; %Z.B 5
     minIter = 1000;%120
     maxiter = 2000;%2000
@@ -71,7 +70,6 @@ booleanFormTCP = 1;
     stepsize = 20;%10
     widhtStuetzp = 0; % Grade Zahl z.B 4 oder 0
     grenzSchwap_Y = 2.5;%STANDART 2.5!!!!
-
 
     optiZ_Rot_Param = [offsetToBorder,minIter,maxiter,span_to_Smooth,stepsize,widhtStuetzp,grenzSchwap_Y];
     optiZ_Rot_Param1 = optiZ_Rot_Param;
@@ -82,8 +80,8 @@ booleanTimeOpimizationTure = 0;
     maxIterations = 20;
     timeStepSize = 0.06; % nicht unter 0.05
 
-booleanSloshingKompensationTrans = 0;
-    numOfIterations = 30;
+booleanSloshingKompensationTrans = 1;
+    numOfIterations = 0;
 
 booleanSloshingKompensationRot = 0;
 
@@ -100,7 +98,7 @@ if booleanFormTCP
 
     % Visualisieren der TCP-Bahn u. Speichern der Ergebnisse im EMI Format
     [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, init_ax_values, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries)
-    for t =1:6
+    for t =1:1
     % Zeitinervalle und Position der Kollisionspunkte optimieren
     [x_xy, optiResuls] = splineOptimization(optimalSplineDiscretization, maxIterationsSplineTCP, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries, init_ax_values) 
 
@@ -140,7 +138,7 @@ if booleanFormTCP
     [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x_xyz, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries)
 
     % Generieren aller Bais-Points
-    [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, x_xyz, axesPointConfigs,eulerZYX);
+    [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, x_xyz, axesPointConfigs);
     
     save('SimResults.mat','x','-v7.3');
 end

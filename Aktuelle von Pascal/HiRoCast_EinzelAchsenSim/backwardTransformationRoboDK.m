@@ -8,9 +8,9 @@ function [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscre
         % Orientierung um Z so realisieren, dass die Beschleunigung in  des TCPs
 %         [tcppunkt, eulZYX, eulXYZ, RichtungInTCP, winkelmatrix] = vorwaertskinematik(minJerkPath(u,:))
         % eulZYX = eulZYX-90;
-               
-        angleTCPxyz = [deg2rad(eulerZYX(1)), deg2rad(eulerZYX(2)), deg2rad(eulerZYX(3))];      
-        angleTCPxyz = [(eulerZYX(u,1)), (eulerZYX(u,2)), (eulerZYX(u,3))];      
+                  
+        %angleTCPxyz = [(eulerZYX(u,1)), (eulerZYX(u,2)), (eulerZYX(u,3))]; 
+        angleTCPxyz = [0, 0, 0]; 
         xyzrpw(:,u) = [1000*Position_xyz(u, 1), 1000*Position_xyz(u, 2), 1000*Position_xyz(u, 3), angleTCPxyz(1), angleTCPxyz(2), angleTCPxyz(3)];        
     end
 

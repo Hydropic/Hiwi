@@ -36,8 +36,8 @@ function [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations, 
     max_jointangle = deg2rad([350]);
     min_jointangle = deg2rad([-350]);
 
-    max_values(1:20, 1) = max_jointangle;
-    min_values(1:20, 1) = min_jointangle;
+    max_values(1:length(optimized_translational_values), 1) = max_jointangle;
+    min_values(1:length(optimized_translational_values), 1) = min_jointangle;
 
     %% =========Optimierung Achswinkelstellungen===========================
     % Optimierung der 5 und 6 Achse mit den Pendelmodellergebnissen
