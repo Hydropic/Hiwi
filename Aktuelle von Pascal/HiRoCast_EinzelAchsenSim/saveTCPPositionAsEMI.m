@@ -1,16 +1,19 @@
-function [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries)  
+function [Position_xyz, timeLine,eulerZYX,Beschl_xyz] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries)  
     optimization_values = x;
 
-    achsstellungen = axesPointConfigs.'
+    achsstellungen = axesPointConfigs.';
 
     wayPoints = [];
 
     for p = 1:height(achsstellungen)
-        [tcppunkt, eulZYX, eulXYZ, RichtungInTCP, winkelmatrix] = vorwaertskinematik(achsstellungen(p,:))
-        wayPoints(:,p) = tcppunkt(:,1)
+        [tcppunkt, eul, ~, ~, ~] = vorwaertskinematik(achsstellungen(p,:));
+        wayPoints(:,p) = tcppunkt(:,1);
+        zRots(:,p) = eul(1,1);
     end
 
-    [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoints, splineDiscretization, visualizeTCPPath, min_values, max_values, jerkBoundaries)
+    %Funktion
+
+     [Position_xyz, timeLine] = generateTCPPath(optimization_values, wayPoints, splineDiscretization, visualizeTCPPath, min_values, max_values, jerkBoundaries);
 
     if saveEMI
         optimized_translational_values_sameDistances(:, 1) = transpose(timeLine);
