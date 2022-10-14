@@ -406,6 +406,9 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
         roboPath = figure;
         robiAx = axes(roboPath);     
         hold(robiAx,"on");
+        for i = 1:size(Position_xyz,1)
+            plotCoord_syst(0.05,Position_xyz(i,1),Position_xyz(i,2),Position_xyz(i,3),eulerZYX,robiAx)
+        end
         plot3(robiAx,Position_xyz(:,1),Position_xyz(:,2),Position_xyz(:,3),'-o','Color','g','MarkerSize',4,'MarkerFaceColor','auto');
         quiver3(robiAx,Position_xyz(:,1),Position_xyz(:,2),Position_xyz(:,3),Beschl_xyz(:,1),Beschl_xyz(:,2),Beschl_xyz(:,3),"Color","r","AutoScale","on");
         arr = [(robiAx.XLim(1,2)-robiAx.XLim(1,1)),(robiAx.YLim(1,2)-robiAx.YLim(1,1)),(robiAx.ZLim(1,2)-robiAx.ZLim(1,1))];

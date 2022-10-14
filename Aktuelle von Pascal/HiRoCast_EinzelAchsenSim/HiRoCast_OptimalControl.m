@@ -87,58 +87,66 @@ booleanSloshingKompensationRot = 0;
 
 booleanVisualisation = 0;
 
+bool_skp_Optimirung_Kat = 0;
+
 %% ======== Optimierung: Beschl.-Profil TCP u. Erzeugung: Base-Points =====
 if booleanFormTCP
-    % Set up Boundarys für first Simulation
-    jerkBoundaries = 0.5; % Für die Ruckänderung an den Mittelpunkten gilt +- dieser Wert als Max. bzw. Min.
-    optimalSplineDiscretization = 80;
-
-    % Initiale Werte für die Optimierung setzen
-    init_ax_values = [timeSteps; VelocityBoundaryCondition_xyz_middle; AccelerationBoundaryCondition_xyz_middle];   
-
-    % Visualisieren der TCP-Bahn u. Speichern der Ergebnisse im EMI Format
-    [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, init_ax_values, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries);
-    for t =1:1
-    % Zeitinervalle und Position der Kollisionspunkte optimieren
-    [x_xy, optiResuls] = splineOptimization(optimalSplineDiscretization, maxIterationsSplineTCP, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries, init_ax_values);
-
-    % Speichern der Ergebnisse in EMI Format
-    [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x_xy, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries);
-    init_ax_values = x_xy;
-    end
-    % Profil in Z Richtung identifizieren
-    VelocityBoundaryCondition_x =       [1.89324092806605	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	0.0];
-    AccelerationBoundaryCondition_x =   [1.89324092806605	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	0.0];
+    if bool_skp_Optimirung_Kat == 0
+        % Set up Boundarys für first Simulation
+        jerkBoundaries = 0.5; % Für die Ruckänderung an den Mittelpunkten gilt +- dieser Wert als Max. bzw. Min.
+        optimalSplineDiscretization = 80;
     
-    VelocityBoundaryCondition_xyz_middle = VelocityBoundaryCondition_x;
-    AccelerationBoundaryCondition_xyz_middle = AccelerationBoundaryCondition_x;
-
-    min_values = [x_xy(1,:); 
-              -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 0.0; 
-              -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 0.0];
-
-    max_values = [x_xy(1,:); 
-                  4.5 4.5 4.5 4.5 4.5 4.5 4.5 0.0;  
-                  4.5 4.5 4.5 4.5 4.5 4.5 4.5 0.0];
-
-    % Initiale Werte für die Optimierung setzen
-    init_ax_values = [x_xy(1,:); VelocityBoundaryCondition_xyz_middle; AccelerationBoundaryCondition_xyz_middle];   
-
-    [x_z, optiResuls] = splineOptimization_z(optimalSplineDiscretization, maxIterationsSplineTCP, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries, init_ax_values);
-
-    x_xyz(1,:) = x_xy(1,:);
-    x_xyz(2,:) = x_xy(2,:);
-    x_xyz(3,:) = x_xy(3,:);
-    x_xyz(4,:) = x_z(2,:);
-    x_xyz(5,:) = x_xy(4,:);
-    x_xyz(6,:) = x_xy(5,:);
-    x_xyz(7,:) = x_z(3,:);
-
-    % Speichern der Ergebnisse in EMI Format
-    [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x_xyz, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries);
+        % Initiale Werte für die Optimierung setzen
+        init_ax_values = [timeSteps; VelocityBoundaryCondition_xyz_middle; AccelerationBoundaryCondition_xyz_middle];   
+    
+        % Visualisieren der TCP-Bahn u. Speichern der Ergebnisse im EMI Format
+        [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, init_ax_values, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries);
+        for t =1:1
+        % Zeitinervalle und Position der Kollisionspunkte optimieren
+        [x_xy, optiResuls] = splineOptimization(optimalSplineDiscretization, maxIterationsSplineTCP, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries, init_ax_values);
+    
+        % Speichern der Ergebnisse in EMI Format
+        [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x_xy, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries);
+        init_ax_values = x_xy;
+        end
+        % Profil in Z Richtung identifizieren
+        VelocityBoundaryCondition_x =       [1.89324092806605	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	0.0];
+        AccelerationBoundaryCondition_x =   [1.89324092806605	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	0.0];
+        
+        VelocityBoundaryCondition_xyz_middle = VelocityBoundaryCondition_x;
+        AccelerationBoundaryCondition_xyz_middle = AccelerationBoundaryCondition_x;
+    
+        min_values = [x_xy(1,:); 
+                  -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 0.0; 
+                  -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 0.0];
+    
+        max_values = [x_xy(1,:); 
+                      4.5 4.5 4.5 4.5 4.5 4.5 4.5 0.0;  
+                      4.5 4.5 4.5 4.5 4.5 4.5 4.5 0.0];
+    
+        % Initiale Werte für die Optimierung setzen
+        init_ax_values = [x_xy(1,:); VelocityBoundaryCondition_xyz_middle; AccelerationBoundaryCondition_xyz_middle];   
+    
+        [x_z, optiResuls] = splineOptimization_z(optimalSplineDiscretization, maxIterationsSplineTCP, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries, init_ax_values);
+    
+        x_xyz(1,:) = x_xy(1,:);
+        x_xyz(2,:) = x_xy(2,:);
+        x_xyz(3,:) = x_xy(3,:);
+        x_xyz(4,:) = x_z(2,:);
+        x_xyz(5,:) = x_xy(4,:);
+        x_xyz(6,:) = x_xy(5,:);
+        x_xyz(7,:) = x_z(3,:);
+    
+        % Speichern der Ergebnisse in EMI Format
+        [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x_xyz, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries);
+        %Überschreiben der Zwischenergebnissen
+        save("Zwischenstand_Vor_ZOpti.mat")
+    else
+        load("Zwischenstand_Vor_ZOpti.mat")
+    end
     
     %Z-Rot optimierung
-    [eulerZYX,acc_XYZ] = generate_Z_Rot(x_xy,axesPointConfigs,splineDiscretization,visualizeTCPPath,optiZ_Rot_Param1);
+    [eulerZYX,acc_XYZ] = generate_Z_Rot(x_xyz,axesPointConfigs,splineDiscretization,visualizeTCPPath,optiZ_Rot_Param1);
 
     % Generieren aller Bais-Points
     [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, x_xyz, axesPointConfigs,eulerZYX);
