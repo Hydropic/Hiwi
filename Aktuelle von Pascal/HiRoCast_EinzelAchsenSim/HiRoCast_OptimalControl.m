@@ -3,24 +3,24 @@ clear all;
 
 %% ======== Setzen der Start-, End- und Kollisionspunkte ==================
 axesPointConfigs = transpose(deg2rad( ...
-               [141.573220, -53.743354, 103.798848, -121.309480, 66.481810, 56.732671;
-                118.203417, -83.621004, 128.715736, -142.868728, 51.528553, 64.777543;
-                80.164116, -68.163911, 137.707543, -190.483666, 69.857463, 93.646028;
-                82.410186, -59.431507, 116.722884, -188.998553, 57.613161, 94.848339; 
-                77.608274, -58.491769, 114.564882, -182.881707, 56.106680, 91.607913;
-                78.929890, -52.725884, 101.514595, -138.195382, 56.862399, 63.948663;
-                85.880409, -51.738553, 99.303763, -96.756601, 83.860758, 47.927961;
-                75.419236, -68.607998, 138.858956, -148.042386, 73.059001, 79.697323;
-                62.074593, -34.121021, 104.137621, -209.422911, 72.424992, 99.664834]));
+               [149.340485, -30.540047, 52.445967, -98.007560, 70.892608, 23.255777;
+                134.458184, -62.090673, 96.292663, -111.878913, 61.264421, 39.870912;
+                109.159915, -62.741053, 124.430863, -147.634859, 65.534798, 75.293398;
+                99.914863, -54.181111, 104.783666, -173.650351, 50.775372, 85.974837; 
+                95.500508, -54.583554, 105.690204, -166.605072, 51.876548, 81.636423;
+                96.451271, -50.799145, 97.204930, -124.545510, 61.635594, 55.391708;
+                102.001739, -48.842405, 92.845794, -88.609097, 91.439707, 44.020866;
+                98.112779, -67.576962, 136.206650, -129.868068, 75.918970, 73.758843;
+                95.422665, -26.004357, 89.642280, -131.440736, 71.840671, 70.556805]));
 
-timeSteps = [0.69449308069551 ...	
-             0.69449308069551 ...		
-             0.89449308069551 ...	
-             0.89449308069551 ...	
-             0.89449308069551 ...	
-             0.99449308069551 ...	
-             0.979449308069551 ...	
-             1.29449308069551];
+timeSteps = [0.74449308069551 ...	
+             0.49449308069551 ...		
+             0.69449308069551 ...	
+             0.40449308069551 ...	
+             0.39449308069551 ...	
+             0.69449308069551 ...	
+             0.679449308069551 ...	
+             0.6449308069551];
 
 VelocityBoundaryCondition_x =       [1.89324092806605	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	0.0];
 AccelerationBoundaryCondition_x =   [1.32791857795363	-3.31940823068824	-3.31940823068824	-3.31940823068824	-3.31940823068824	-3.31940823068824	-3.31940823068824	0.0];
@@ -64,15 +64,15 @@ saveEMI = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%ZRot%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 offsetToBorder = 10; %Z.B 5
-minIter = 1000;%120
+minIter = 120;%120
 maxiter = 2000;%2000
-span_to_Smooth = 0.005;%0.025 %As value from 0 to 1  !!!!MAX 0.1 SONST FEHLERANFÄLLIG!!!!!
-stepsize = 20;%10
-widhtStuetzp = 0; % Grade Zahl z.B 4 oder 0
+span_to_Smooth = 0.05;%0.025 %As value from 0 to 1  !!!!MAX 0.1 SONST FEHLERANFÄLLIG!!!!!
+stepsize = 10;%10
+widhtStuetzp = 5; % Grade Zahl z.B 4 oder 0
 grenzSchwap_Y = 2.5;%STANDART 2.5!!!!
 
 optiZ_Rot_Param = [offsetToBorder,minIter,maxiter,span_to_Smooth,stepsize,widhtStuetzp,grenzSchwap_Y];
-optiZ_Rot_Param1 = optiZ_Rot_Param;
+optiZ_Rot_Param3 = optiZ_Rot_Param;
     
 booleanManualPostProcessing = 1;
 
@@ -87,7 +87,7 @@ booleanSloshingKompensationRot = 0;
 
 booleanVisualisation = 0;
 
-bool_skp_Optimirung_Kat = 0;
+bool_skp_Optimirung_Kat = 1;
 
 %% ======== Optimierung: Beschl.-Profil TCP u. Erzeugung: Base-Points =====
 if booleanFormTCP
@@ -146,7 +146,7 @@ if booleanFormTCP
     end
     
     %Z-Rot optimierung
-    [eulerZYX,acc_XYZ] = generate_Z_Rot(x_xyz,axesPointConfigs,splineDiscretization,visualizeTCPPath,optiZ_Rot_Param1);
+    [eulerZYX,acc_XYZ] = generate_Z_Rot(x_xyz,axesPointConfigs,splineDiscretization,visualizeTCPPath,optiZ_Rot_Param3);
 
     % Generieren aller Bais-Points
     [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, x_xyz, axesPointConfigs,eulerZYX);

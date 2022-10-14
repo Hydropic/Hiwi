@@ -94,7 +94,53 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
         end
     end
 
-    %% X intervall in dem eine Limitation besteht
+    lb_1 = wrapTo_negativ_360_To_360(lb_1);
+    ub_1 = wrapTo_negativ_360_To_360(ub_1);
+
+    for i = 1:size(z_Rot_Acc,1)
+        if lb_1 >= -360 && lb_1 <= -180
+            lb_1 = lb_1 + 360;
+        end 
+
+        if ub_1 >= -360 && ub_1 <= -180
+            ub_1 = ub_1 + 360;
+        end 
+
+        if lb_1 >=  && lb_1 <= -180
+            lb_1 = lb_1 + 360;
+        end 
+
+        if ub_1 >= -360 && ub_1 <= -360
+            ub_1 = ub_1 + 360;
+        end 
+
+
+    end
+
+    % filter Lb und Ub sodass -180 < lb,ub < 180
+    lb_2 = lb_1+180;
+    ub_2 = ub_1+180;
+    lb_3 = lb_1-180;
+    ub_3 = ub_1-180;
+
+    lb_1 = wrapTo180(lb_1);
+    ub_1 = wrapTo180(ub_1);
+    lb_2 = wrapTo180(lb_2);
+    ub_2 = wrapTo180(ub_2);
+    lb_3 = wrapTo180(lb_3);
+    ub_3 = wrapTo180(ub_3);
+
+   
+    lb_2 = wrapTo_negativ_360_To_360(lb_2);
+    ub_2 = wrapTo_negativ_360_To_360(ub_2);
+    lb_3 = wrapTo_negativ_360_To_360(lb_3);
+    ub_3 = wrapTo_negativ_360_To_360(ub_3);
+    lb_4 = lb_1 +360;
+    ub_4 = ub_1 +360;
+    lb_5 = lb_1 -360;
+    ub_5 = ub_1 -360;
+
+%% X intervall in dem eine Limitation besteht
     timeStmpd_Start = [];
     timeStmpd_End = [];
     
@@ -105,38 +151,6 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
             timeStmpd_End(end+1,1) = tvec(1,y-1);
         end
     end
-
-
-    lb_1 = wrapTo180(lb_1);   
-
-    %% filter Lb und Ub sodass -180 < lb,ub < 180
-    lb_2 = lb_1+180;
-    ub_2 = ub_1+180;
-    lb_3 = lb_1-180;
-    ub_3 = ub_1-180;
-    lb_4 = lb_1+360;
-    ub_4 = ub_1+360;
-    lb_5 = lb_1-360;
-    ub_5 = ub_1-360;
-
-
-% % %     ub_1 = wrapTo180(ub_1);
-% % %     lb_2 = wrapTo180(lb_2);
-% % %     ub_2 = wrapTo180(ub_2);
-% % %     lb_3 = wrapTo180(lb_3);
-% % %     ub_3 = wrapTo180(ub_3);
-
-    lb_1 = wrapTo_negativ_360_To_360(lb_1);
-    ub_1 = wrapTo_negativ_360_To_360(ub_1);
-    lb_2 = wrapTo_negativ_360_To_360(lb_2);
-    ub_2 = wrapTo_negativ_360_To_360(ub_2);
-    lb_3 = wrapTo_negativ_360_To_360(lb_3);
-    ub_3 = wrapTo_negativ_360_To_360(ub_3);
-    lb_4 = wrapTo_negativ_360_To_360(lb_4);
-    ub_4 = wrapTo_negativ_360_To_360(ub_4);
-    lb_5 = wrapTo_negativ_360_To_360(lb_5);
-    ub_5 = wrapTo_negativ_360_To_360(ub_5);
-
 
 %% Abschätzen der Maximalen Achsumorientierung
     
@@ -159,6 +173,8 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     z_Rot = StuetzRot;
     z_Rot_V_unfilterd = z_Rot;
 
+
+
     wight = ones(size(tvec,2),1);
 
     while  violaton >= 1 
@@ -171,34 +187,34 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
 %Filter Loop, der Gültige werte erzwingt
         for i = 1:size(z_Rot,1)
             
-            %Erzwingt, dass Knotenpunkte berücksichtigt werden
-            if i == ind_tpts_in_tVec(currStuetzp) 
-
-                %Intervallbreite um stützpunkt zu gewichten    
-                if i == 1
-                    minus = 0;
-                    plus = widhtStuetzp;
-    
-                elseif i == size(z_Rot,1)
-                    minus = -widhtStuetzp;
-                    plus = 0;
-                else
-                    minus = -widhtStuetzp/2;
-                    plus = widhtStuetzp/2;
-                end
-
-                if z_Rot(i,1) < zRots(currStuetzp) - offsetToBorder*4
-                    z_Rot(i+minus:i+plus,1) = zRots(currStuetzp) - offsetToBorder;
-                    wight(i,1) = 100;
-                    violaton = violaton+1;
-                elseif z_Rot(i,1) > zRots(currStuetzp) + offsetToBorder*4
-                    z_Rot(i+minus:i+plus,1) = zRots(currStuetzp) + offsetToBorder;
-                    wight(i,1) = 100;
-                    violaton = violaton+1;
-                end  
-                
-                currStuetzp = currStuetzp+1;             
-            end
+% % %             %Erzwingt, dass Knotenpunkte berücksichtigt werden
+% % %             if i == ind_tpts_in_tVec(currStuetzp) 
+% % % 
+% % %                 %Intervallbreite um stützpunkt zu gewichten    
+% % %                 if i == 1
+% % %                     minus = 0;
+% % %                     plus = widhtStuetzp;
+% % %     
+% % %                 elseif i == size(z_Rot,1)
+% % %                     minus = -widhtStuetzp;
+% % %                     plus = 0;
+% % %                 else
+% % %                     minus = -widhtStuetzp/2;
+% % %                     plus = widhtStuetzp/2;
+% % %                 end
+% % % 
+% % %                 if z_Rot(i,1) < zRots(currStuetzp) - offsetToBorder*4
+% % %                     z_Rot(i+minus:i+plus,1) = zRots(currStuetzp) - offsetToBorder;
+% % %                     wight(i,1) = 100;
+% % %                     violaton = violaton+1;
+% % %                 elseif z_Rot(i,1) > zRots(currStuetzp) + offsetToBorder*4
+% % %                     z_Rot(i+minus:i+plus,1) = zRots(currStuetzp) + offsetToBorder;
+% % %                     wight(i,1) = 100;
+% % %                     violaton = violaton+1;
+% % %                 end  
+% % %                 
+% % %                 currStuetzp = currStuetzp+1;             
+% % %             end
             
             acc_TCP_XY(i,1:3) = transpose(RotationDegUmZ(-z_Rot(i,1))*transpose(qdd_xyz(i,:)));
 %Fallunterscheidung ob RotZ zu klein oder groß
