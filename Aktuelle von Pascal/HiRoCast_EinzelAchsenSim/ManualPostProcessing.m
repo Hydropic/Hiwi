@@ -11,7 +11,7 @@ function [test] = ManualPostProcessing(splineDiscretization, visualizeTCPPath)
     example = matfile('SimResults.mat');
     optimized_translational_values_load = example.x;
 
-    Haendische_Nachbearbeitung;
+    Haendische_Nachbearbeitung("SimResults.mat");
 
     show_spline(optimized_translational_values_load, 'Axes Editor');
 
