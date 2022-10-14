@@ -10,6 +10,9 @@ function [test] = ManualPostProcessing(splineDiscretization, visualizeTCPPath)
 
     example = matfile('SimResults.mat');
     optimized_translational_values_load = example.x;
+
+    Haendische_Nachbearbeitung;
+
     show_spline(optimized_translational_values_load, 'Axes Editor');
 
    for p = 1:height(optimized_translational_values_load)

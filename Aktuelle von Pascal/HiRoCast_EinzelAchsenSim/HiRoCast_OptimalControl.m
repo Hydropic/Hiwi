@@ -74,7 +74,7 @@ booleanFormTCP = 1;
     optiZ_Rot_Param = [offsetToBorder,minIter,maxiter,span_to_Smooth,stepsize,widhtStuetzp,grenzSchwap_Y];
     optiZ_Rot_Param1 = optiZ_Rot_Param;
     
-booleanManualPostProcessing = 0;
+booleanManualPostProcessing = 1;
 
 booleanTimeOpimizationTure = 0;
     maxIterations = 20;
