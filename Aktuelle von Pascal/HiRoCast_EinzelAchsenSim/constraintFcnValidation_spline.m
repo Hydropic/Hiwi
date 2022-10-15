@@ -1,4 +1,4 @@
-function [c,ceq] = constraintFcnValidation_spline(optimalSplineDiscretization, optimization_values, splineDiscretization, axesPointConfigs, max_values, min_values, jerkBoundaries)
+function [c,ceq] = constraintFcnValidation_spline(optimalSplineDiscretization, optimization_values_XY, splineDiscretization, axesPointConfigs, max_values, min_values, jerkBoundaries)
     ceq =[];
     c=[];
     %% =========Feste Variablen==========================================
@@ -6,11 +6,11 @@ function [c,ceq] = constraintFcnValidation_spline(optimalSplineDiscretization, o
 
     wayPoints = [];
 
-    for t = 1:length(optimization_values(1,:))
+    for t = 1:length(optimization_values_XY(1,:))
         if t == 1
-            optimization_values(1,t) = optimization_values(1,t)
+            optimization_values_XY(1,t) = optimization_values_XY(1,t)
         else
-            optimization_values(1,t) = optimization_values(1,t-1) + optimization_values(1,t)
+            optimization_values_XY(1,t) = optimization_values_XY(1,t-1) + optimization_values_XY(1,t)
         end
     end
 
@@ -19,20 +19,20 @@ function [c,ceq] = constraintFcnValidation_spline(optimalSplineDiscretization, o
         wayPoints(:,p) = tcppunkt(:,1)
     end
     
-    interval =  round(optimization_values(1, end)/optimalSplineDiscretization, 3)
-    tvec = 0:interval:optimization_values(1, end);
-    tpts = [0, optimization_values(1,:)]
+    interval =  round(optimization_values_XY(1, end)/optimalSplineDiscretization, 3)
+    tvec = 0:interval:optimization_values_XY(1, end);
+    tpts = [0, optimization_values_XY(1,:)]
 
-    VelocityBoundaryCondition_x = [0, optimization_values(2,:)]
-    VelocityBoundaryCondition_y = [0, optimization_values(3,:)]
+    VelocityBoundaryCondition_x = [0, optimization_values_XY(2,:)]
+    VelocityBoundaryCondition_y = [0, optimization_values_XY(3,:)]
 
-    AccelerationBoundaryCondition_x = [0, optimization_values(4,:)]
-    AccelerationBoundaryCondition_y = [0, optimization_values(5,:)]
+    AccelerationBoundaryCondition_x = [0, optimization_values_XY(4,:)]
+    AccelerationBoundaryCondition_y = [0, optimization_values_XY(5,:)]
 
     % Check, if Time is rising on every Point
     timeRising = false;
-    for t = 1:width(optimization_values)-1
-        if optimization_values(1,t) >= optimization_values(1,t+1)
+    for t = 1:width(optimization_values_XY)-1
+        if optimization_values_XY(1,t) >= optimization_values_XY(1,t+1)
             timeRising = true
             break
         else
@@ -67,9 +67,9 @@ function [c,ceq] = constraintFcnValidation_spline(optimalSplineDiscretization, o
         end
     end
 
-    for timePoint = 1:width(optimization_values)-1
+    for timePoint = 1:width(optimization_values_XY)-1
         % Nur den Ruck in der Nähe des Kollisionspunktes aufnehmen
-        timePoint = optimization_values(1, timePoint)
+        timePoint = optimization_values_XY(1, timePoint)
         diffValuePoint = [];
     
         % Determine all values around the time
