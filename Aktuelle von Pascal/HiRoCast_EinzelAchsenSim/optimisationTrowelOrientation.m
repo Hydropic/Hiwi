@@ -7,6 +7,7 @@ function [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations, 
     %% ========Umorientierung auf Basis von TCP KOS====================
     [path_angular_deflection_old] = determinationAccelerationTCP(optimized_translational_values);
 
+    %ZRot in zeile 8 integrieren + addition der Rotationen
     [optimized_translational_values_oriented, path_angular_deflection] = matchPendelPathData(path_angular_deflection_old,optimized_translational_values);
 
     % Setzen der initialen und optimalen Orientierung der Achse 6
