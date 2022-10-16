@@ -16,7 +16,6 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     stepsize = optiParam(5);
     widhtStuetzp = optiParam(6);
     grenzSchwappY = optiParam(7);
-
     
     for p = 1:height(achsstellungen)
         [tcppunkt, eul, ~, ~, ~] = vorwaertskinematik(achsstellungen(p,:));
@@ -78,7 +77,6 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     abs_Acc = sqrt(qdd_xyz(:,1).^2+qdd_xyz(:,2).^2);
 
 %% Berechnet gültige Rotationen (upper and lower boundrys)
-    acc_TCP_XY = [];
     winkelGrenz = [];
     lb_1 = [];
     ub_1 = [];
@@ -111,9 +109,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
 
         warNanN = istNaN;
     end
-
-    
-
+   
     %% X intervall in dem eine Limitation besteht
     timeStmpd_Start = [];
     timeStmpd_End = [];
@@ -138,10 +134,12 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
 
     maxBuble = [];
     minBuble = [];
+    startEndValBubble = [];
     
     for i = 1:size(IndexBuble,1)     
         maxBuble(i,1) = max(lb_1(IndexBuble(i,1):IndexBuble(i,2),1));
         minBuble(i,1) = min(ub_1(IndexBuble(i,1):IndexBuble(i,2),1));
+        startEndValBubble(i,1:2) = [ub_1(IndexBuble(i,1),1), ub_1(IndexBuble(i,2),1)];
 
         if minBuble(i,1) > 360
             lb_1(IndexBuble(i,1):IndexBuble(i,2),1) = lb_1(IndexBuble(i,1):IndexBuble(i,2),1) - 360;
@@ -162,10 +160,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
         end
     end
 
-
-%     lb_1 = wrapTo360(lb_1);   
-
-    %% filter Lb und Ub sodass -180 < lb,ub < 180
+    %% fillb und Ub dublizieren und verschieben (n*180°)
     lb_2 = lb_1+180;
     ub_2 = ub_1+180;
     lb_3 = lb_1-180;
@@ -175,27 +170,8 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     lb_5 = lb_1-360;
     ub_5 = ub_1-360;
 
-% % %     ub_1 = wrapTo180(ub_1);
-% % %     lb_2 = wrapTo180(lb_2);
-% % %     ub_2 = wrapTo180(ub_2);
-% % %     lb_3 = wrapTo180(lb_3);
-% % %     ub_3 = wrapTo180(ub_3);
-
-    lb_1 = wrapTo_negativ_360_To_360(lb_1);
-    ub_1 = wrapTo_negativ_360_To_360(ub_1);
-    lb_2 = wrapTo_negativ_360_To_360(lb_2);
-    ub_2 = wrapTo_negativ_360_To_360(ub_2);
-    lb_3 = wrapTo_negativ_360_To_360(lb_3);
-    ub_3 = wrapTo_negativ_360_To_360(ub_3);
-    lb_4 = wrapTo_negativ_360_To_360(lb_4);
-    ub_4 = wrapTo_negativ_360_To_360(ub_4);
-    lb_5 = wrapTo_negativ_360_To_360(lb_5);
-    ub_5 = wrapTo_negativ_360_To_360(ub_5);
-
-
 %% Abschätzen der Maximalen Achsumorientierung
     
-
     
 %% Berechnung inertialer bahn aus Stützpunkten und Geschwindigkeit
     for i = 1:size(ind_tpts_in_tVec,1)-1 
@@ -258,6 +234,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
             end
             
             acc_TCP_XY(i,1:3) = transpose(RotationDegUmZ(-z_Rot(i,1))*transpose(qdd_xyz(i,:)));
+
 %Fallunterscheidung ob RotZ zu klein oder groß
             if abs(acc_TCP_XY(i,2)) > grenzSchwappY %-0.01 %Zur näheren grenze implementieren
                 %Anzeigen, dass eine violation vorliegt
@@ -342,10 +319,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
                     z_Rot(i,1) = lb_5(i,1)+offsetToBorder; 
 
                 end
-            end 
-
-            %Minimalabstand zu den grenzen als 1/2 offsetToBorder
-            
+            end             
         end
         
 %smoothing Funktion die nicht zwangsweise gültige lösung liefert Dafür werden zunächst stützpunkte gelegt, wodurch anschlißend ein Spline gelegt wird
@@ -353,7 +327,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
             smoothRot = smooth(z_Rot,span_to_Smooth,'lowess');
             fitObj = fit(transpose(tvec(1,1:stepsize:end)),smoothRot(1:stepsize:end,1),'smoothingspline','Weights',wight(1:stepsize:end,1),'SmoothingParam',1);
             z_Rot = fitObj(transpose(tvec));
-            z_Rot = smoothRot;
+%             z_Rot = smoothRot;
         end
 
         if iter == maxiter
@@ -366,7 +340,6 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
 
     z_Rot = wrapTo_negativ_360_To_360(z_Rot);
 
-
     %Debug
     f = sqrt(acc_Max_XY(:,1).^2+acc_Max_XY(:,2).^2);
     g =  sqrt(acc_TCP_XY(:,1).^2+acc_TCP_XY(:,2).^2);
@@ -376,8 +349,6 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     for m = 1:size( acc_TCP_XY,1)
          acc_TCP_XY(i,1:3) = transpose(RotationDegUmZ(-z_Rot(i,1))*transpose(qdd_xyz(i,:)));
     end
-
-
  
 %% Erstellung der Output Variablen mit splineDiscretization vielen Punkten
     %Kartesische koord. Position
@@ -405,27 +376,6 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     if visualize == 1
         %Sprünge um 180° Filtern:
         for i = 2:size(z_Rot,1)-1
-            if abs(z_Rot(i-1,1)-z_Rot(i,1)) > 170
-                z_Rot(i,1) = NaN;
-            end
-            if abs(ub_1(i-1,1)-ub_1(i,1)) > 170
-                ub_1(i,1) = NaN;
-            end
-            if abs(ub_2(i-1,1)-ub_2(i,1)) > 170
-                ub_2(i,1) = NaN;
-            end
-            if abs(ub_3(i-1,1)-ub_3(i,1)) > 170
-                ub_3(i,1) = NaN;
-            end
-            if abs(lb_1(i-1,1)-lb_1(i,1)) > 170
-                lb_1(i,1) = NaN;
-            end
-            if abs(lb_2(i-1,1)-lb_2(i,1)) > 170
-                lb_2(i,1) = NaN;
-            end
-            if abs(lb_3(i-1,1)-lb_3(i,1)) > 170
-                lb_3(i,1) = NaN;
-            end
             if abs(z_Rot_Acc_unfilterd(i-1,1)-z_Rot_Acc_unfilterd(i,1)) > 170
                 z_Rot_Acc_unfilterd(i,1) = NaN;
             end
@@ -445,22 +395,23 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
         ylabel('Z-Rotation')
         hold on
         
-        %Plots mit Legende
+        %Plots mit Legende              
+        rotPlot = plot(tvec, z_Rot,'LineWidth',2.5,'DisplayName','Rot_Z');
+        plot(tvec, ub_1,'r','LineWidth',1.5,'DisplayName','ub')
+        plot(tvec, lb_1,'c','LineWidth',1.5,'DisplayName','lb')
+        plot(tvec, z_Rot_Acc_unfilterd,'--g','LineWidth',1.5,'DisplayName','optimal')
+        plot(tvec, z_Rot_V_unfilterd,'--m','DisplayName','Rot_Z unfilterd')         
 
-        
-        
-        plot(tvec, z_Rot,'LineWidth',2.5)
-        plot(tvec, ub_1,'r','LineWidth',1.5)
-        plot(tvec, lb_1,'c','LineWidth',1.5)
-        plot(tvec, z_Rot_Acc_unfilterd,'--g','LineWidth',1.5)
-        plot(tvec, z_Rot_V_unfilterd,'--m') 
-
+        %Fill area between Upper and lower borders
         alphaBuble = 0.3;%Transparenz der ungültigen Bereiche        
         for i = 1:size(IndexBuble,1)
             times1 = [transpose(tvec(1,IndexBuble(i,1):IndexBuble(i,2)));transpose(flip(tvec(1,IndexBuble(i,1):IndexBuble(i,2))))];
             borders1 = [lb_1(IndexBuble(i,1):IndexBuble(i,2),1);flip(ub_1(IndexBuble(i,1):IndexBuble(i,2),1))];
-            filld = fill(times1,borders1,'r','FaceAlpha',alphaBuble);
-            uistack(filld,"bottom");
+            filld = fill(times1,borders1,'r','FaceAlpha',alphaBuble,'DisplayName','Ungültige Rotation');
+            if i == 1
+                filld.DisplayName = 'Ungültige Rotation';
+                legend(x,"AutoUpdate","off")
+            end
 
             times2 = [transpose(tvec(1,IndexBuble(i,1):IndexBuble(i,2)));transpose(flip(tvec(1,IndexBuble(i,1):IndexBuble(i,2))))];
             borders2 = [lb_2(IndexBuble(i,1):IndexBuble(i,2),1);flip(ub_2(IndexBuble(i,1):IndexBuble(i,2),1))];
@@ -477,8 +428,9 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
             times5 = [transpose(tvec(1,IndexBuble(i,1):IndexBuble(i,2)));transpose(flip(tvec(1,IndexBuble(i,1):IndexBuble(i,2))))];
             borders5 = [lb_5(IndexBuble(i,1):IndexBuble(i,2),1);flip(ub_5(IndexBuble(i,1):IndexBuble(i,2),1))];
             fill(times5,borders5,'r','FaceAlpha',alphaBuble)
+        end        
 
-        end
+        uistack(rotPlot, "top")
       
         %Widerholungen um 180° bzw 360° verschoben
         plot(tvec, ub_2,'r','LineWidth',1.5)
@@ -502,15 +454,17 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
         yline(-180, '--b','-180°','LabelVerticalAlignment','top','LabelHorizontalAlignment','left')
         yline(360, '--b','360°','LabelVerticalAlignment','bottom','LabelHorizontalAlignment','left')
         yline(-360, '--b','-360°','LabelVerticalAlignment','top','LabelHorizontalAlignment','left')
-        legend('Rot_Z','ub','lb','optimal','Rot_Z unfilterd')
+        
         
         %Plot Roboterbahn und Beschleunigung in 3d
         roboPath = figure;
         robiAx = axes(roboPath);     
         hold(robiAx,"on");
+
         for i = 1:2:size(Position_xyz,1)
             plotCoord_syst(0.15,Position_xyz(i,1),Position_xyz(i,2),Position_xyz(i,3),eulerZYX(i,1),robiAx)
         end
+
         plot3(robiAx,Position_xyz(:,1),Position_xyz(:,2),Position_xyz(:,3),'-o','Color','g','MarkerSize',4,'MarkerFaceColor','auto');
         quiver3(robiAx,Position_xyz(:,1),Position_xyz(:,2),Position_xyz(:,3),Beschl_xyz(:,1),Beschl_xyz(:,2),Beschl_xyz(:,3),"Color","r","AutoScale","on");
         arr = [(robiAx.XLim(1,2)-robiAx.XLim(1,1)),(robiAx.YLim(1,2)-robiAx.YLim(1,1)),(robiAx.ZLim(1,2)-robiAx.ZLim(1,1))];
