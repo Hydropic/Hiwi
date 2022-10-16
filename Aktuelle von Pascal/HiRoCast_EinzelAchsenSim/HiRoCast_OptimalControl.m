@@ -70,19 +70,23 @@ min_values = [timeMin timeMin timeMin timeMin timeMin timeMin timeMin timeMin;..
 
 %% ======== Simulation konfigurieren ======================================
 booleanFormTCP = 1;
-splineDiscretization = 40;
-maxIterationsSplineTCP = 5;
-visualizeTCPPath = 1;
-saveEMI = 0;
+    bool_skp_Optimirung_Kat = 0;
+    splineDiscretization = 40;
+    maxIterationsSplineTCP = 5;
+    visualizeTCPPath = 1;
+    saveEMI = 0;
+    % Set up Boundarys für first Simulation
+    jerkBoundaries = 0.5; % Für die Ruckänderung an den Mittelpunkten gilt +- dieser Wert als Max. bzw. Min.
+    optimalSplineDiscretization = 80;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%ZRot%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-offsetToBorder = 5; %Z.B 5
-minIter = 120;%120
-maxiter = 2000;%2000
-span_to_Smooth = 0.03;%0.025 %As value from 0 to 1  !!!!MAX 0.1 SONST FEHLERANFÄLLIG!!!!!
-stepsize = 10;%10
-widhtStuetzp = 5; % Grade Zahl z.B 4 oder 0
-grenzSchwap_Y = 2.5;%STANDART 2.5!!!!
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%ZRot%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+    offsetToBorder = 5; %Z.B 5
+    minIter = 120;%120
+    maxiter = 2000;%2000
+    span_to_Smooth = 0.03;%0.025 %As value from 0 to 1  !!!!MAX 0.1 SONST FEHLERANFÄLLIG!!!!!
+    stepsize = 10;%10
+    widhtStuetzp = 5; % Grade Zahl z.B 4 oder 0
+    grenzSchwap_Y = 2.5;%STANDART 2.5!!!!
 
 optiZ_Rot_Param = [offsetToBorder,minIter,maxiter,span_to_Smooth,stepsize,widhtStuetzp,grenzSchwap_Y];
 optiZ_Rot_Param2 = optiZ_Rot_Param;
@@ -100,7 +104,7 @@ booleanSloshingKompensationRot = 0;
 
 booleanVisualisation = 0;
 
-bool_skp_Optimirung_Kat = 1;
+
 
 
 %% ====== Visualisierung ==================================================
@@ -131,9 +135,6 @@ end
 %% ======== Optimierung: Beschl.-Profil TCP u. Erzeugung: Base-Points =====
 if booleanFormTCP
     if bool_skp_Optimirung_Kat == 0
-        % Set up Boundarys für first Simulation
-        jerkBoundaries = 0.5; % Für die Ruckänderung an den Mittelpunkten gilt +- dieser Wert als Max. bzw. Min.
-        optimalSplineDiscretization = 80;
             
         % Initiale Werte für die Optimierung setzen
         init_ax_values_YX = [timeSteps; VelocityBoundaryCondition_xyz_middle_XY; AccelerationBoundaryCondition_xyz_middle_XY];  
@@ -211,7 +212,7 @@ end
 
 %% ======== Visualisierung u. Händische Nachbearbeitung ===================
 if booleanManualPostProcessing
-    [test] = ManualPostProcessing(splineDiscretization, visualizeTCPPath,max_values_Z,min_values_Z,jerkBoundaries);
+    [test] = ManualPostProcessing(splineDiscretization, visualizeTCPPath,max_values,min_values,jerkBoundaries);
 end
 
 %% ======== Optimierung: Achse 1 - 5 ======================================
