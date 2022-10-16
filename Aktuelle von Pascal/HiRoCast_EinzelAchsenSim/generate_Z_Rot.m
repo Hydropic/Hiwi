@@ -84,6 +84,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     ub_1 = [];
     istNaN = 0;
     warNanN = 0;
+
 %     wasNum = 0;
     for i = 1:size(z_Rot_Acc,1)
         acc_Max_XY(i,1:3) = transpose(RotationDegUmZ(-z_Rot_Acc(i,1))*transpose(qdd_xyz(i,:)));
@@ -132,6 +133,32 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
             timeStmpd_End_ind(end+1,1) = y-1;  
             IndexBuble(bubbleNum,2) = y-1;
             bubbleNum = bubbleNum+1;
+        end
+    end
+
+    maxBuble = [];
+    minBuble = [];
+    
+    for i = 1:size(IndexBuble,1)     
+        maxBuble(i,1) = max(lb_1(IndexBuble(i,1):IndexBuble(i,2),1));
+        minBuble(i,1) = min(ub_1(IndexBuble(i,1):IndexBuble(i,2),1));
+
+        if minBuble(i,1) > 360
+            lb_1(IndexBuble(i,1):IndexBuble(i,2),1) = lb_1(IndexBuble(i,1):IndexBuble(i,2),1) - 360;
+            ub_1(IndexBuble(i,1):IndexBuble(i,2),1) = ub_1(IndexBuble(i,1):IndexBuble(i,2),1) - 360;
+
+        elseif maxBuble(i,1) < -360
+            lb_1(IndexBuble(i,1):IndexBuble(i,2),1) = lb_1(IndexBuble(i,1):IndexBuble(i,2),1) + 360;
+            ub_1(IndexBuble(i,1):IndexBuble(i,2),1) = ub_1(IndexBuble(i,1):IndexBuble(i,2),1) + 360;
+        end
+
+        if minBuble(i,1) > 180
+            lb_1(IndexBuble(i,1):IndexBuble(i,2),1) = lb_1(IndexBuble(i,1):IndexBuble(i,2),1) - 180;
+            ub_1(IndexBuble(i,1):IndexBuble(i,2),1) = ub_1(IndexBuble(i,1):IndexBuble(i,2),1) - 180;
+
+        elseif maxBuble(i,1) < -180
+            lb_1(IndexBuble(i,1):IndexBuble(i,2),1) = lb_1(IndexBuble(i,1):IndexBuble(i,2),1) + 180;
+            ub_1(IndexBuble(i,1):IndexBuble(i,2),1) = ub_1(IndexBuble(i,1):IndexBuble(i,2),1) + 180;
         end
     end
 

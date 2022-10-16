@@ -71,6 +71,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     z_Rot_V(1,1) = z_Rot_V(2,1);
     z_Rot_Acc = atan2d(qdd_xyz(:,2),qdd_xyz(:,1));
     z_Rot_Acc(1,1) = z_Rot_Acc(2,1);
+    z_Rot_Acc = wrapTo_negativ_360_To_360(z_Rot_Acc);  
     z_Rot_Acc_unfilterd = wrapTo_negativ_360_To_360(z_Rot_Acc);
     z_Rot_Acc_unfilterd_2 = z_Rot_Acc_unfilterd+180;
     z_Rot_Acc_unfilterd_3 = z_Rot_Acc_unfilterd-180;
@@ -81,17 +82,34 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     winkelGrenz = [];
     lb_1 = [];
     ub_1 = [];
+    istNaN = 0;
+    warNanN = 0;
+
+%     wasNum = 0;
     for i = 1:size(z_Rot_Acc,1)
         acc_Max_XY(i,1:3) = transpose(RotationDegUmZ(-z_Rot_Acc(i,1))*transpose(qdd_xyz(i,:)));
         winkelGrenz(i,1) = asind(2.5/abs_Acc(i,1));
+
         if abs_Acc(i,1) <= grenzSchwappY
             lb_1(i,1) = NaN;
             ub_1(i,1) = NaN;
-            
+            istNaN = 1;
         elseif abs_Acc(i,1) > grenzSchwappY        
             lb_1(i,1) = z_Rot_Acc(i,1)-winkelGrenz(i,1);
-            ub_1(i,1) = z_Rot_Acc(i,1)+winkelGrenz(i,1);
+            ub_1(i,1) = z_Rot_Acc(i,1)+winkelGrenz(i,1)-180;
+            istNaN = 0;            
         end
+
+        %Conect ub with lb at optimal +90°
+        if i > 1 && ~(istNaN == warNanN) && warNanN == 0
+            lb_1(i-1,1) = z_Rot_Acc(i,1)-90;
+            ub_1(i-1,1) = z_Rot_Acc(i,1)+90-180;
+        elseif i > 1 && ~(istNaN == warNanN) && warNanN == 1
+            lb_1(i,1) = z_Rot_Acc(i,1)-90;
+            ub_1(i,1) = z_Rot_Acc(i,1)+90-180;
+        end
+
+        warNanN = istNaN;
     end
 
     
@@ -99,17 +117,53 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
     %% X intervall in dem eine Limitation besteht
     timeStmpd_Start = [];
     timeStmpd_End = [];
+
+    timeStmpd_Start_ind = [];
+    timeStmpd_End_ind = [];
+    bubbleNum = 1;
+    IndexBuble = [];
     
     for y = 2:size(ub_1,1)
         if isnan(lb_1(y-1,1)) && ~isnan(lb_1(y,1)) 
             timeStmpd_Start(end+1,1) = tvec(1,y);
+            timeStmpd_Start_ind(end+1,1) = y;
+            IndexBuble(bubbleNum,1) = y;
         elseif ~isnan(lb_1(y-1,1)) && isnan(lb_1(y,1))
             timeStmpd_End(end+1,1) = tvec(1,y-1);
+            timeStmpd_End_ind(end+1,1) = y-1;  
+            IndexBuble(bubbleNum,2) = y-1;
+            bubbleNum = bubbleNum+1;
+        end
+    end
+
+    maxBuble = [];
+    minBuble = [];
+    
+    for i = 1:size(IndexBuble,1)     
+        maxBuble(i,1) = max(lb_1(IndexBuble(i,1):IndexBuble(i,2),1));
+        minBuble(i,1) = min(ub_1(IndexBuble(i,1):IndexBuble(i,2),1));
+
+        if minBuble(i,1) > 360
+            lb_1(IndexBuble(i,1):IndexBuble(i,2),1) = lb_1(IndexBuble(i,1):IndexBuble(i,2),1) - 360;
+            ub_1(IndexBuble(i,1):IndexBuble(i,2),1) = ub_1(IndexBuble(i,1):IndexBuble(i,2),1) - 360;
+
+        elseif maxBuble(i,1) < -360
+            lb_1(IndexBuble(i,1):IndexBuble(i,2),1) = lb_1(IndexBuble(i,1):IndexBuble(i,2),1) + 360;
+            ub_1(IndexBuble(i,1):IndexBuble(i,2),1) = ub_1(IndexBuble(i,1):IndexBuble(i,2),1) + 360;
+        end
+
+        if minBuble(i,1) > 180
+            lb_1(IndexBuble(i,1):IndexBuble(i,2),1) = lb_1(IndexBuble(i,1):IndexBuble(i,2),1) - 180;
+            ub_1(IndexBuble(i,1):IndexBuble(i,2),1) = ub_1(IndexBuble(i,1):IndexBuble(i,2),1) - 180;
+
+        elseif maxBuble(i,1) < -180
+            lb_1(IndexBuble(i,1):IndexBuble(i,2),1) = lb_1(IndexBuble(i,1):IndexBuble(i,2),1) + 360;
+            ub_1(IndexBuble(i,1):IndexBuble(i,2),1) = ub_1(IndexBuble(i,1):IndexBuble(i,2),1) + 360;
         end
     end
 
 
-    lb_1 = wrapTo180(lb_1);   
+%     lb_1 = wrapTo360(lb_1);   
 
     %% filter Lb und Ub sodass -180 < lb,ub < 180
     lb_2 = lb_1+180;
@@ -178,18 +232,20 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
                 %Intervallbreite um stützpunkt zu gewichten    
                 if i == 1
                     minus = 0;
-                    plus = widhtStuetzp;
+                    plus = round(widhtStuetzp);
     
                 elseif i == size(z_Rot,1)
-                    minus = -widhtStuetzp;
+                    minus = -round(widhtStuetzp);
                     plus = 0;
                 else
-                    minus = -widhtStuetzp/2;
-                    plus = widhtStuetzp/2;
+                    minus = -round(widhtStuetzp/2);
+                    plus = round(widhtStuetzp/2);
                 end
 
                 if z_Rot(i,1) < zRots(currStuetzp) - offsetToBorder*4
-                    z_Rot(i+minus:i+plus,1) = zRots(currStuetzp) - offsetToBorder;
+                    mini = i+minus;
+                    maxi = i+plus;
+                    z_Rot(mini:maxi,1) = zRots(currStuetzp) - offsetToBorder;
                     wight(i,1) = 100;
                     violaton = violaton+1;
                 elseif z_Rot(i,1) > zRots(currStuetzp) + offsetToBorder*4
@@ -203,7 +259,7 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
             
             acc_TCP_XY(i,1:3) = transpose(RotationDegUmZ(-z_Rot(i,1))*transpose(qdd_xyz(i,:)));
 %Fallunterscheidung ob RotZ zu klein oder groß
-            if abs(acc_TCP_XY(i,2)) > grenzSchwappY +0.01 %Zur näheren grenze implementieren
+            if abs(acc_TCP_XY(i,2)) > grenzSchwappY %-0.01 %Zur näheren grenze implementieren
                 %Anzeigen, dass eine violation vorliegt
                 violaton = violaton+1;
     
@@ -390,24 +446,51 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
         hold on
         
         %Plots mit Legende
-        
-        plot(tvec, z_Rot,'LineWidth',1.5)
-        plot(tvec, ub_1,'r','LineWidth',0.7)
-        plot(tvec, lb_1,'c','LineWidth',0.7)
-        plot(tvec, z_Rot_Acc_unfilterd,'--g','LineWidth',1.5)
-        plot(tvec, z_Rot_V_unfilterd,'--m')        
 
+        
+        
+        plot(tvec, z_Rot,'LineWidth',2.5)
+        plot(tvec, ub_1,'r','LineWidth',1.5)
+        plot(tvec, lb_1,'c','LineWidth',1.5)
+        plot(tvec, z_Rot_Acc_unfilterd,'--g','LineWidth',1.5)
+        plot(tvec, z_Rot_V_unfilterd,'--m') 
+
+        alphaBuble = 0.3;%Transparenz der ungültigen Bereiche        
+        for i = 1:size(IndexBuble,1)
+            times1 = [transpose(tvec(1,IndexBuble(i,1):IndexBuble(i,2)));transpose(flip(tvec(1,IndexBuble(i,1):IndexBuble(i,2))))];
+            borders1 = [lb_1(IndexBuble(i,1):IndexBuble(i,2),1);flip(ub_1(IndexBuble(i,1):IndexBuble(i,2),1))];
+            filld = fill(times1,borders1,'r','FaceAlpha',alphaBuble);
+            uistack(filld,"bottom");
+
+            times2 = [transpose(tvec(1,IndexBuble(i,1):IndexBuble(i,2)));transpose(flip(tvec(1,IndexBuble(i,1):IndexBuble(i,2))))];
+            borders2 = [lb_2(IndexBuble(i,1):IndexBuble(i,2),1);flip(ub_2(IndexBuble(i,1):IndexBuble(i,2),1))];
+            fill(times2,borders2,'r','FaceAlpha',alphaBuble)
+
+            times3 = [transpose(tvec(1,IndexBuble(i,1):IndexBuble(i,2)));transpose(flip(tvec(1,IndexBuble(i,1):IndexBuble(i,2))))];
+            borders3 = [lb_3(IndexBuble(i,1):IndexBuble(i,2),1);flip(ub_3(IndexBuble(i,1):IndexBuble(i,2),1))];
+            fill(times3,borders3,'r','FaceAlpha',alphaBuble)
+
+            times4 = [transpose(tvec(1,IndexBuble(i,1):IndexBuble(i,2)));transpose(flip(tvec(1,IndexBuble(i,1):IndexBuble(i,2))))];
+            borders4 = [lb_4(IndexBuble(i,1):IndexBuble(i,2),1);flip(ub_4(IndexBuble(i,1):IndexBuble(i,2),1))];
+            fill(times4,borders4,'r','FaceAlpha',alphaBuble)
+
+            times5 = [transpose(tvec(1,IndexBuble(i,1):IndexBuble(i,2)));transpose(flip(tvec(1,IndexBuble(i,1):IndexBuble(i,2))))];
+            borders5 = [lb_5(IndexBuble(i,1):IndexBuble(i,2),1);flip(ub_5(IndexBuble(i,1):IndexBuble(i,2),1))];
+            fill(times5,borders5,'r','FaceAlpha',alphaBuble)
+
+        end
+      
         %Widerholungen um 180° bzw 360° verschoben
-        plot(tvec, ub_2,'r','LineWidth',0.7)
-        plot(tvec, lb_2,'c','LineWidth',0.7)
-        plot(tvec, ub_3,'r','LineWidth',0.7)
-        plot(tvec, lb_3,'c','LineWidth',0.7) 
-        plot(tvec, ub_4,'r','LineWidth',0.7)
-        plot(tvec, lb_4,'c','LineWidth',0.7) 
-        plot(tvec, ub_5,'r','LineWidth',0.7)
-        plot(tvec, lb_5,'c','LineWidth',0.7) 
-        plot(tvec, z_Rot_Acc_unfilterd_2,'--g','LineWidth',1)
-        plot(tvec, z_Rot_Acc_unfilterd_3,'--g','LineWidth',1)
+        plot(tvec, ub_2,'r','LineWidth',1.5)
+        plot(tvec, lb_2,'c','LineWidth',1.5)
+        plot(tvec, ub_3,'r','LineWidth',1.5)
+        plot(tvec, lb_3,'c','LineWidth',1.5) 
+        plot(tvec, ub_4,'r','LineWidth',1.5)
+        plot(tvec, lb_4,'c','LineWidth',1.5) 
+        plot(tvec, ub_5,'r','LineWidth',1.5)
+        plot(tvec, lb_5,'c','LineWidth',1.5) 
+        plot(tvec, z_Rot_Acc_unfilterd_2,'--g','LineWidth',1.5)
+        plot(tvec, z_Rot_Acc_unfilterd_3,'--g','LineWidth',1.5)
          
         %Plotten der Ausgangsgröße
         plot(tpts,zRots,'o')
@@ -425,9 +508,9 @@ function [eulerZYX,Beschl_xyz] = generate_Z_Rot(optimization_values, axesPointCo
         roboPath = figure;
         robiAx = axes(roboPath);     
         hold(robiAx,"on");
-% % %         for i = 1:size(Position_xyz,1)
-% % %             plotCoord_syst(0.05,Position_xyz(i,1),Position_xyz(i,2),Position_xyz(i,3),eulerZYX,robiAx)
-% % %         end
+        for i = 1:2:size(Position_xyz,1)
+            plotCoord_syst(0.15,Position_xyz(i,1),Position_xyz(i,2),Position_xyz(i,3),eulerZYX(i,1),robiAx)
+        end
         plot3(robiAx,Position_xyz(:,1),Position_xyz(:,2),Position_xyz(:,3),'-o','Color','g','MarkerSize',4,'MarkerFaceColor','auto');
         quiver3(robiAx,Position_xyz(:,1),Position_xyz(:,2),Position_xyz(:,3),Beschl_xyz(:,1),Beschl_xyz(:,2),Beschl_xyz(:,3),"Color","r","AutoScale","on");
         arr = [(robiAx.XLim(1,2)-robiAx.XLim(1,1)),(robiAx.YLim(1,2)-robiAx.YLim(1,1)),(robiAx.ZLim(1,2)-robiAx.ZLim(1,1))];
