@@ -34,8 +34,8 @@ function [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations, 
     
     %% ==================== lb u. ub ================================    
     % Definig ub lb and options
-    max_jointangle = deg2rad([350]);
-    min_jointangle = deg2rad([-350]);
+    max_jointangle = deg2rad(350);
+    min_jointangle = deg2rad(-350);
 
     max_values(1:length(optimized_translational_values), 1) = max_jointangle;
     min_values(1:length(optimized_translational_values), 1) = min_jointangle;

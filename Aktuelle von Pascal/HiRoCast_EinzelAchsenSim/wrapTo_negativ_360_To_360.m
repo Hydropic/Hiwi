@@ -47,8 +47,9 @@ function [angels] = wrapTo_negativ_360_To_360(anglesWrapedTo180)
     end
 %BUG 
 % % %     %Filter Values <-360 abd >360
+% % %     isfirst = 0;
 % % %     for k = 1:1:sizeAng
-% % %         if angels(k) > 360
+% % %         if angels(k) > 360            
 % % %             angels(k) = angels(k)- 360*2;
 % % %         end
 % % % 

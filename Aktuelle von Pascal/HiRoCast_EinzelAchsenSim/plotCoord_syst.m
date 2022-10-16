@@ -10,31 +10,22 @@ function plotCoord_syst(scale,x_tcp,y_tcp,z_tcp,eulerZYX,parent_Ax)
        z_coord = z_tcp;
 
        %Length of Vectors (when diffrent scales are needed)
-       X_lim = xlim(parentAx);
-       Y_lim = ylim(parentAx);
-       Z_lim = zlim(parentAx);
-
-       xlength =(X_lim(1,2)-X_lim(1,1))*scale;
-       ylength = (Y_lim(1,2) -Y_lim(1,1))*scale;
-       zlength = (Z_lim(1,2)-Z_lim(1,1))*scale;
+       xlength = (1)*scale;
+       ylength = (1)*scale;
+       zlength = (1)*scale;
 
         hold (parentAx,"on");
 
         %x-axis                                    
-        text(parentAx,x_coord+xlength,y_coord,z_coord,'    X','Color','red','FontSize',16);
-        plot_Vector(xlength,x_coord,y_coord,z_coord,0,90+eulerZYX(2),0,'r',parentAx);
+        plot_Vector(xlength,x_coord,y_coord,z_coord,eulerZYX(1),0,'r',parentAx);
 
         %y-axis                                  
-        text(parentAx,x_coord,y_coord+ylength,z_coord,'    Y','Color','green','FontSize',16);
-        plot_Vector(ylength,x_coord,y_coord,z_coord,-90+eulerZYX(1),0,0,'g',parentAx);
+        plot_Vector(ylength,x_coord,y_coord,z_coord,eulerZYX(1)-90,0,'g',parentAx);
 
         %z-axis                                   
-        text(parentAx,x_coord,y_coord,z_coord+zlength,'    Z','Color','blue','FontSize',16);
-        plot_Vector(zlength,x_coord,y_coord,z_coord,0,0,0,'blue',parentAx);   
+        plot_Vector(zlength,x_coord,y_coord,z_coord,0,90,'blue',parentAx);   
 
-
-        function plot_Vector(~,length,xt,yt,zt,alpha,beta,gamma,color,parent)
-            disp('  function: plot_Vector') 
+        function plot_Vector(length,xt,yt,zt,alpha,beta,color,parent)
             %number of triangels to aproximate cone shape
             n = 4;
             %create values for calculating shape of circle
@@ -48,49 +39,36 @@ function plotCoord_syst(scale,x_tcp,y_tcp,z_tcp,eulerZYX,parent_Ax)
     
             %calculate x & y coord. of the circle
             x = cos(a)*width_Cone;  
-            y = sin(a)*width_Cone;
-            z = ones(1,n+2)*length;
-    
+            y = ones(1,n+2)*length;
+            z = sin(a)*width_Cone;
+              
             %calculate x & y coord. of the line
-            x_line = cos(a)*width_Line;
-            y_line = sin(a)*width_Line;
-            z_line_end = ones(1,n+2)*length;
-            z_line_start = zeros(1,n+2); 
+            x_line = cos(a)*width_Line;            
+            y_line_end = ones(1,n+2)*length;
+            y_line_start = zeros(1,n+2); 
+            z_line = sin(a)*width_Line;
     
             %tip of cone
             x3 = 0;
-            y3 = 0;
-            z3 = length*(1+0.25);
-                   
-            %create rotation matrix
-            R_x = [1 0 0;...
-                0 cosd(alpha) -sind(alpha);...
-                0 sind(alpha) cosd(alpha)];
-    
-            R_y = [cosd(beta) 0 sind(beta);...
-                0 1 0;...
-                -sind(beta) 0 cosd(beta)];
-    
-            R_z = [cosd(gamma) -sind(gamma) 0;...
-                sind(gamma) cosd(gamma) 0;...
-                0 0 1];
-    
+            y3 = length*(1+0.25);
+            z3 = 0;
+                                   
             %calculate rot Matrix
-            Rot = R_x*R_y*R_z;
+            Rot =RotationDegUmZ(alpha)*RotationDegUmX(beta);
     
             %transpose row vectors for rotation
             x = transpose(x);
             y = transpose(y);
             z = transpose(z);
             x_line = transpose(x_line);
-            y_line = transpose(y_line);
-            z_line_end = transpose(z_line_end);
-            z_line_start = transpose(z_line_start);
+            z_line = transpose(z_line);
+            y_line_end = transpose(y_line_end);
+            y_line_start = transpose(y_line_start);
             
             %Creates vektors to be rotated in a loop
             xyz =[x,y,z];
-            xyz_line_end = [x_line,y_line,z_line_end];
-            xyz_line_start = [x_line,y_line,z_line_start];
+            xyz_line_end = [x_line,y_line_end,z_line];
+            xyz_line_start = [x_line,y_line_start,z_line];
     
             %rotates xyz & xyz_line_end & xyz_line_start
             xyz_line_end = transpose(Rot*transpose(xyz_line_end));
@@ -116,9 +94,9 @@ function plotCoord_syst(scale,x_tcp,y_tcp,z_tcp,eulerZYX,parent_Ax)
             z3 = xyz3(1,3)+zt;
     
             % plots circels        
-            fill3(parent,x,y,z,color);
-            fill3(parent,x_line,y_line,z_line_start,color);
-            fill3(parent,x_line,y_line,z_line_end,color);
+%             fill3(parent,x,y,z,color);
+%             fill3(parent,x_line,y_line,z_line_start,color);
+%             fill3(parent,x_line,y_line,z_line_end,color);
            
             %plots cone/cylinder
             for m = 2:(n+1)                                                            
