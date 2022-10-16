@@ -88,7 +88,7 @@ booleanSloshingKompensationRot = 0;
 
 booleanVisualisation = 0;
 
-bool_skp_Optimirung_Kat = 0;
+bool_skp_Optimirung_Kat = 1;
 
 %% ======== Optimierung: Beschl.-Profil TCP u. Erzeugung: Base-Points =====
 if booleanFormTCP

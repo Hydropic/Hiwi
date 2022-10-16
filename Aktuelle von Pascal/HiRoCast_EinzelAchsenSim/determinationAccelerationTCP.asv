@@ -26,17 +26,14 @@ function [orientation_xy] = determinationAccelerationTCP(optimized_translational
        orientation_xy(t,3) = atand(acceleration_xy_TCP(t,2)/(9.81+acceleration_xy_TCP(t,3)));   
     end
 
-    figure
-    hold on
-    plot(time_Spline,acceleration_xy_TCP(:,1))
-    plot(time_Spline,acceleration_xy_TCP(:,2))
-    plot(time_Spline,acceleration_xy_TCP(:,3))
+    plot(time_Spline,acceleration_xy(:,1))
+    plot(time_Spline,acceleration_xy(:,2))
+    plot(time_Spline,acceleration_xy(:,3))
     legend('Acc_X_TCP','Acc_Y_TCP','Acc_Z_TCP')
     figure;
-    hold on
-%     plot(time_Spline,orientation_xy(:,1))
-    plot(time_Spline,orientation_xy(:,2))
-    plot(time_Spline,orientation_xy(:,3))
-    legend('orientation_xy_X_TCP','orientation_xy_Y_TCP','orientation_xy_Z_TCP')
+    plot(time_Spline,orientation_xy(:,1))
+    plot(time_Spline,orientation_xy(:,1))
+    plot(time_Spline,orientation_xy(:,1))
+    legend('orientation_xy_X_TCP','orientation_xy_Y_TCP','Acc_Z_TCP')
 end
 

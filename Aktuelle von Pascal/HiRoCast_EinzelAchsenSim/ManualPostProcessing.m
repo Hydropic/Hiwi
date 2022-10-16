@@ -34,11 +34,9 @@ function [test] = ManualPostProcessing(splineDiscretization, visualizeTCPPath,ma
         [tcppunkt, eul, eulXYZ, RichtungInTCP, winkelmatrix] = vorwaertskinematik(optimized_translational_values_load(p,2:7));
         wayPoints(:,p) = tcppunkt(:,1);
         eulZYX(1:3,p) = eul;
-% %         waypointsTCP = RotationDegUmZ(eulerZYX(1,1))*[]
    end
    wayPoints = wayPoints.';
 
-%    location_Kat2D = spline(wayPoints(:,1),wayPoints(:,2));
    [Xt_W,Xtd_W,Xtdd_W,Xtddd_W,Xtime_W,Xplace_W] = splineOptimal(wayPoints(:,1),optimized_translational_values_load(1:end-1,1),false);
    [Yt_W,Ytd_W,Ytdd_W,Ytddd_W,Ytime_W,Yplace_W] = splineOptimal(wayPoints(:,2),optimized_translational_values_load(1:end-1,1),false);
    [eulZYXt_W,~,~,~,~,~] = splineOptimal(eulZYX(1,:),optimized_translational_values_load(1:end-1,1),false);
