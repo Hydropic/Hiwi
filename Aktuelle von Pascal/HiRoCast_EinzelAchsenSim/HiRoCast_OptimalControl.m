@@ -4,43 +4,35 @@ clear all;
 %% ======== Setzen der Start-, End- und Kollisionspunkte ==================
 
     % velocity GRAD/SEC
-    max_velocity = deg2rad([80,75,70,70,70,100]);
-    min_velocity = deg2rad([-80,-75,-70,-70,-70,-100]);
+    max_velocity = deg2rad([90,85,80,80, 80,100]);
+    min_velocity = deg2rad([-90,-85,-80,-80,-80,-100]);
 
     % acceleration GRAD/SEC2
     max_acceleration = deg2rad([200,200,200,200,200,200]);
     min_acceleration = deg2rad([-200,-200,-200,-200,-200,-200]);
 
 
-%load("Zwischenstand_Vor_ZOpti.mat")
+load("Zwischenstand_Vor_ZOpti.mat")
 axesPointConfigs = transpose(deg2rad( ...
-               [141.890723, -43.140113, 85.711127, -106.102512, 73.199377, 44.964343;...   %Axe 1
-                120.083395, -72.750982, 119.697534, -126.076824, 61.182276, 56.512061;...   %Axe 2
-                98.695383, -62.300735, 135.237490, -155.341029, 74.413686, 82.968061;...    %Axe 3
-                96.351437, -51.944629, 106.677805, -154.415388, 57.468990, 75.561543;...    %Axe 4
-                88.025371, -52.567899, 108.219675, -170.309037, 56.034379, 84.549972;...    %Axe 5
-                56.641495, -52.595106, 108.287235, -207.602495, 58.838993, 105.138530;...    %Axe 6
-                45.000000, -62.633443, 136.399930, -180.000000, 73.766487, 90.000000;...    %Axe 7
-                50.825428, -64.385356, 143.622082, -148.725198, 80.771644, 84.436386;...    %Axe 8
-                69.531454, -29.153212, 84.912043, -125.193936, 68.580424, 62.624289]));     %Axe 9
-%save("Zwischenstand_Vor_ZOpti.mat")
+               [142.513780, -41.097123, 80.986343, -101.421903, 76.670469, 41.228242;...   %Axe 1
+                123.147596, -69.142842, 113.821145, -113.597971, 67.960061, 49.337334;...   %Axe 2
+                105.588376, -60.253667, 128.729698, -132.344532, 75.122519, 74.266006;...    %Axe 3
+                104.281867, -46.335817, 93.185696, -117.681293, 66.467654, 52.725428;...    %Axe 4
+                98.359601, -36.849547, 71.260670, -96.640440, 80.417951, 34.968308;...    %Axe 5
+                81.267666, -37.014082, 71.635406, -89.279696, 91.043166, 34.627882;...    %Axe 6
+                68.724564, -45.766976, 91.846426, -87.315368, 92.582637, 46.139978;...    %Axe 7
+                63.751130, -50.892558, 104.098377, -86.994584, 92.245681, 53.264737;...    %Axe 8
+                72.277703, -24.591109, 71.489827, -107.001590, 74.696553, 49.199437]));     %Axe 9
+save("Zwischenstand_Vor_ZOpti.mat")
 
-a = 0.05; 
-timeSteps = [0.74449308069551+a ...	    %1
-             0.49449308069551+a ...	    %2	
-             0.59449308069551+a ...	    %3
-             0.40449308069551+a ...	    %4
-             0.39449308069551+a ...	    %5
-             0.89449308069551+a ...	    %6
-             0.829449308069551+a ...    %7	
-             0.6049308069551+a];        %8
+
 
 VelocityBoundaryCondition_x =       [1.89324092806605	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	1.11626424791510	0.0];
-AccelerationBoundaryCondition_x =   [1.32791857795363	-3.31940823068824	-3.31940823068824	-3.31940823068824	-3.31940823068824	-3.31940823068824	-3.31940823068824	0.0];
+AccelerationBoundaryCondition_x =   [1.32791857795363	-1.31940823068824	-1.31940823068824	-1.31940823068824	-1.31940823068824	-1.31940823068824	-1.31940823068824	0.0];
 
 
 VelocityBoundaryCondition_y =       [-1.95367961344194	-1.18494663299643	-1.18494663299643	-1.18494663299643	-1.18494663299643	-1.18494663299643	-1.18494663299643	0.0];
-AccelerationBoundaryCondition_y =   [-2.90067458258856	4.48604587496325	4.48604587496325	4.48604587496325	4.48604587496325	4.48604587496325	4.48604587496325	0.0];
+AccelerationBoundaryCondition_y =   [-1.90067458258856	1.48604587496325	1.48604587496325	1.48604587496325	1.48604587496325	1.48604587496325	1.48604587496325	0.0];
 
 VelocityBoundaryCondition_xyz_middle_XY = [VelocityBoundaryCondition_x; VelocityBoundaryCondition_y];
 AccelerationBoundaryCondition_xyz_middle_XY = [AccelerationBoundaryCondition_x; AccelerationBoundaryCondition_y];
@@ -51,38 +43,58 @@ AccelerationBoundaryCondition_xyz_middle_XY = [AccelerationBoundaryCondition_x; 
             % VelocityBoundaryCondition_y
             % AccelerationBoundaryCondition_x
             % AccelerationBoundaryCondition_y
-timeMax = 2.0;
-timeMin = 0.3;
-acc = 5;
-vel = 5;
+timeMax = 2.1;
+timeMin = 0.6;
+acc_x_TCP = 3.5;
+acc_y_TCP = 3.5;
 
-max_values = [timeMax timeMax timeMax timeMax timeMax timeMax timeMax timeMax;... 
+% acc_x_TCP = 4.5;
+% acc_y_TCP = 3.5;
+
+vel = 2.1;
+
+
+a = 0.00; 
+timeSteps = [1.04449308069551+a ...	    %1
+             1.00449308069551+a ...	    %2	
+             1.00449308069551+a ...	    %3
+             1.10449308069551+a ...	    %4
+             1.09449308069551+a ...	    %5
+             1.15449308069551+a ...	    %6
+             1.109449308069551+a ...    %7	
+             1.0049308069551+a];        %8
+
+max_values = [timeSteps(1) timeSteps(2) timeSteps(3) timeSteps(4) timeSteps(5) timeSteps(6) timeSteps(7) timeSteps(8);...  
               vel vel vel vel vel vel vel 0.0;... 
-              vel vel vel vel vel vel vel 0.0;...  
-              acc acc acc acc acc acc acc 0.0;... 
-              acc acc acc acc acc acc acc 0.0];
+              vel vel vel vel vel vel vel 0.0;...
+              acc_x_TCP acc_x_TCP acc_x_TCP acc_x_TCP acc_x_TCP acc_x_TCP acc_x_TCP 0.0;...
+              acc_y_TCP acc_y_TCP acc_y_TCP acc_y_TCP acc_y_TCP acc_y_TCP acc_y_TCP 0.0];
 
-min_values = [timeMin timeMin timeMin timeMin timeMin timeMin timeMin timeMin;... 
-              -vel -vel -vel -vel -vel -vel -vel 0.0;...
+min_values = [timeSteps(1) timeSteps(2) timeSteps(3) timeSteps(4) timeSteps(5) timeSteps(6) timeSteps(7) timeSteps(8);... 
               -vel -vel -vel -vel -vel -vel -vel 0.0;... 
-              -acc -acc -acc -acc -acc -acc -acc 0.0;...
-              -acc -acc -acc -acc -acc -acc -acc 0.0];
+              -vel -vel -vel -vel -vel -vel -vel 0.0;... 
+              -acc_x_TCP -acc_x_TCP -acc_x_TCP -acc_x_TCP -acc_x_TCP -acc_x_TCP -acc_x_TCP 0.0;...
+              -acc_y_TCP -acc_y_TCP -acc_y_TCP -acc_y_TCP -acc_y_TCP -acc_y_TCP -acc_y_TCP 0.0];
+
 
 %% ======== Simulation konfigurieren ======================================
-booleanFormTCP = 1;
+booleanFormTCP = 0;
     bool_skp_Optimirung_Kat = 1;
-    splineDiscretization = 40;
-    maxIterationsSplineTCP = 5;
+
+booleanSloshingKompensationTrans = 1;
+    
+    splineDiscretization = 160;
+    maxIterationsSplineTCP = 100;
     visualizeTCPPath = 1;
     saveEMI = 0;
     % Set up Boundarys für first Simulation
     jerkBoundaries = 0.5; % Für die Ruckänderung an den Mittelpunkten gilt +- dieser Wert als Max. bzw. Min.
-    optimalSplineDiscretization = 80;
+    optimalSplineDiscretization = 160;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%ZRot%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     offsetToBorder = 5; %Z.B 5
-    minIter = 120;%120
-    maxiter = 2000;%2000
+    minIter = 100;%120
+    maxiter = 160;%2000
     span_to_Smooth = 0.03;%0.025 %As value from 0 to 1  !!!!MAX 0.1 SONST FEHLERANFÄLLIG!!!!!
     stepsize = 10;%10
     widhtStuetzp = 5; % Grade Zahl z.B 4 oder 0
@@ -91,14 +103,14 @@ booleanFormTCP = 1;
 optiZ_Rot_Param = [offsetToBorder,minIter,maxiter,span_to_Smooth,stepsize,widhtStuetzp,grenzSchwap_Y];
 optiZ_Rot_Param2 = optiZ_Rot_Param;
     
-booleanManualPostProcessing = 1;
+booleanManualPostProcessing = 0;
 
 booleanTimeOpimizationTure = 0;
     maxIterations = 20;
     timeStepSize = 0.06; % nicht unter 0.05
 
-booleanSloshingKompensationTrans = 1;
-    numOfIterations = 0;
+%booleanSloshingKompensationTrans = 1;
+    numOfIterations =  70;
 
 booleanSloshingKompensationRot = 0;
 
@@ -138,9 +150,10 @@ if booleanFormTCP
             
         % Initiale Werte für die Optimierung setzen
         init_ax_values_YX = [timeSteps; VelocityBoundaryCondition_xyz_middle_XY; AccelerationBoundaryCondition_xyz_middle_XY];  
-
+        % save("Zwischenstand_Vor_ZOpti.mat")
         load("Zwischenstand_Vor_ZOpti.mat")
-    
+        [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, init_ax_values_YX, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries);
+        save("Zwischenstand_Vor_ZOpti.mat")
         % Visualisieren der TCP-Bahn u. Speichern der Ergebnisse im EMI Format
         [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, init_ax_values_YX, splineDiscretization, axesPointConfigs, min_values, max_values, jerkBoundaries);
         for t =1:1
@@ -174,7 +187,7 @@ if booleanFormTCP
         init_ax_values_Z = [x_xy(1,:); VelocityBoundaryCondition_xyz_middle_Z; AccelerationBoundaryCondition_xyz_middle_Z];   
     
         %load("Zwischenstand_Vor_ZOpti.mat")
-        [x_z, optiResuls] = splineOptimization_z(optimalSplineDiscretization, 10, splineDiscretization, axesPointConfigs, min_values_Z, max_values_Z, jerkBoundaries, init_ax_values_Z);
+        [x_z, optiResuls] = splineOptimization_z(optimalSplineDiscretization, 6, splineDiscretization, axesPointConfigs, min_values_Z, max_values_Z, jerkBoundaries, init_ax_values_Z);
     
         x_xyz(1,:) = x_xy(1,:);
         x_xyz(2,:) = x_xy(2,:);
@@ -203,6 +216,7 @@ if booleanFormTCP
     %Z-Rot optimierung    
     [eulerZYX,acc_XYZ] = generate_Z_Rot(x_xyz,axesPointConfigs,splineDiscretization,visualizeTCPPath,optiZ_Rot_Param2);
 
+    save("Zwischenstand_Vor_ZOpti.mat")
     load("Zwischenstand_Vor_ZOpti.mat")
     % Generieren aller Bais-Points
     [x] = backwardTransformationRoboDK(Position_xyz, timeLine, splineDiscretization, x_xyz, axesPointConfigs,eulerZYX);
@@ -258,6 +272,10 @@ end
 
 %% ======== Optimierung: Achse 6 ==========================================
 if booleanSloshingKompensationTrans
+            % Speichern der Ergebnisse in EMI Format
+        [Position_xyz, timeLine] = saveTCPPositionAsEMI(visualizeTCPPath, saveEMI, x_xyz, splineDiscretization, axesPointConfigs, min_values_Z, max_values_Z, jerkBoundaries);
+        save("Zwischenstand_Vor_ZOpti.mat")
+
         [x,fval,eflag,output] = optimisationTrowelOrientation(numOfIterations);
         
         example = matfile('SimResults.mat');
@@ -267,7 +285,9 @@ if booleanSloshingKompensationTrans
 
         x = optimized_translational_values_load;
     
-        save('SimResults.mat','x','-v7.3');
+        save('SimResults_A6.mat','x','-v7.3');
+        splineDiscretization = 60;
+        generierenEmily(optimized_translational_values_load, splineDiscretization);
 end    
 
 %% ======== CFD ===========================================================
