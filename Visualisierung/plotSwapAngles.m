@@ -21,5 +21,5 @@ title('Y Angle (Swap)')
 xlabel 'Timestep';
 ylabel 'YAngle'
 
-saveas(fig,'100Wasser0Gly.jpg' )
+saveas(fig,'SwapAngle.jpg' )
 end
