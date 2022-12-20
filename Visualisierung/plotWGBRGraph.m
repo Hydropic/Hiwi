@@ -29,7 +29,7 @@ for i = 1:sizeofArray
 end
 disp(timeintervals)
 
-%Using splineOptimal to derivate the changed graphs
+%Using splineOptimal to derive the changed graphs
 timeAxis = {};
 path = {};
 velocityAxis = {};
@@ -82,64 +82,187 @@ jerkAxis{end+1} = ruck;
 
 %Configure Figure and plot
 fig = figure(1);
-subplot(2,2,1)
-plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,1)))
+
+%%FIRST AXIS
+subplot(4,6,1)
+plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,1)),'Color','r')
+grid on
+title('Erste Achse')
+xlabel 'Zeit [s]';
+ylabel 'Strecke [mm]'
+
+subplot(4,6,7)
+
+plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,1)),'Color','b')
+grid on
 hold on
-plot(cell2mat(timeAxis(:,2)), cell2mat(path(:,2)))
-plot(cell2mat(timeAxis(:,3)), cell2mat(path(:,3)))
-plot(cell2mat(timeAxis(:,4)), cell2mat(path(:,4)))
-plot(cell2mat(timeAxis(:,5)), cell2mat(path(:,5)))
-plot(cell2mat(timeAxis(:,6)), cell2mat(path(:,6)))
+% line([0 3],[1.39 1.39],'Color','black');
+% line([0 3],[-1.39 -1.39],'Color','black');                     
 hold off
-legend( 'First Axis', 'Second Axis', 'Third Axis', 'Fourth Axis', 'Fifth Axis', 'Sixth Axis')
-title('Weg')
-xlabel 'Timestep';
-ylabel 'Angle'
+xlabel 'Zeit [s]';
+ylabel 'Geschwindigkeit [mm/s]'
 
-subplot(2,2,2)
+subplot(4,6,13)
 
-plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,1)))
+plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,1)),'Color','g')
+grid on
 hold on
-plot(cell2mat(timeAxis(:,2)), cell2mat(velocityAxis(:,2)))
-plot(cell2mat(timeAxis(:,3)), cell2mat(velocityAxis(:,3)))
-plot(cell2mat(timeAxis(:,4)), cell2mat(velocityAxis(:,4)))
-plot(cell2mat(timeAxis(:,5)), cell2mat(velocityAxis(:,5)))
-plot(cell2mat(timeAxis(:,6)), cell2mat(velocityAxis(:,6)))
+% line([0 3],[3.5 3.5],'Color','black');
+% line([0 3],[-3.5 -3.5],'Color','black');
 hold off
-legend( 'First Axis', 'Second Axis', 'Third Axis', 'Fourth Axis', 'Fifth Axis', 'Sixth Axis')
-title('Velocity')
-xlabel 'Timestep';
-ylabel 'Geschwindigkeit'
+xlabel 'Zeit [s]';
+ylabel 'Beschleuinigung [mm/s²]'
 
-subplot(2,2,3)
+subplot(4,6,19)
+plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,1)),'Color','k')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Ruck'
 
-plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,1)))
-hold on
-plot(cell2mat(timeAxis(:,2)), cell2mat(accelerationAxis(:,2)))
-plot(cell2mat(timeAxis(:,3)), cell2mat(accelerationAxis(:,3)))
-plot(cell2mat(timeAxis(:,4)), cell2mat(accelerationAxis(:,4)))
-plot(cell2mat(timeAxis(:,5)), cell2mat(accelerationAxis(:,5)))
-plot(cell2mat(timeAxis(:,6)), cell2mat(accelerationAxis(:,6)))
-hold off
-legend( 'First Axis', 'Second Axis', 'Third Axis', 'Fourth Axis', 'Fifth Axis', 'Sixth Axis')
-title('Acceleration')
-xlabel 'Timestep';
-ylabel 'Beschleuinigung'
+%%SECOND AXIS
 
-subplot(2,2,4)
+subplot(4,6,2)
+plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,2)),'Color','r')
+grid on
+title('Zweite Achse')
+xlabel 'Zeit [s]';
+ylabel 'Strecke [mm]'
 
-plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,1)))
-hold on
-plot(cell2mat(timeAxis(:,2)), cell2mat(jerkAxis(:,2)))
-plot(cell2mat(timeAxis(:,3)), cell2mat(jerkAxis(:,3)))
-plot(cell2mat(timeAxis(:,4)), cell2mat(jerkAxis(:,4)))
-plot(cell2mat(timeAxis(:,5)), cell2mat(jerkAxis(:,5)))
-plot(cell2mat(timeAxis(:,6)), cell2mat(jerkAxis(:,6)))
-hold off
-legend( 'First Axis', 'Second Axis', 'Third Axis', 'Fourth Axis', 'Fifth Axis', 'Sixth Axis')
-title('Acceleration')
-xlabel 'Timestep';
-ylabel 'Beschleuinigung'
+subplot(4,6,8)
+
+plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,2)),'Color','b')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Geschwindigkeit [mm/s]'
+
+subplot(4,6,14)
+
+plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,2)),'Color','g')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Beschleuinigung [mm/s²]'
+
+subplot(4,6,20)
+plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,2)),'Color','k')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Ruck'
+
+%%THIRD AXIS
+
+subplot(4,6,3)
+plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,3)),'Color','r')
+grid on
+title('Dritte Achse')
+xlabel 'Zeit [s]';
+ylabel 'Strecke [mm]'
+
+subplot(4,6,9)
+
+plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,3)),'Color','b')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Geschwindigkeit [mm/s]'
+
+subplot(4,6,15)
+
+plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,3)),'Color','g')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Beschleuinigung [mm/s²]'
+
+subplot(4,6,21)
+plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,3)),'Color','k')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Ruck'
+
+%%FOURTH AXIS
+
+subplot(4,6,4)
+plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,4)),'Color','r')
+grid on
+title('Vierte Achse')
+xlabel 'Zeit [s]';
+ylabel 'Strecke [mm]'
+
+subplot(4,6,10)
+
+plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,4)),'Color','b')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Geschwindigkeit [mm/s]'
+
+subplot(4,6,16)
+
+plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,4)),'Color','g')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Beschleuinigung [mm/s²]'
+
+subplot(4,6,22)
+plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,4)),'Color','k')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Ruck'
+
+%%FIFTH AXIS
+
+subplot(4,6,5)
+plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,5)),'Color','r')
+grid on
+title('Fünfte Achse')
+xlabel 'Zeit [s]';
+ylabel 'Strecke [mm]'
+
+subplot(4,6,11)
+
+plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,5)),'Color','b')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Geschwindigkeit [mm/s]'
+
+subplot(4,6,17)
+
+plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,5)),'Color','g')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Beschleuinigung [mm/s²]'
+
+subplot(4,6,23)
+plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,5)),'Color','k')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Ruck'
+
+%%SIXTH AXIS
+
+subplot(4,6,6)
+plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,6)),'Color','r')
+grid on
+title('Sechste Achse')
+xlabel 'Zeit [s]';
+ylabel 'Strecke [mm]'
+
+subplot(4,6,12)
+
+plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,6)),'Color','b')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Geschwindigkeit [mm/s]'
+
+subplot(4,6,18)
+
+plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,6)),'Color','g')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Beschleuinigung [mm/s²]'
+
+subplot(4,6,24)
+plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,6)),'Color','k')
+grid on
+xlabel 'Zeit [s]';
+ylabel 'Ruck'
 
 
 end
