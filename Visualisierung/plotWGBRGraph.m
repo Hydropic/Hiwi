@@ -402,7 +402,7 @@ xticks(0:1:timeEnd(end))
 ylim([YMinLimJerk YMaxLimJerk])
 ylabel('Ruck', 'FontSize', 10)
 
-
+fig.WindowState = 'maximized';
 
 saveas(fig,'WGBRGraph','svg')
 
