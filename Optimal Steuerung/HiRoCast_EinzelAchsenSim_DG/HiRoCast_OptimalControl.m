@@ -59,8 +59,8 @@ min_values = [timeMin timeMin timeMin;...
               -vel -vel 0.0];
 
 %% ======== Simulation konfigurieren ======================================
-booleanFormTCP = 0;
-    bool_skp_Optimirung_Kat = 1;
+booleanFormTCP = 1;
+    bool_skp_Optimirung_Kat = 0;
     splineDiscretization = 40;
     maxIterationsSplineTCP = 70;
     visualizeTCPPath = 1;
@@ -92,7 +92,7 @@ booleanSloshingKompensationTrans = 0;
 
 booleanSloshingKompensationRot = 0;
 
-booleanVisualisation = 1;
+booleanVisualisation = 0;
 
 
 
