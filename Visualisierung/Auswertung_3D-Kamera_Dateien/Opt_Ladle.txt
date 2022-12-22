@@ -1,0 +1,4 @@
+V1;LadleSTL\;Ladle_2_inside.stl;0;0;0;90;-135;0
+CompleteLadle;LadleSTL\;Ladle_2.stl;0;0;0;90;-135;0
+Test_Roboforming;LadleSTL\;tp35.STL;0;0;0;0;0;0
+Neue_Kelle;LadleSTL\;Kelle_Neu_99_Skaliert.stl;-16.5;-0.6835;-71.6234;0;0;0
