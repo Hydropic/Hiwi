@@ -1,4 +1,4 @@
-function [fig] = plotSwapAngles(emiFile)
+function [fig] = plotSwapAngles(emiFile, compressBolean)
 
 %% PLOT ANGLES
 
@@ -23,7 +23,13 @@ end
 fig = figure(1);
 subplot(2,1,1)
 [spline, velocity, acceleration, ruck , time] =  splineOptimal(data(:,7),timeintervals,false);
-plot(time, spline)
+%Compress angle values if necessary
+if compressBolean == 0
+    plot(time, spline)
+else
+    [valuesOfAngles] = compressAngleValues(spline, 10);
+    plot(time, valuesOfAngles)
+end
 grid on
 xlim([0 timeData(end)])
 xticks(0:1:timeData(end)+1)
@@ -33,7 +39,13 @@ ylabel 'X Winkel [°]'
 
 subplot(2,1,2)
 [spline2, velocity, acceleration, ruck , time2] =  splineOptimal(data(:,8),timeintervals,false);
-plot(time2, spline2)
+%Compress angle values if necessary
+if compressBolean == 0
+    plot(time, spline2)
+else
+    [valuesOfAngles] = compressAngleValues(spline2, 10);
+    plot(time, valuesOfAngles)
+end
 grid on
 xlim([0 timeData(end)])
 xticks(0:1:timeData(end)+1)

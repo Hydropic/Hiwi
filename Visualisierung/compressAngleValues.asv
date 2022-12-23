@@ -1,0 +1,14 @@
+function [valuesOfAngles] = compressAngleValues(anglesArray)
+    factor = 1;
+    anglesArrayCopy = anglesArray;
+    anglesArrayCopy = anglesArrayCopy * factor
+    while (max(anglesArrayCopy) > 10 && min(anglesArrayCopy) < -10)
+        anglesArrayCopy = anglesArray;
+        factor = factor - 0.01;
+        anglesArrayCopy = anglesArrayCopy * factor;
+    end
+    maxValue = max(anglesArrayCopy);
+    minValue = min(anglesArrayCopy);
+    valuesOfAngles = anglesArrayCopy;
+    
+end
