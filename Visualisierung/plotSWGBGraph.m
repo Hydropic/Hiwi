@@ -48,8 +48,10 @@ plot(time, splineZ)
 hold off
 grid on
 xticks(0:1:time(end))
+xlim([0 timeData(end)])
 title('Strecke')
-legend('X-Kor','Y-Kor','Z-Kor')
+lgd = legend('X-Kor','Y-Kor','Z-Kor','Location','best');
+lgd.FontSize = 7;
 xlabel 'Zeit [s]';
 ylabel 'Strecke[mm]'
 
@@ -61,8 +63,10 @@ plot(time, velocityZ)
 hold off
 grid on
 xticks(0:1:time(end))
+xlim([0 timeData(end)])
 title('Geschwindigkeit')
-legend('X-Kor','Y-Kor','Z-Kor')
+lgd2 = legend('X-Kor','Y-Kor','Z-Kor','Location','best');
+lgd2.FontSize = 7;
 xlabel 'Zeit [s]';
 ylabel 'Geschwindigkeit[mm/s]'
 
@@ -74,8 +78,10 @@ plot(time, accelerationZ)
 hold off
 grid on
 xticks(0:1:time(end))
+xlim([0 timeData(end)])
 title('Beschleuinigung')
-legend('X-Kor','Y-Kor','Z-Kor')
+lgd3 = legend('X-Kor','Y-Kor','Z-Kor','Location','best');
+lgd3.FontSize = 7;
 xlabel 'Zeit [s]';
 ylabel 'Beschleuinigung[mm/s²]'
 
@@ -86,8 +92,10 @@ plot(time2, spline2)
 hold off
 grid on
 xticks(0:1:time(end))
+xlim([0 timeData(end)])
 title('Schwappwinkel')
-legend('X-Rot','Y-Rot')
+lgd4 = legend('X-Rot','Y-Rot','Location','best');
+lgd4.FontSize = 7;
 xlabel 'Zeit [s]';
 ylabel 'Winkel [°]'
 

@@ -106,6 +106,7 @@ for i = 1:6
     end
     
 end
+%Calculating the distance of the X Axis for scaling
 maxDistance = ceil(maxDistance/100)*100;
 YMaxLimPaths = [];
 YMinLimPaths = [];
@@ -118,8 +119,6 @@ for i = 1:6
     YMaxLimPaths(end+1) = YMaxLimPathAxis;
     YMinLimPaths(end+1) = YMinLimPathAxis;
 end
-YMaxLimPath = 300;
-YMinLimPath = -300;
 
 %Velocity
 maxVelocity = -10000;

@@ -10,6 +10,7 @@ data = dlmread(emiFile,'',whichline);
 
 timeData = data(:,1)
 
+
 %Calculate distance between timeintervals
 timeintervals = zeros(1,size(timeData,1) - 1);
 sizeofArray = length(timeData) - 1;
@@ -23,16 +24,22 @@ fig = figure(1);
 subplot(2,1,1)
 [spline, velocity, acceleration, ruck , time] =  splineOptimal(data(:,7),timeintervals,false);
 plot(time, spline)
+grid on
+xlim([0 timeData(end)])
+xticks(0:1:timeData(end)+1)
 title('X Angle (Swap)')
-xlabel 'Timestep';
-ylabel 'XAngle'
+xlabel 'Zeit [s]';
+ylabel 'X Winkel [°]'
 
 subplot(2,1,2)
 [spline2, velocity, acceleration, ruck , time2] =  splineOptimal(data(:,8),timeintervals,false);
 plot(time2, spline2)
+grid on
+xlim([0 timeData(end)])
+xticks(0:1:timeData(end)+1)
 title('Y Angle (Swap)')
-xlabel 'Timestep';
-ylabel 'YAngle'
+xlabel 'Zeit [s]';
+ylabel 'Y Winkel [°]'
 
 saveas(fig,'SwapAngle.jpg' )
 end
