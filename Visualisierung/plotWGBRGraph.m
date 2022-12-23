@@ -1,7 +1,7 @@
 function [fig] = plotWGBRGraph(EMIFile)
 
 %%PLOTTE Weg, Geschwindigkeit, Beschleuinigung und Ruck der sechs Achsen
-EMIFile = "Data/Emily_Complex_C_gekuerzt.EMI";
+EMIFile = "Data/Emily_Complex_A_gekuerzt.EMI";
 
 %READ FILES
 lineOfEmi = regexp(fileread(EMIFile),'\n','split');
@@ -18,6 +18,10 @@ max_acceleration = [200,200,200,200,200,200];
 min_acceleration = [-200,-200,-200,-200,-200,-200];
 max_jerk = [2000, 2000, 2000, 2000, 2000,2000];
 min_jerk = [-2000,-2000,-2000,-2000,-2000,-2000];
+
+%SET height and width of Resolution
+height_of_Resolution = 1080; %Max is dependent on your screen size (For me it is 1080)
+width_of_Resolution = 1920; %Max is dependent on your screen size (For me it is 1920)
 
 %Put each axis in its own array
 timeData = data(:,1);
@@ -92,22 +96,30 @@ timeEnd = timeAxis{1,1};
 %%Calculate Xlim and Ylim for all the graphs
 
 %Path
-maxPath = -10000;
-minPath = 10000;
+maxDistance = 0;
 for i = 1:6
     [maxLimit] = max(path{i},[],2)
     [minLimit] = min(path{i},[],2)
-
-    if maxLimit > maxPath
-        maxPath = maxLimit
+    
+    if (maxLimit - minLimit) > maxDistance
+        maxDistance = maxLimit - minLimit;
     end
-
-    if minLimit < minPath
-        minPath = minLimit
-    end
+    
 end
-YMaxLimPath = maxPath;
-YMinLimPath = minPath;
+maxDistance = ceil(maxDistance/100)*100;
+YMaxLimPaths = [];
+YMinLimPaths = [];
+for i = 1:6
+    Distance_to_be_added = (maxDistance - (max(path{i},[],2) - min(path{i},[],2)))/2;
+    [maxLimit] = max(path{i},[],2)
+    [minLimit] = min(path{i},[],2)
+    YMaxLimPathAxis = maxLimit + Distance_to_be_added;
+    YMinLimPathAxis = minLimit - Distance_to_be_added;
+    YMaxLimPaths(end+1) = YMaxLimPathAxis;
+    YMinLimPaths(end+1) = YMinLimPathAxis;
+end
+YMaxLimPath = 300;
+YMinLimPath = -300;
 
 %Velocity
 maxVelocity = -10000;
@@ -171,10 +183,11 @@ fig = figure(1);
 subplot(4,6,1)
 plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,1)),'Color','r')
 grid on
-ylim([YMinLimPath YMaxLimPath])
-xticks(0:1:timeEnd(end))
-title('1.Achse', 'FontSize', 10)
-ylabel('Strecke [mm]', 'FontSize', 10)
+ylim([YMinLimPaths(1) YMaxLimPaths(1)])
+xlim([0 timeEnd(end)])
+xticks(0:1:timeEnd(end)+1)
+title('Achse 1', 'FontSize', 10)
+ylabel('Winkel [°]', 'FontSize', 10)
 
 subplot(4,6,7)
 plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,1)),'Color','b')
@@ -185,6 +198,7 @@ line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
 hold off
 xticks(0:1:timeEnd(end))
 ylim([YMinLimVelocity YMaxLimVelocity])
+xlim([0 timeEnd(end)])
 ylabel('Geschwindigkeit [mm/s]', 'FontSize', 10)
 
 subplot(4,6,13)
@@ -197,6 +211,7 @@ line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black')
 hold off
 xticks(0:1:timeEnd(end))
 ylim([YMinLimAcceleration YMaxLimAcceleration])
+xlim([0 timeEnd(end)])
 ylabel('Beschleuinigung [mm/s²]', 'FontSize', 10)
 
 subplot(4,6,19)
@@ -206,17 +221,19 @@ line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black');
 grid on
 xticks(0:1:timeEnd(end))
 ylim([YMinLimJerk YMaxLimJerk])
-ylabel('Ruck', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+ylabel('Ruck [mm/s³]', 'FontSize', 10)
+xlabel('Zeit [s]', 'FontSize', 10)
 
 %%SECOND AXIS
 
 subplot(4,6,2)
 plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,2)),'Color','r')
 grid on
-ylim([YMinLimPath YMaxLimPath])
+ylim([YMinLimPaths(2) YMaxLimPaths(2)])
+xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
-title('2.Achse', 'FontSize', 10)
-ylabel('Strecke [mm]', 'FontSize', 10)
+title('Achse 2', 'FontSize', 10)
 
 subplot(4,6,8)
 
@@ -226,7 +243,8 @@ line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
 line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimVelocity YMaxLimVelocity])
-ylabel('Geschwindigkeit [mm/s]', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
 
 subplot(4,6,14)
 
@@ -236,7 +254,8 @@ line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black')
 line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimAcceleration YMaxLimAcceleration])
-ylabel('Beschleuinigung [mm/s²]', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
 
 subplot(4,6,20)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,2)),'Color','k')
@@ -245,17 +264,20 @@ line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
 line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimJerk YMaxLimJerk])
-ylabel('Ruck', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
+
 
 %%THIRD AXIS
 
 subplot(4,6,3)
 plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,3)),'Color','r')
 grid on
-ylim([YMinLimPath YMaxLimPath])
+ylim([YMinLimPaths(3) YMaxLimPaths(3)])
+xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
-title('3.Achse', 'FontSize', 10)
-ylabel('Strecke [mm]', 'FontSize', 10)
+title('Achse 3', 'FontSize', 10)
+
 
 subplot(4,6,9)
 
@@ -265,7 +287,8 @@ line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
 line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimVelocity YMaxLimVelocity])
-ylabel('Geschwindigkeit [mm/s]', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
 
 subplot(4,6,15)
 
@@ -275,7 +298,8 @@ line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black')
 line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimAcceleration YMaxLimAcceleration])
-ylabel('Beschleuinigung [mm/s²]', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
 
 subplot(4,6,21)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,3)),'Color','k')
@@ -284,17 +308,19 @@ line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
 line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black'); 
 xticks(0:1:timeEnd(end))
 ylim([YMinLimJerk YMaxLimJerk])
-ylabel('Ruck', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
+
 
 %%FOURTH AXIS
 
 subplot(4,6,4)
 plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,4)),'Color','r')
 grid on
-ylim([YMinLimPath YMaxLimPath])
+ylim([YMinLimPaths(4) YMaxLimPaths(4)])
+xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
-title('4.Achse', 'FontSize', 10)
-ylabel('Strecke [mm]', 'FontSize', 10)
+title('Achse 4', 'FontSize', 10)
 
 subplot(4,6,10)
 
@@ -304,7 +330,8 @@ line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
 line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimVelocity YMaxLimVelocity])
-ylabel('Geschwindigkeit [mm/s]', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
 
 subplot(4,6,16)
 
@@ -314,7 +341,8 @@ line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black')
 line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimAcceleration YMaxLimAcceleration])
-ylabel('Beschleuinigung [mm/s²]', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
 
 subplot(4,6,22)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,4)),'Color','k')
@@ -323,17 +351,20 @@ line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
 line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimJerk YMaxLimJerk])
-ylabel('Ruck', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
+
 
 %%FIFTH AXIS
 
 subplot(4,6,5)
 plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,5)),'Color','r')
 grid on
-ylim([YMinLimPath YMaxLimPath])
+ylim([YMinLimPaths(5) YMaxLimPaths(5)])
+xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
-title('5.Achse', 'FontSize', 10)
-ylabel('Strecke [mm]', 'FontSize', 10)
+title('Achse 5', 'FontSize', 10)
+
 
 subplot(4,6,11)
 
@@ -343,7 +374,8 @@ line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
 line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimVelocity YMaxLimVelocity])
-ylabel('Geschwindigkeit [mm/s]', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
 
 subplot(4,6,17)
 
@@ -353,7 +385,8 @@ line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black')
 line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimAcceleration YMaxLimAcceleration])
-ylabel('Beschleuinigung [mm/s²]', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
 
 subplot(4,6,23)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,5)),'Color','k')
@@ -362,17 +395,20 @@ line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
 line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimJerk YMaxLimJerk])
-ylabel('Ruck', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
+
 
 %%SIXTH AXIS
 
 subplot(4,6,6)
 plot(cell2mat(timeAxis(:,1)), cell2mat(path(:,6)),'Color','r')
 grid on
-ylim([YMinLimPath YMaxLimPath])
+ylim([YMinLimPaths(6) YMaxLimPaths(6)])
+xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
-title('6.Achse', 'FontSize', 10)
-ylabel('Strecke [mm]', 'FontSize', 10)
+title('Achse 6', 'FontSize', 10)
+
 
 subplot(4,6,12)
 
@@ -382,7 +418,8 @@ line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
 line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimVelocity YMaxLimVelocity])
-ylabel('Geschwindigkeit [mm/s]', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
 
 subplot(4,6,18)
 
@@ -392,7 +429,8 @@ line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black')
 line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
 xticks(0:1:timeEnd(end))
 ylim([YMinLimAcceleration YMaxLimAcceleration])
-ylabel('Beschleuinigung [mm/s²]', 'FontSize', 10)
+xlim([0 timeEnd(end)])
+
 
 subplot(4,6,24)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,6)),'Color','k')
@@ -401,9 +439,12 @@ line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
 line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black'); 
 xticks(0:1:timeEnd(end))
 ylim([YMinLimJerk YMaxLimJerk])
-ylabel('Ruck', 'FontSize', 10)
+xlim([0 timeEnd(end)])
 
-fig.WindowState = 'maximized';
+
+
+% fig.WindowState = 'maximized';
+fig.Position = [0 0 width_of_Resolution height_of_Resolution];
 
 saveas(fig,'WGBRGraph','svg')
 

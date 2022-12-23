@@ -2,14 +2,14 @@ close all;
 clear all;
 
 %% Eingabe
-beschlIntervallGroesse = 0.025
+beschlIntervallGroesse = 0.2
 AnzahlIntervall = 30
-beschleunigungswert_X = 0.025 % m/s²
-beschleunigungswert_Y = 0 % m/s²
+beschleunigungswert_X = 0 % m/s²
+beschleunigungswert_Y = 1 % m/s²
 beschleunigungswert_Z = 0 % m/s²
 Zeitintervall = 1.6 % Sekunden
 Zeitschritte = 0.2 % Sekunden
-reverse = 0;
+reverse = 1;
 
 for steps = 1:AnzahlIntervall
     if beschleunigungswert_X == 0
@@ -40,18 +40,18 @@ for steps = 1:AnzahlIntervall
         end
     
     else
-        for t = length(ZeitAchse):-1:1
-            s_x(end+1) = 0.5*beschleunigungswert_X*ZeitAchse(t)^2
-            s_y(end+1) = 0.5*beschleunigungswert_Y*ZeitAchse(t)^2
-            s_z(end+1) = 0.5*beschleunigungswert_Z*ZeitAchse(t)^2
+        for t = 1:length(ZeitAchse)
+            s_x(end+1) = -0.5*beschleunigungswert_X*ZeitAchse(t)^2
+            s_y(end+1) = -0.5*beschleunigungswert_Y*ZeitAchse(t)^2
+            s_z(end+1) = -0.5*beschleunigungswert_Z*ZeitAchse(t)^2
         end
     end
     test = 0;
     
     %% Umorientierung
     orientation_X = 0;
-    orientation_Y = 0;
-    orientation_Z = 25;
+    orientation_Y = -25;
+    orientation_Z = 0;
     
     %% Speichern als EMI TCP
     Position_xyz = [s_x.', s_y.', s_z.'];
