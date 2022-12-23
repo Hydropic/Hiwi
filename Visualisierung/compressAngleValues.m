@@ -9,8 +9,6 @@ function [valuesOfAngles] = compressAngleValues(anglesArray, limit)
         factor = factor - 0.01;
         anglesArrayCopy = anglesArrayCopy * factor;
     end
-    maxValue = max(anglesArrayCopy);
-    minValue = min(anglesArrayCopy);
     valuesOfAngles = anglesArrayCopy;
     
 end
