@@ -111,9 +111,9 @@ maxDistance = ceil(maxDistance/100)*100;
 YMaxLimPaths = [];
 YMinLimPaths = [];
 for i = 1:6
-    Distance_to_be_added = (maxDistance - (max(path{i},[],2) - min(path{i},[],2)))/2;
     [maxLimit] = max(path{i},[],2)
     [minLimit] = min(path{i},[],2)
+    Distance_to_be_added = (maxDistance - (maxLimit - minLimit))/2;
     YMaxLimPathAxis = maxLimit + Distance_to_be_added;
     YMinLimPathAxis = minLimit - Distance_to_be_added;
     YMaxLimPaths(end+1) = YMaxLimPathAxis;
@@ -185,6 +185,7 @@ grid on
 ylim([YMinLimPaths(1) YMaxLimPaths(1)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end)+1)
+xtickangle(0)
 title('Achse 1', 'FontSize', 10)
 ylabel('Winkel [°]', 'FontSize', 10)
 
@@ -196,6 +197,7 @@ line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
 line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');                   
 hold off
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimVelocity YMaxLimVelocity])
 xlim([0 timeEnd(end)])
 ylabel('Geschwindigkeit [mm/s]', 'FontSize', 10)
@@ -209,6 +211,7 @@ line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black')
 line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');     
 hold off
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimAcceleration YMaxLimAcceleration])
 xlim([0 timeEnd(end)])
 ylabel('Beschleuinigung [mm/s²]', 'FontSize', 10)
@@ -219,6 +222,7 @@ line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
 line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black'); 
 grid on
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimJerk YMaxLimJerk])
 xlim([0 timeEnd(end)])
 ylabel('Ruck [mm/s³]', 'FontSize', 10)
@@ -232,6 +236,7 @@ grid on
 ylim([YMinLimPaths(2) YMaxLimPaths(2)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 title('Achse 2', 'FontSize', 10)
 
 subplot(4,6,8)
@@ -241,6 +246,7 @@ grid on
 line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
 line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimVelocity YMaxLimVelocity])
 xlim([0 timeEnd(end)])
 
@@ -252,6 +258,7 @@ grid on
 line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black');
 line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimAcceleration YMaxLimAcceleration])
 xlim([0 timeEnd(end)])
 
@@ -262,6 +269,7 @@ grid on
 line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
 line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimJerk YMaxLimJerk])
 xlim([0 timeEnd(end)])
 
@@ -275,6 +283,7 @@ grid on
 ylim([YMinLimPaths(3) YMaxLimPaths(3)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 title('Achse 3', 'FontSize', 10)
 
 
@@ -285,6 +294,7 @@ grid on
 line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
 line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimVelocity YMaxLimVelocity])
 xlim([0 timeEnd(end)])
 
@@ -296,6 +306,7 @@ grid on
 line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black');
 line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimAcceleration YMaxLimAcceleration])
 xlim([0 timeEnd(end)])
 
@@ -306,6 +317,7 @@ grid on
 line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
 line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black'); 
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimJerk YMaxLimJerk])
 xlim([0 timeEnd(end)])
 
@@ -319,6 +331,7 @@ grid on
 ylim([YMinLimPaths(4) YMaxLimPaths(4)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 title('Achse 4', 'FontSize', 10)
 
 subplot(4,6,10)
@@ -328,6 +341,7 @@ grid on
 line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
 line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimVelocity YMaxLimVelocity])
 xlim([0 timeEnd(end)])
 
@@ -339,6 +353,7 @@ grid on
 line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black');
 line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimAcceleration YMaxLimAcceleration])
 xlim([0 timeEnd(end)])
 
@@ -349,6 +364,7 @@ grid on
 line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
 line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimJerk YMaxLimJerk])
 xlim([0 timeEnd(end)])
 
@@ -362,6 +378,7 @@ grid on
 ylim([YMinLimPaths(5) YMaxLimPaths(5)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 title('Achse 5', 'FontSize', 10)
 
 
@@ -372,6 +389,7 @@ grid on
 line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
 line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimVelocity YMaxLimVelocity])
 xlim([0 timeEnd(end)])
 
@@ -383,6 +401,7 @@ grid on
 line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black');
 line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimAcceleration YMaxLimAcceleration])
 xlim([0 timeEnd(end)])
 
@@ -393,6 +412,7 @@ grid on
 line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
 line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimJerk YMaxLimJerk])
 xlim([0 timeEnd(end)])
 
@@ -406,6 +426,7 @@ grid on
 ylim([YMinLimPaths(6) YMaxLimPaths(6)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 title('Achse 6', 'FontSize', 10)
 
 
@@ -416,6 +437,7 @@ grid on
 line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
 line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimVelocity YMaxLimVelocity])
 xlim([0 timeEnd(end)])
 
@@ -427,6 +449,7 @@ grid on
 line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black');
 line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimAcceleration YMaxLimAcceleration])
 xlim([0 timeEnd(end)])
 
@@ -437,6 +460,7 @@ grid on
 line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
 line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black'); 
 xticks(0:1:timeEnd(end))
+xtickangle(0)
 ylim([YMinLimJerk YMaxLimJerk])
 xlim([0 timeEnd(end)])
 
