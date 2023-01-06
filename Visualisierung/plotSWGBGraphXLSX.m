@@ -1,4 +1,4 @@
-function [fig] = plotSWGBGraphXL(emiFile,excelFile)
+function [fig] = plotSWGBGraphXLSX(emiFile,excelFile)
 %% PLOT ANGLES
 
 %READ XYZ
