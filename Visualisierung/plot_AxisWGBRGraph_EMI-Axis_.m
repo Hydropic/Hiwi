@@ -1,7 +1,7 @@
 function [fig] = plotWGBRGraph(EMIFile)
 
 %%PLOTTE Weg, Geschwindigkeit, Beschleuinigung und Ruck der sechs Achsen
-EMIFile = "Data/Emily_Complex_A_gekuerzt.EMI";
+EMIFile = "Data/Emily1_Axis.txt";
 
 %READ FILES
 lineOfEmi = regexp(fileread(EMIFile),'\n','split');
@@ -16,8 +16,8 @@ max_velocity = [90,85,80,80,80,100];
 min_velocity = [-90,-85,-80,-80,-80,-100];
 max_acceleration = [200,200,200,200,200,200];
 min_acceleration = [-200,-200,-200,-200,-200,-200];
-max_jerk = [2000, 2000, 2000, 2000, 2000,2000];
-min_jerk = [-2000,-2000,-2000,-2000,-2000,-2000];
+max_jerk = [2000];
+min_jerk = [-2000];
 
 %SET height and width of Resolution
 height_of_Resolution = 1080; %Max is dependent on your screen size (For me it is 1080)
@@ -138,6 +138,12 @@ end
 YMaxLimVelocity = maxVelocity;
 YMinLimVelocity = minVelocity;
 
+    [maxVelocity] = max(max_velocity,[],2)
+    [minVelocity] = min(min_velocity,[],2)
+
+    YMaxLimVelocity = maxVelocity+10;
+    YMinLimVelocity = minVelocity-10;
+
 %Acceleration
 maxAcceleration = -10000;
 minAcceleration = 10000;
@@ -156,6 +162,12 @@ end
 YMaxLimAcceleration = maxAcceleration;
 YMinLimAcceleration = minAcceleration;
 
+    [maxAcceleration] = max(max_acceleration,[],2)
+    [minAcceleration] = min(min_acceleration,[],2)
+
+    YMaxLimAcceleration = maxAcceleration+20;
+    YMinLimAcceleration = minAcceleration-20;
+
 %Jerk
 maxJerk = -10000;
 minJerk = 10000;
@@ -173,6 +185,12 @@ for i = 1:6
 end
 YMaxLimJerk = maxJerk;
 YMinLimJerk = minJerk;
+
+    [maxJerk] = max(max_jerk,[],2)
+    [minJerk] = min(min_jerk,[],2)
+
+    YMaxLimJerk = maxJerk+200;
+    YMinLimJerk = minJerk-200;
 
 %Configure Figure and plot
 fig = figure(1);
@@ -469,6 +487,6 @@ xlim([0 timeEnd(end)])
 % fig.WindowState = 'maximized';
 fig.Position = [0 0 width_of_Resolution height_of_Resolution];
 
-saveas(fig,'WGBRGraph','svg')
+saveas(fig,'WGBRGraph','jpg')
 
 end
