@@ -1,7 +1,7 @@
 close all;
 clear all;
 
-dataXLSX = readcell('Data/KomplexeOptiBahnMessung.xlsx');
+dataXLSX = readcell('input/KomplexeOptiBahnMessung.xlsx');
 
 optimized_translational_values_sameDistances(:, 1) = dataXLSX(:,1);
 optimized_translational_values_sameDistances(:, 2) = dataXLSX(:,2);

@@ -7,10 +7,14 @@ AnzahlIntervall = 30
 beschleunigungswert_X = 0.025 % m/s²
 beschleunigungswert_Y = 0 % m/s²
 beschleunigungswert_Z = 0 % m/s²
-ZeitEnde = 4.4 % Sekunden
+ZeitEnde = 14.2 % Sekunden
 reverse = 0;
 
-EMIFile = "Data/Emily1_Axis.txt";
+
+wenigerFeinDiskretisieren = 1;
+jedeXbelassen = 20;
+
+EMIFile = "input/InputSOBGB_opti_DG_Emily_Axis.txt";
 
 NameFile = erase(EMIFile,"Data/");
 NameFile = erase(NameFile,".EMI");
@@ -49,9 +53,6 @@ for steps = 0:aa-1
              end
             
 end
-
-wenigerFeinDiskretisieren = 1;
-jedeXbelassen = 6;
 
 timeData_kurz = [];
 first_Axis_kurz = [];
@@ -143,7 +144,7 @@ end
     optimized_translational_values_sameDistances(:, 6) = fifth_Axis;
     optimized_translational_values_sameDistances(:, 7) = sixth_Axis;
     
-    example = readcell('Emily1_blanko.txt');
+    example = readcell('input/Emily1_blanko.txt');
     example(end+1,1) = {'[HEADER]'};
     example(end+1,1) = {'  GEAR_NOMINAL_VEL = 1.000000'};
     example(end+1,1) = {'  CRC = 4230818067'};

@@ -83,11 +83,7 @@ AccData_time(:) = AccData.zeit_kurz();
 AccData_time(:) = AccData.zeit_kurz(2);
 AccData_time(end) = [];
 
-AccDataz2(1,16) = 2.5;
-AccData_time(1,17) = 0.00001;
-AccDatax2(1,18) = 0;
-AccDatay2(1,18) = 0;
-AccDataz2(1,18) = 0;
+AccDataz2(1,16) = 3;
 
 [splineX1, velocityX1, accelerationX1, ruckX1 , time1] =  splineOptimal(AccDatax2,AccData_time,false);
 [splineY1, velocityY1, accelerationY1, ruckY1 , timeY1] =  splineOptimal(AccDatay2,AccData_time,false);

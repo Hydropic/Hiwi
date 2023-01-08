@@ -2,15 +2,18 @@ close all;
 clear all;
 
 %% Eingabe
+EMIFile = "input/InputSOBGB_opti_DG_Emily_TCP.txt";
+wenigerFeinDiskretisieren = 1;
+jedeXbelassen = 4;
+
+
 beschlIntervallGroesse = 0.025
 AnzahlIntervall = 30
 beschleunigungswert_X = 0.025 % m/s²
 beschleunigungswert_Y = 0 % m/s²
 beschleunigungswert_Z = 0 % m/s²
-ZeitEnde = 14.2 % Sekunden
+ZeitEnde = 2.4143 % Sekunden
 reverse = 0;
-
-EMIFile = "Data/Emily_Complex_C_gekuerzt.EMI";
 
 NameFile = erase(EMIFile,"Data/");
 NameFile = erase(NameFile,".EMI");
@@ -49,6 +52,79 @@ for steps = 0:aa-1
              end
             
 end
+
+timeData_kurz = [];
+first_Axis_kurz = [];
+second_Axis_kurz = [];
+third_Axis_kurz = [];
+fourth_Axis_kurz = [];
+fifth_Axis_kurz = [];
+sixth_Axis_kurz = [];
+
+%% Anzahl an Intervallen Kürzen
+if wenigerFeinDiskretisieren
+    kuerzereListe = [];
+    [aa, bb] = size(timeData);
+
+    for z = 1:jedeXbelassen:aa
+        timeData_kurz(end+1) = timeData(z)
+        first_Axis_kurz(end+1,:) = first_Axis(z)
+        second_Axis_kurz(end+1,:) = second_Axis(z)
+        third_Axis_kurz(end+1,:) = third_Axis(z)
+        fourth_Axis_kurz(end+1,:) = fourth_Axis(z)
+        fifth_Axis_kurz(end+1,:) = fifth_Axis(z)
+        sixth_Axis_kurz(end+1,:) = sixth_Axis(z)
+    end
+
+    if aa > z
+        timeData_kurz(end+1) = timeData(aa)
+        first_Axis_kurz(end+1) = first_Axis(aa)
+        second_Axis_kurz(end+1) = second_Axis(aa)
+        third_Axis_kurz(end+1) = third_Axis(aa)
+        fourth_Axis_kurz(end+1) = fourth_Axis(aa)
+        fifth_Axis_kurz(end+1) = fifth_Axis(aa)
+        sixth_Axis_kurz(end+1) = sixth_Axis(aa)
+    end
+
+    [aa, bb] = size(timeData_kurz);
+
+
+    summeAlleZeilen = sum(timeData,1);
+    zeiintervalle = summeAlleZeilen(:,1)/(aa-1);
+
+    for z = 1:aa
+        timeData_kurz(z,1) = zeiintervalle
+    end
+    
+
+    timeData = timeData_kurz;
+    first_Axis = first_Axis_kurz;
+    second_Axis = second_Axis_kurz;
+    third_Axis = third_Axis_kurz;
+    fourth_Axis = fourth_Axis_kurz;
+    fifth_Axis = fifth_Axis_kurz;
+    sixth_Axis = sixth_Axis_kurz;
+
+
+    [aa, bb] = size(timeData);
+
+    zeitstep = [];
+
+    for steps = 0:bb-1
+        s_x = [];
+        s_y = [];
+        s_z = [];
+    
+                %% Zeit Einstellen
+                 if steps == 0
+                     zeitstep(1) = 0
+                 else
+                     zeitstep(end+1) = ZeitEnde*(steps/(bb-1))
+                 end
+                
+    end
+end
+
     %% Umorientierung
     orientation_X = 0;
     orientation_Y = 0;
@@ -65,7 +141,7 @@ end
     optimized_translational_values_sameDistances(:, 6) = -90 + orientation_Y;
     optimized_translational_values_sameDistances(:, 7) = +0 + orientation_Z;
     
-    example = readcell('Emily1_blanko.txt');
+    example = readcell('input/Emily1_blanko.txt');
     example(end+1,1) = {'[HEADER]'};
     example(end+1,1) = {'  GEAR_NOMINAL_VEL = 1.000000'};
     example(end+1,1) = {'  SAMPLING_MODE = CARTESIAN'};

@@ -17,7 +17,7 @@ function [spline,geschwindigkeit,beschleunigung,ruck,time,passendeStelle] = spli
     if nargin  == 4
         Schritte = varargin{1};
     elseif nargin == 3  
-        Schritte = 100;%1000
+        Schritte = 1000;%1000
     end
     Schrittgroesse = 1/Schritte;
     

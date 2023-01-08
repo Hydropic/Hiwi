@@ -1,7 +1,7 @@
 function [fig] = plotWGBRGraph(EMIFile)
 
 %%PLOTTE Weg, Geschwindigkeit, Beschleuinigung und Ruck der sechs Achsen
-EMIFile = "Data/Emily1_Axis.txt";
+EMIFile = "input/Emily1_Axis.txt";
 
 %READ FILES
 lineOfEmi = regexp(fileread(EMIFile),'\n','split');
