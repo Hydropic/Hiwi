@@ -1,7 +1,6 @@
 function [fig] = plotWGBRGraph(EMIFile)
-
 %%PLOTTE Weg, Geschwindigkeit, Beschleuinigung und Ruck der sechs Achsen
-EMIFile = "C:\Users\Ayman\Desktop\Neuer Ordner (8)\Gemisch\Hiwi\Visualisierung\input\Alt\Emily_Complex_A_gekuerzt.EMI";
+EMIFile = "input/Emily1_Axis.txt";
 
 %READ FILES
 lineOfEmi = regexp(fileread(EMIFile),'\n','split');
@@ -206,7 +205,17 @@ xlim([0 timeEnd(end)])
 xticks(0:0.5:timeEnd(end)+1)
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -226,7 +235,17 @@ hold off
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -248,7 +267,17 @@ hold off
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -267,7 +296,17 @@ grid on
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -288,7 +327,17 @@ xlim([0 timeEnd(end)])
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -306,7 +355,17 @@ line([0 timeEnd(end)],[min_velocity(2) min_velocity(2)],'Color', colorX, 'LineSt
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -326,7 +385,17 @@ line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color', colorY,
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -340,12 +409,22 @@ set(gca, 'XMinorGrid','on', 'YMinorGrid','on')
 subplot(4,6,20)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,2)),'Color', colorZ)
 grid on
-line([0 timeEnd(end)],[max_jerk(2) max_jerk(2)],'Color', colorZ, 'LineStyle', '--');
-line([0 timeEnd(end)],[min_jerk(2) min_jerk(2)],'Color', colorZ, 'LineStyle', '--');
+line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color', colorZ, 'LineStyle', '--');
+line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color', colorZ, 'LineStyle', '--');
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -366,7 +445,17 @@ xlim([0 timeEnd(end)])
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -385,7 +474,17 @@ line([0 timeEnd(end)],[min_velocity(3) min_velocity(3)],'Color', colorX, 'LineSt
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -405,7 +504,17 @@ line([0 timeEnd(end)],[min_acceleration(3) min_acceleration(3)],'Color', colorY,
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -419,12 +528,22 @@ set(gca, 'XMinorGrid','on', 'YMinorGrid','on')
 subplot(4,6,21)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,3)),'Color', colorZ)
 grid on
-line([0 timeEnd(end)],[max_jerk(3) max_jerk(3)],'Color', colorZ, 'LineStyle', '--');
-line([0 timeEnd(end)],[min_jerk(3) min_jerk(3)],'Color', colorZ, 'LineStyle', '--'); 
+line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color', colorZ, 'LineStyle', '--');
+line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color', colorZ, 'LineStyle', '--'); 
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -446,7 +565,17 @@ xlim([0 timeEnd(end)])
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -464,7 +593,17 @@ line([0 timeEnd(end)],[min_velocity(4) min_velocity(4)],'Color', colorX, 'LineSt
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -484,7 +623,17 @@ line([0 timeEnd(end)],[min_acceleration(4) min_acceleration(4)],'Color', colorY,
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -498,12 +647,22 @@ set(gca, 'XMinorGrid','on', 'YMinorGrid','on')
 subplot(4,6,22)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,4)),'Color', colorZ)
 grid on
-line([0 timeEnd(end)],[max_jerk(4) max_jerk(4)],'Color', colorZ, 'LineStyle', '--');
-line([0 timeEnd(end)],[min_jerk(4) min_jerk(4)],'Color', colorZ, 'LineStyle', '--');
+line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color', colorZ, 'LineStyle', '--');
+line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color', colorZ, 'LineStyle', '--');
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -524,12 +683,22 @@ xlim([0 timeEnd(end)])
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-xlabel('Zeit [s]', 'FontSize', 10)
+xlabel('Zeit [s]', 'FontSize', FontsizeLabels)
 title('Achse 5', 'FontSize', FontsizeLabels)
 set(gca, 'XMinorGrid','on', 'YMinorGrid','on')
 
@@ -543,7 +712,17 @@ line([0 timeEnd(end)],[min_velocity(5) min_velocity(5)],'Color', colorX, 'LineSt
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -563,7 +742,17 @@ line([0 timeEnd(end)],[min_acceleration(5) min_acceleration(5)],'Color', colorY,
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -577,12 +766,22 @@ set(gca, 'XMinorGrid','on', 'YMinorGrid','on')
 subplot(4,6,23)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,5)),'Color', colorZ)
 grid on
-line([0 timeEnd(end)],[max_jerk(5) max_jerk(5)],'Color', colorZ, 'LineStyle', '--');
-line([0 timeEnd(end)],[min_jerk(5) min_jerk(5)],'Color', colorZ, 'LineStyle', '--');
+line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color', colorZ, 'LineStyle', '--');
+line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color', colorZ, 'LineStyle', '--');
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -604,7 +803,17 @@ xlim([0 timeEnd(end)])
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -623,7 +832,17 @@ line([0 timeEnd(end)],[min_velocity(6) min_velocity(6)],'Color', colorX, 'LineSt
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -643,7 +862,17 @@ line([0 timeEnd(end)],[min_acceleration(6) min_acceleration(6)],'Color', colorY,
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -657,12 +886,22 @@ set(gca, 'XMinorGrid','on', 'YMinorGrid','on')
 subplot(4,6,24)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,6)),'Color', colorZ)
 grid on
-line([0 timeEnd(end)],[max_jerk(6) max_jerk(6)],'Color', colorZ, 'LineStyle', '--');
-line([0 timeEnd(end)],[min_jerk(6) min_jerk(6)],'Color', colorZ, 'LineStyle', '--'); 
+line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color', colorZ, 'LineStyle', '--');
+line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color', colorZ, 'LineStyle', '--'); 
 xticks(0:0.5:timeEnd(end))
 ax = gca;
 labels = string(ax.XAxis.TickLabels);
-labels(2:2:end) = nan;
+deleteElements = 3;
+for i=2:length(labels)
+
+    if deleteElements > 0
+        labels(i) = nan;
+        deleteElements = deleteElements - 1;
+        continue
+    end
+    deleteElements = 3;
+
+end
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
