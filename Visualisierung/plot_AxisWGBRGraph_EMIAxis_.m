@@ -1,7 +1,7 @@
 function [fig] = plotWGBRGraph(EMIFile)
 
 %%PLOTTE Weg, Geschwindigkeit, Beschleuinigung und Ruck der sechs Achsen
-EMIFile = "input/Emily1_Axis.txt";
+EMIFile = "C:\Users\Ayman\Desktop\Neuer Ordner (8)\Gemisch\Hiwi\Visualisierung\input\Alt\Emily_Complex_A_gekuerzt.EMI";
 
 %READ FILES
 lineOfEmi = regexp(fileread(EMIFile),'\n','split');
@@ -10,6 +10,11 @@ endLine = find(contains(lineOfEmi,'[END]'));
 
 endLine = endLine - 2;
 data = dlmread(EMIFile,'',[startLine 0 endLine 6]);
+
+%Fontsizes for the text in the figure
+FontsizeXTicklabels = 12;
+FontsizeYTicklabels = 12;
+FontsizeLabels = 14;
 
 %SET LIMITS for Velocity, Acceleration....
 max_velocity = [90,85,80,80,80,100];
@@ -121,76 +126,62 @@ for i = 1:6
 end
 
 %Velocity
-maxVelocity = -10000;
-minVelocity = 10000;
+marginVelocity = 20;
+
+[maxVelocity] = max(max_velocity,[],2);
+[minVelocity] = min(min_velocity,[],2);
+
+YMaxLimVelocityAxises = maxVelocity+marginVelocity;
+YMinLimVelocityAxises = minVelocity-marginVelocity;
+YMaxLimitsVelocity = [];
+YMinLimitsVelocity = [];
+
 for i = 1:6
-    [maxLimit] = max(velocityAxis{i},[],2)
-    [minLimit] = min(velocityAxis{i},[],2)
-
-    if maxLimit > maxVelocity
-        maxVelocity = maxLimit
-    end
-
-    if minLimit < minVelocity
-        minVelocity = minLimit
-    end
+    distance = YMaxLimVelocityAxises - max_velocity(i);
+    distanceAdded = marginVelocity - distance;
+    YMaxLimitsVelocity(end+1) = YMaxLimVelocityAxises + distanceAdded;
+    YMinLimitsVelocity(end+1) = YMinLimVelocityAxises - distanceAdded;
 end
-YMaxLimVelocity = maxVelocity;
-YMinLimVelocity = minVelocity;
 
-    [maxVelocity] = max(max_velocity,[],2)
-    [minVelocity] = min(min_velocity,[],2)
 
-    YMaxLimVelocity = maxVelocity+10;
-    YMinLimVelocity = minVelocity-10;
 
 %Acceleration
-maxAcceleration = -10000;
-minAcceleration = 10000;
+
+marginAcceleration = 20;
+
+[maxAcceleration] = max(max_acceleration,[],2)
+[minAcceleration] = min(min_acceleration,[],2)
+
+YMaxLimAccelerationAxises = maxAcceleration+marginAcceleration;
+YMinLimAccelerationAxises = minAcceleration-marginAcceleration;
+YMaxLimitsAcceleration = [];
+YMinLimitsAcceleration = [];
+
 for i = 1:6
-    [maxLimit] = max(accelerationAxis{i},[],2)
-    [minLimit] = min(accelerationAxis{i},[],2)
-
-    if maxLimit > maxAcceleration
-        maxAcceleration = maxLimit
-    end
-
-    if minLimit < minAcceleration
-        minAcceleration = minLimit
-    end
+    distance = YMaxLimAccelerationAxises - max_acceleration(i);
+    distanceAdded = marginAcceleration - distance;
+    YMaxLimitsAcceleration(end+1) = YMaxLimAccelerationAxises + distanceAdded;
+    YMinLimitsAcceleration(end+1) = YMinLimAccelerationAxises - distanceAdded;
 end
-YMaxLimAcceleration = maxAcceleration;
-YMinLimAcceleration = minAcceleration;
-
-    [maxAcceleration] = max(max_acceleration,[],2)
-    [minAcceleration] = min(min_acceleration,[],2)
-
-    YMaxLimAcceleration = maxAcceleration+20;
-    YMinLimAcceleration = minAcceleration-20;
 
 %Jerk
-maxJerk = -10000;
-minJerk = 10000;
+
+marginJerk = 200;
+
+[maxJerk] = max(max_jerk,[],2);
+[minJerk] = min(min_jerk,[],2);
+
+YMaxLimJerkAxises = maxJerk+marginJerk;
+YMinLimJerkAxises = minJerk-marginJerk;
+YMaxLimitsJerk = [];
+YMinLimitsJerk = [];
+
 for i = 1:6
-    [maxLimit] = max(jerkAxis{i},[],2)
-    [minLimit] = min(jerkAxis{i},[],2)
-
-    if maxLimit > maxJerk
-        maxJerk = maxLimit
-    end
-
-    if minLimit < minJerk
-        minJerk = minLimit
-    end
+    distance = YMaxLimJerkAxises - max_jerk(1);
+    distanceAdded = marginJerk - distance;
+    YMaxLimitsJerk(end+1) = YMaxLimJerkAxises + distanceAdded;
+    YMinLimitsJerk(end+1) = YMinLimJerkAxises - distanceAdded;
 end
-YMaxLimJerk = maxJerk;
-YMinLimJerk = minJerk;
-
-    [maxJerk] = max(max_jerk,[],2)
-    [minJerk] = min(min_jerk,[],2)
-
-    YMaxLimJerk = maxJerk+200;
-    YMinLimJerk = minJerk-200;
 
 %Configure Figure and plot
 fig = figure(1);
@@ -203,48 +194,72 @@ grid on
 ylim([YMinLimPaths(1) YMaxLimPaths(1)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end)+1)
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-title('Achse 1', 'FontSize', 10)
-ylabel('Winkel [°]', 'FontSize', 10)
+title('Achse 1', 'FontSize', FontsizeLabels)
+ylabel('Winkel [°]', 'FontSize', FontsizeLabels)
 
 subplot(4,6,7)
 plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,1)),'Color','b')
 grid on
 hold on
-line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
-line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');                   
+line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','red','LineStyle','--');                   
 hold off
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimVelocity YMaxLimVelocity])
+ylim([YMinLimitsVelocity(1) YMaxLimitsVelocity(1)])
 xlim([0 timeEnd(end)])
-ylabel('Geschwindigkeit [mm/s]', 'FontSize', 10)
+ylabel('Geschwindigkeit [mm/s]', 'FontSize', FontsizeLabels)
 
 subplot(4,6,13)
 
 plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,1)),'Color','g')
 grid on
 hold on
-line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black');
-line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');     
+line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','red','LineStyle','--');     
 hold off
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimAcceleration YMaxLimAcceleration])
+ylim([YMinLimitsAcceleration(1) YMaxLimitsAcceleration(1)])
 xlim([0 timeEnd(end)])
-ylabel('Beschleuinigung [mm/s²]', 'FontSize', 10)
+ylabel('Beschleuinigung [mm/s²]', 'FontSize', FontsizeLabels)
 
 subplot(4,6,19)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,1)),'Color','k')
-line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
-line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black'); 
+line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','red','LineStyle','--'); 
 grid on
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimJerk YMaxLimJerk])
+ylim([YMinLimitsJerk(1) YMaxLimitsJerk(1)])
 xlim([0 timeEnd(end)])
-ylabel('Ruck [mm/s³]', 'FontSize', 10)
-xlabel('Zeit [s]', 'FontSize', 10)
+ylabel('Ruck [mm/s³]', 'FontSize', FontsizeLabels)
+xlabel('Zeit [s]', 'FontSize', FontsizeLabels)
 
 %%SECOND AXIS
 
@@ -254,18 +269,30 @@ grid on
 ylim([YMinLimPaths(2) YMaxLimPaths(2)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-title('Achse 2', 'FontSize', 10)
+title('Achse 2', 'FontSize', FontsizeLabels)
 
 subplot(4,6,8)
 
 plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,2)),'Color','b')
 grid on
-line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
-line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
+line([0 timeEnd(end)],[max_velocity(2) max_velocity(2)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_velocity(2) min_velocity(2)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimVelocity YMaxLimVelocity])
+ylim([YMinLimitsVelocity(2) YMaxLimitsVelocity(2)])
 xlim([0 timeEnd(end)])
 
 
@@ -273,23 +300,36 @@ subplot(4,6,14)
 
 plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,2)),'Color','g')
 grid on
-line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black');
-line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
+line([0 timeEnd(end)],[max_acceleration(2) max_acceleration(2)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_acceleration(2) min_acceleration(2)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimAcceleration YMaxLimAcceleration])
+ylim([YMinLimitsAcceleration(2) YMaxLimitsAcceleration(2)])
 xlim([0 timeEnd(end)])
 
 
 subplot(4,6,20)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,2)),'Color','k')
 grid on
-line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
-line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black');
+line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimJerk YMaxLimJerk])
+ylim([YMinLimitsJerk(2) YMaxLimitsJerk(2)])
 xlim([0 timeEnd(end)])
+xlabel('Zeit [s]', 'FontSize', FontsizeLabels)
 
 
 
@@ -301,19 +341,31 @@ grid on
 ylim([YMinLimPaths(3) YMaxLimPaths(3)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-title('Achse 3', 'FontSize', 10)
+title('Achse 3', 'FontSize', FontsizeLabels)
 
 
 subplot(4,6,9)
 
 plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,3)),'Color','b')
 grid on
-line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
-line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
+line([0 timeEnd(end)],[max_velocity(3) max_velocity(3)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_velocity(3) min_velocity(3)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimVelocity YMaxLimVelocity])
+ylim([YMinLimitsVelocity(3) YMaxLimitsVelocity(3)])
 xlim([0 timeEnd(end)])
 
 
@@ -321,23 +373,36 @@ subplot(4,6,15)
 
 plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,3)),'Color','g')
 grid on
-line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black');
-line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
+line([0 timeEnd(end)],[max_acceleration(3) max_acceleration(3)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_acceleration(3) min_acceleration(3)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimAcceleration YMaxLimAcceleration])
+ylim([YMinLimitsAcceleration(3) YMaxLimitsAcceleration(3)])
 xlim([0 timeEnd(end)])
 
 
 subplot(4,6,21)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,3)),'Color','k')
 grid on
-line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
-line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black'); 
+line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','red','LineStyle','--'); 
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimJerk YMaxLimJerk])
+ylim([YMinLimitsJerk(3) YMaxLimitsJerk(3)])
 xlim([0 timeEnd(end)])
+xlabel('Zeit [s]', 'FontSize', FontsizeLabels)
 
 
 
@@ -349,18 +414,30 @@ grid on
 ylim([YMinLimPaths(4) YMaxLimPaths(4)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-title('Achse 4', 'FontSize', 10)
+title('Achse 4', 'FontSize', FontsizeLabels)
 
 subplot(4,6,10)
 
 plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,4)),'Color','b')
 grid on
-line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
-line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
+line([0 timeEnd(end)],[max_velocity(4) max_velocity(4)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_velocity(4) min_velocity(4)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimVelocity YMaxLimVelocity])
+ylim([YMinLimitsVelocity(4) YMaxLimitsVelocity(4)])
 xlim([0 timeEnd(end)])
 
 
@@ -368,23 +445,36 @@ subplot(4,6,16)
 
 plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,4)),'Color','g')
 grid on
-line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black');
-line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
+line([0 timeEnd(end)],[max_acceleration(4) max_acceleration(4)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_acceleration(4) min_acceleration(4)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimAcceleration YMaxLimAcceleration])
+ylim([YMinLimitsAcceleration(4) YMaxLimitsAcceleration(4)])
 xlim([0 timeEnd(end)])
 
 
 subplot(4,6,22)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,4)),'Color','k')
 grid on
-line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
-line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black');
+line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimJerk YMaxLimJerk])
+ylim([YMinLimitsJerk(4) YMaxLimitsJerk(4)])
 xlim([0 timeEnd(end)])
+xlabel('Zeit [s]', 'FontSize', FontsizeLabels)
 
 
 
@@ -396,19 +486,31 @@ grid on
 ylim([YMinLimPaths(5) YMaxLimPaths(5)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-title('Achse 5', 'FontSize', 10)
+title('Achse 5', 'FontSize', FontsizeLabels)
 
 
 subplot(4,6,11)
 
 plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,5)),'Color','b')
 grid on
-line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
-line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
+line([0 timeEnd(end)],[max_velocity(5) max_velocity(5)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_velocity(5) min_velocity(5)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimVelocity YMaxLimVelocity])
+ylim([YMinLimitsVelocity(5) YMaxLimitsVelocity(5)])
 xlim([0 timeEnd(end)])
 
 
@@ -416,23 +518,36 @@ subplot(4,6,17)
 
 plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,5)),'Color','g')
 grid on
-line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black');
-line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
+line([0 timeEnd(end)],[max_acceleration(5) max_acceleration(5)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_acceleration(5) min_acceleration(5)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimAcceleration YMaxLimAcceleration])
+ylim([YMinLimitsAcceleration(5) YMaxLimitsAcceleration(5)])
 xlim([0 timeEnd(end)])
 
 
 subplot(4,6,23)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,5)),'Color','k')
 grid on
-line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
-line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black');
+line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimJerk YMaxLimJerk])
+ylim([YMinLimitsJerk(5) YMaxLimitsJerk(5)])
 xlim([0 timeEnd(end)])
+xlabel('Zeit [s]', 'FontSize', FontsizeLabels)
 
 
 
@@ -444,19 +559,31 @@ grid on
 ylim([YMinLimPaths(6) YMaxLimPaths(6)])
 xlim([0 timeEnd(end)])
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-title('Achse 6', 'FontSize', 10)
+title('Achse 6', 'FontSize', FontsizeLabels)
 
 
 subplot(4,6,12)
 
 plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,6)),'Color','b')
 grid on
-line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color','black');
-line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color','black');
+line([0 timeEnd(end)],[max_velocity(6) max_velocity(6)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_velocity(6) min_velocity(6)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimVelocity YMaxLimVelocity])
+ylim([YMinLimitsVelocity(6) YMaxLimitsVelocity(6)])
 xlim([0 timeEnd(end)])
 
 
@@ -464,23 +591,36 @@ subplot(4,6,18)
 
 plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,6)),'Color','g')
 grid on
-line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color','black');
-line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color','black');
+line([0 timeEnd(end)],[max_acceleration(6) max_acceleration(6)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_acceleration(6) min_acceleration(6)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimAcceleration YMaxLimAcceleration])
+ylim([YMinLimitsAcceleration(6) YMaxLimitsAcceleration(6)])
 xlim([0 timeEnd(end)])
 
 
 subplot(4,6,24)
 plot(cell2mat(timeAxis(:,1)), cell2mat(jerkAxis(:,6)),'Color','k')
 grid on
-line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','black');
-line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','black'); 
+line([0 timeEnd(end)],[max_jerk(1) max_jerk(1)],'Color','red','LineStyle','--');
+line([0 timeEnd(end)],[min_jerk(1) min_jerk(1)],'Color','red','LineStyle','--');
 xticks(0:1:timeEnd(end))
+ax = gca;
+labels = string(ax.XAxis.TickLabels);
+labels(2:2:end) = nan;
+ax.XAxis.TickLabels = labels;
+ax.XAxis.FontSize = FontsizeXTicklabels;
+ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
-ylim([YMinLimJerk YMaxLimJerk])
+ylim([YMinLimitsJerk(6) YMaxLimitsJerk(6)])
 xlim([0 timeEnd(end)])
+xlabel('Zeit [s]', 'FontSize', FontsizeLabels)
 
 
 
