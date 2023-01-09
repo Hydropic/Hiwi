@@ -1,6 +1,6 @@
 function [tcppunkt, eulZYX, eulXYZ, RichtungInTCP, winkelmatrix] = vorwaertskinematik(achsstellungen,RichtungGlobal)
     %Kopien der Matrizen der Roboterkonfiguration (eventuell mit globalen
-    %Variablen oder Funktionsübergabe effizienter)
+    %Variablen oder Funktionsübergabe effizienter) 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%[Körper 1: Base]%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     phi1 = 0;
     tform = [cos(phi1)   0   sin(phi1)       0;

@@ -7,12 +7,12 @@ AnzahlIntervall = 30
 beschleunigungswert_X = 0.025 % m/s²
 beschleunigungswert_Y = 0 % m/s²
 beschleunigungswert_Z = 0 % m/s²
-ZeitEnde = 14.2 % Sekunden
+ZeitEnde = 2.4143 % Sekunden
 reverse = 0;
 
 
 wenigerFeinDiskretisieren = 1;
-jedeXbelassen = 20;
+jedeXbelassen = 5;
 
 EMIFile = "input/InputSOBGB_opti_DG_Emily_Axis.txt";
 
