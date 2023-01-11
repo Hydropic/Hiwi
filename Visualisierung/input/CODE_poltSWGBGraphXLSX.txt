@@ -1,0 +1,14 @@
+lineTimeFileBoolean = false;
+
+%READ lineTimeFile
+lineTime = [];
+if lineTimeFileBoolean
+    dataXLSX = regexp(fileread(lineTimeFile),'\n','split')
+    for ss = 1:length(dataXLSX)
+        lineTime(ss) = str2double(cell2mat(dataXLSX(ss))); 
+    end
+end
+
+[splineX1, velocityX1, accelerationX1, ruckX1 , time1] =  splineOptimal(AccDatax2,AccData_time,false);
+[splineY1, velocityY1, accelerationY1, ruckY1 , timeY1] =  splineOptimal(AccDatay2,AccData_time,false);
+[splineZ1, velocityZ1, accelerationZ1, ruckZ1 , timeZ1] =  splineOptimal(AccDataz2,AccData_time,false);
