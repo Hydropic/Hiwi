@@ -1,5 +1,6 @@
-function [fig] = plot_3DPath(emiFile)
+function [fig] = plot_3DPath(emiFile,timePointsFile)
 emiFile = 'input/InputSOBGB_opti_DG_Emily_TCP.txt';
+timePointsFile = 'input/timepoints.txt';
 
 %READ XYZ
 lineOfEmi = regexp(fileread(emiFile),'\n','split');
@@ -15,6 +16,16 @@ timeData = dataKartesisch(:,1);
 X = dataKartesisch(:,2);
 Y = dataKartesisch(:,3);
 Z = dataKartesisch(:,4);
+
+%READ TIMEPOINTS
+fileID = fopen(timePointsFile,'r');
+formatSpec = '%f';
+timePoints = fscanf(fileID,formatSpec);
+indexOfPoints = [];
+
+for i = 1:length(timePoints)
+    indexOfPoints(end + 1) = find(timeData==timePoints(i))
+end
 
 %Calculate distance between timeintervals
 timeintervals = zeros(1,size(timeData,1) - 1);
@@ -44,6 +55,9 @@ magnitudeAccelerationXYZ(end + 1) = nan;
 fig = figure(1);
 subplot(2,2,1)
 patch(splineX,splineY,splineZ,magnitudeAccelerationXYZ,'FaceColor','none','EdgeColor','interp')
+hold on
+scatter3(X(indexOfPoints),Y(indexOfPoints),Z(indexOfPoints),50);
+hold off
 xlabel('X')
 ylabel('Y')
 zlabel('Z')
@@ -56,6 +70,9 @@ view(90,0)
 
 subplot(2,2,2)
 patch(splineX,splineY,splineZ,magnitudeAccelerationXYZ,'FaceColor','none','EdgeColor','interp')
+hold on
+scatter3(X(indexOfPoints),Y(indexOfPoints),Z(indexOfPoints),50);
+hold off
 xlabel('X')
 ylabel('Y')
 zlabel('Z')
@@ -68,6 +85,9 @@ view(0,90)
 
 subplot(2,2,3)
 patch(splineX,splineY,splineZ,magnitudeAccelerationXYZ,'FaceColor','none','EdgeColor','interp')
+hold on
+scatter3(X(indexOfPoints),Y(indexOfPoints),Z(indexOfPoints),50);
+hold off
 xlabel('X')
 ylabel('Y')
 zlabel('Z')
@@ -80,6 +100,9 @@ view(0,0)
 
 subplot(2,2,4)
 patch(splineX,splineY,splineZ,magnitudeAccelerationXYZ,'FaceColor','none','EdgeColor','interp')
+hold on
+scatter3(X(indexOfPoints),Y(indexOfPoints),Z(indexOfPoints),50);
+hold off
 xlabel('X')
 ylabel('Y')
 zlabel('Z')
