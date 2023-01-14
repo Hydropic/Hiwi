@@ -1,0 +1,59 @@
+function [fig] = plot_3DPath(emiFile)
+emiFile = 'input/InputSOBGB_opti_DG_Emily_TCP.txt';
+
+%READ XYZ
+lineOfEmi = regexp(fileread(emiFile),'\n','split');
+startLine = find(contains(lineOfEmi,'[RECORDS]'));
+endLine = find(contains(lineOfEmi,'[END]'));
+
+endLine = endLine - 2;
+dataKartesisch = dlmread(emiFile,'',[startLine 0 endLine 6]);
+
+
+%Put each axis in its own array
+timeData = dataKartesisch(:,1);
+X = dataKartesisch(:,2);
+Y = dataKartesisch(:,3);
+Z = dataKartesisch(:,4);
+
+%Calculate distance between timeintervals
+timeintervals = zeros(1,size(timeData,1) - 1);
+sizeofArray = length(timeData) - 1;
+disp(sizeofArray)
+for i = 1:sizeofArray
+    timeintervals(i) = timeData(i+1) - timeData(i);
+end
+
+%Calculate Velocity,Acceleration and Path
+[splineX, velocityX, accelerationX, ruckX , timeX] =  splineOptimal(X,timeintervals,false);
+[splineY, velocityY, accelerationY, ruckY , timeY] =  splineOptimal(Y,timeintervals,false);
+[splineZ, velocityZ, accelerationZ, ruckZ , timeZ] =  splineOptimal(Z,timeintervals,false);
+
+accelerationVectors = [];
+accelerationVectors(:,1) = accelerationX;
+accelerationVectors(:,2) = accelerationY;
+accelerationVectors(:,3) = accelerationZ;
+magnitudeAcceleration = vecnorm(accelerationVectors,2,2);
+
+%Configure Figure and plot
+fig = figure(1);
+subplot(2,2,4)
+plot3(splinex;)
+% % patch(splineX,splineY,splineZ,magnitudeAcceleration,'FaceColor','none','EdgeColor','interp')
+% % colorbar
+% % view(3)
+% plot(time, splineX)
+% hold on
+% plot(time, splineY)
+% plot(time, splineZ)
+% hold off
+% grid on
+% xticks(0:1:time(end))
+% xlim([0 timeData(end)])
+% title('Strecke')
+% lgd = legend('X-Kor','Y-Kor','Z-Kor','Location','best');
+% lgd.FontSize = 7;
+% xlabel 'Zeit [s]';
+% ylabel 'Strecke[mm]'
+
+end
