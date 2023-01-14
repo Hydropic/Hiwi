@@ -35,28 +35,10 @@ accelerationVectorsXYZ(:,2) = accelerationY;
 accelerationVectorsXYZ(:,3) = accelerationZ;
 magnitudeAccelerationXYZ = vecnorm(accelerationVectorsXYZ,2,2);
 
-accelerationVectorsXY = [];
-accelerationVectorsXY(:,1) = accelerationX;
-accelerationVectorsXY(:,2) = accelerationY;
-magnitudeAccelerationXY = vecnorm(accelerationVectorsXY,2,2);
-
-accelerationVectorsXZ = [];
-accelerationVectorsXZ(:,1) = accelerationX;
-accelerationVectorsXZ(:,2) = accelerationZ;
-magnitudeAccelerationXZ = vecnorm(accelerationVectorsXZ,2,2);
-
-accelerationVectorsYZ = [];
-accelerationVectorsYZ(:,1) = accelerationY;
-accelerationVectorsYZ(:,2) = accelerationZ;
-magnitudeAccelerationYZ = vecnorm(accelerationVectorsYZ,2,2);
-
-splineX(end + 1) = nan
-splineY(end + 1) = nan
-splineZ(end + 1) = nan
-magnitudeAccelerationXYZ(end + 1) = nan
-magnitudeAccelerationXY(end + 1) = nan
-magnitudeAccelerationXZ(end + 1) = nan
-magnitudeAccelerationYZ(end + 1) = nan
+splineX(end + 1) = nan;
+splineY(end + 1) = nan;
+splineZ(end + 1) = nan;
+magnitudeAccelerationXYZ(end + 1) = nan;
 
 %Configure Figure and plot
 fig = figure(1);
