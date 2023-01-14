@@ -89,18 +89,5 @@ a = colorbar;
 ylabel(a,'Beschleuinigung [mm/s²]','FontSize',12,'Rotation',270);
 a.Label.Position(1) = 5;
 view(3)
-% plot(time, splineX)
-% hold on
-% plot(time, splineY)
-% plot(time, splineZ)
-% hold off
-% grid on
-% xticks(0:1:time(end))
-% xlim([0 timeData(end)])
-% title('Strecke')
-% lgd = legend('X-Kor','Y-Kor','Z-Kor','Location','best');
-% lgd.FontSize = 7;
-% xlabel 'Zeit [s]';
-% ylabel 'Strecke[mm]'
 
 end
