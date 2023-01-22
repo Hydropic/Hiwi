@@ -1,6 +1,6 @@
 close all
 %Variablen
-regression = load("regressionKat4.mat");
+% regression = load("regressionKat4.mat");
 simulation_data = readtable('simulationData.txt');
 
 %Load data
@@ -11,7 +11,7 @@ simulation_data = readtable('simulationData.txt');
 % Baut den Roboter und minJerkPath
 KSetUp;
 KPfadgenerator;
-%laufbahn(robot,minJerkPath,1,true)
+laufbahn(robot,minJerkPath,1,true)
 
 % input der achsstellungen
 init_ax_values = [ones(size(minJerkPath,1),1) minJerkPath];

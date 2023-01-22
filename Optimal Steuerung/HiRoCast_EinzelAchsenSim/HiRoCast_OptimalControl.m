@@ -128,10 +128,10 @@ if booleanVisualisation
 
     show_spline(optimized_translational_values, 'Bad Output');
 
-%     KSetUp;
-%     showBahn = optimized_translational_values;
-%     showBahn(:,1) = [];
-%     laufbahn(robot,showBahn,1,true)    
+    KSetUp;
+    showBahn = optimized_translational_values;
+    showBahn(:,1) = [];
+    laufbahn(robot,showBahn,1,true)    
        
     for z = 1:length(optimized_translational_values)
         [pos, eulerZYX,eulerXYZ, y_direction] = vorwaertskinematik(optimized_translational_values(z,2:7));
