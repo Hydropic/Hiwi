@@ -1,6 +1,6 @@
 function [fig] = plot_3DPath(emiFile,timePointsFile)
 emiFile = 'input/InputSOBGB_opti_DG_Emily_TCP.txt';
-timePointsFile = 'input/timepoints.txt';
+timePointsFile = 'input/BewegungsabschnittePunkten.txt';
 
 %READ XYZ
 lineOfEmi = regexp(fileread(emiFile),'\n','split');
@@ -16,6 +16,7 @@ timeData = dataKartesisch(:,1);
 X = dataKartesisch(:,2);
 Y = dataKartesisch(:,3);
 Z = dataKartesisch(:,4);
+
 
 %READ TIMEPOINTS
 fileID = fopen(timePointsFile,'r');

@@ -1,6 +1,7 @@
 function [fig] = plotWGBRGraph(EMIFile)
 %%PLOTTE Weg, Geschwindigkeit, Beschleuinigung und Ruck der sechs Achsen
-EMIFile = "input/Emily1_Axis.txt";
+%EMIFile = "input/Emily1_Axis.txt";
+EMIFile = "input/InputSOBGB_opti_DG_Emily_Axis.txt";
 
 %READ FILES
 lineOfEmi = regexp(fileread(EMIFile),'\n','split');
@@ -252,7 +253,7 @@ ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
 ylim([YMinLimitsVelocity(1) YMaxLimitsVelocity(1)])
 xlim([0 timeEnd(end)])
-ylabel('Geschwindigkeit [mm/s]', 'FontSize', FontsizeLabels)
+ylabel('Geschw. [mm/s]', 'FontSize', FontsizeLabels)
 xlabel('Zeit [s]', 'FontSize', FontsizeLabels)
 set(gca, 'XMinorGrid','on', 'YMinorGrid','on')
 
@@ -284,7 +285,7 @@ ax.YAxis.FontSize = FontsizeYTicklabels;
 xtickangle(0)
 ylim([YMinLimitsAcceleration(1) YMaxLimitsAcceleration(1)])
 xlim([0 timeEnd(end)])
-ylabel('Beschleuinigung [mm/s²]', 'FontSize', FontsizeLabels)
+ylabel('Beschl. [mm/s²]', 'FontSize', FontsizeLabels)
 xlabel('Zeit [s]', 'FontSize', FontsizeLabels)
 set(gca, 'XMinorGrid','on', 'YMinorGrid','on')
 
@@ -914,8 +915,8 @@ set(gca, 'XMinorGrid','on', 'YMinorGrid','on')
 
 
 % fig.WindowState = 'maximized';
-fig.Position = [0 0 width_of_Resolution height_of_Resolution];
+%fig.Position = [0 0 width_of_Resolution height_of_Resolution];
 
-saveas(fig,'WGBRGraph','jpg')
+%saveas(fig,'WGBRGraph','jpg')
 
 end

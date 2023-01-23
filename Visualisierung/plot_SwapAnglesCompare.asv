@@ -4,7 +4,7 @@ emiFile = "input/90Wasser10GlycerinNeueKelle.txt";
 emiFile2 = "input/SiziliumtombakNeueKelle.txt";
 XTitle = "Vergleich Schwappverhalten von Siliziumtombak und Wasser-Glycerin-Gemisch um die x-Achse";
 YTitle = "Vergleich Schwappverhalten von Siliziumtombak und Wasser-Glycerin-Gemisch um die y-Achse";
-Filename = "output/schwappvergleich";
+Filename = "e";
 
 %% PLOT ANGLES
 
@@ -47,11 +47,11 @@ hold off
 grid on
 xlim([0 timeData(end)])
 xticks(0:1:timeData(end)+1)
-lgd = legend('Wasser-Glycerin-Gemisch', 'Siliziumtombak');
+lgd = legend('Wasser-Glycerin-Gemisch', 'Wasser-Glycerin-Gemisch');
 lgd.FontSize = 7;
 title(XTitle)
 xlabel 'Zeit [s]';
-ylabel 'Schwapp-Winkel [°]'
+ylabel 'Schwapp-Winkel um x-Achse [°]'
 
 [splineY, velocity, acceleration, ruck , time] =  splineOptimal(data(:,8),timeintervals,false);
 [splineY2, velocity2, acceleration2, ruck2 , time2] =  splineOptimal(data2(:,8),timeintervals2,false);
@@ -64,11 +64,11 @@ hold off
 grid on
 xlim([0 timeData(end)])
 xticks(0:1:timeData(end)+1)
-lgd2 = legend('Wasser-Glycerin-Gemisch', 'Siliziumtombak');
+lgd2 = legend('Siliziumtombak', 'Siliziumtombak');
 lgd2.FontSize = 7;
 title(YTitle)
 xlabel 'Zeit [s]';
-ylabel 'Schwapp-Winkel [°]'
+ylabel 'Schwapp-Winkel um y-Achse [°]'
 
 saveas(fig,Filename)
 end
