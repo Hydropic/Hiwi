@@ -5,6 +5,7 @@ emiFile2 = "input/SiziliumtombakNeueKelle.txt";
 XTitle = "Vergleich Schwappverhalten von Siliziumtombak und Wasser-Glycerin-Gemisch um die x-Achse";
 YTitle = "Vergleich Schwappverhalten von Siliziumtombak und Wasser-Glycerin-Gemisch um die y-Achse";
 Filename = "output/schwappvergleich";
+lineTimeFile = 'input/BewegungsabschnittePunkten.txt';
 
 %% PLOT ANGLES
 
@@ -34,6 +35,27 @@ for i = 1:sizeofArray
     timeintervals2(i) = timeData2(i+1) - timeData2(i);
 end
 
+lineTimeFileBoolean = true;
+
+%READ lineTimeFile
+lineTime = [];
+if lineTimeFileBoolean
+    dataXLSX = regexp(fileread(lineTimeFile),'\n','split')
+    for ss = 1:length(dataXLSX)
+        lineTime(ss) = str2double(cell2mat(dataXLSX(ss))); 
+    end
+    indicesOfClosestValues = findClosest(timeData,lineTime);
+end
+
+lineTimeSecond = [];
+if lineTimeFileBoolean
+    dataXLSX = regexp(fileread(lineTimeFile),'\n','split')
+    for ss = 1:length(dataXLSX)
+        lineTimeSecond(ss) = str2double(cell2mat(dataXLSX(ss))); 
+    end
+    indicesOfClosestValuesSecond = findClosest(timeData2,lineTime);
+end
+
 [splineX, velocity, acceleration, ruck , time] =  splineOptimal(data(:,7),timeintervals,false);
 [splineX2, velocity2, acceleration2, ruck2 , time2] =  splineOptimal(data2(:,7),timeintervals2,false);
 
@@ -43,6 +65,15 @@ subplot(2,1,1)
 plot(time,splineX)
 hold on
 plot(time2, splineX2)
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'red', 'LineStyle', '--');
+    end
+
+    for a = 1:length(lineTimeSecond)
+        xline([timeData2(indicesOfClosestValuesSecond(a)) timeData2(indicesOfClosestValuesSecond(a))],'Color', 'blue', 'LineStyle', '--');
+    end
+end
 hold off
 grid on
 xlim([0 timeData(end)])
@@ -60,6 +91,15 @@ subplot(2,1,2)
 plot(time, splineY)
 hold on
 plot(time2,splineY2)
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'red', 'LineStyle', '--');
+    end
+
+    for a = 1:length(lineTimeSecond)
+        xline([timeData2(indicesOfClosestValuesSecond(a)) timeData2(indicesOfClosestValuesSecond(a))],'Color', 'blue', 'LineStyle', '--');
+    end
+end
 hold off
 grid on
 xlim([0 timeData(end)])

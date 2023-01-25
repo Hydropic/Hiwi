@@ -1,6 +1,7 @@
 function [fig] = plotSwapAngles(emiFile, compressBolean)
 
 %% PLOT ANGLES
+lineTimeFile = 'input/BewegungsabschnittePunkten.txt';
 
 %READ FILES
 lineOfEmi = regexp(fileread(emiFile),'\n','split');
@@ -19,6 +20,18 @@ for i = 1:sizeofArray
     timeintervals(i) = timeData(i+1) - timeData(i);
 end
 
+
+%READ lineTimeFile
+lineTimeFileBoolean = true;
+lineTime = [];
+if lineTimeFileBoolean
+    dataXLSX = regexp(fileread(lineTimeFile),'\n','split')
+    for ss = 1:length(dataXLSX)
+        lineTime(ss) = str2double(cell2mat(dataXLSX(ss))); 
+    end
+    indicesOfClosestValues = findClosest(timeData,lineTime);
+end
+
 %Configure Figure and plot
 fig = figure(1);
 subplot(2,1,1)
@@ -31,6 +44,13 @@ else
     plot(time, valuesOfAngles)
 end
 grid on
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 xlim([0 timeData(end)])
 xticks(0:1:timeData(end)+1)
 title('X Angle (Swap)')
@@ -47,6 +67,13 @@ else
     plot(time, valuesOfAngles)
 end
 grid on
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 xlim([0 timeData(end)])
 xticks(0:1:timeData(end)+1)
 title('Y Angle (Swap)')

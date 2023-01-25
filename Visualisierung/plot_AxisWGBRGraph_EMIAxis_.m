@@ -2,6 +2,7 @@ function [fig] = plotWGBRGraph(EMIFile)
 %%PLOTTE Weg, Geschwindigkeit, Beschleuinigung und Ruck der sechs Achsen
 %EMIFile = "input/Emily1_Axis.txt";
 EMIFile = "input/InputSOBGB_opti_DG_Emily_Axis.txt";
+lineTimeFile = 'input/BewegungsabschnittePunkten.txt';
 
 %READ FILES
 lineOfEmi = regexp(fileread(EMIFile),'\n','split');
@@ -36,6 +37,18 @@ third_Axis = data(:,4);
 fourth_Axis = data(:,5);
 fifth_Axis = data(:,6);
 sixth_Axis = data(:,7);
+
+lineTimeFileBoolean = true;
+
+%READ lineTimeFile
+lineTime = [];
+if lineTimeFileBoolean
+    dataXLSX = regexp(fileread(lineTimeFile),'\n','split')
+    for ss = 1:length(dataXLSX)
+        lineTime(ss) = str2double(cell2mat(dataXLSX(ss))); 
+    end
+    indicesOfClosestValues = findClosest(timeData,lineTime);
+end
 
 %Calculate distance between timeintervals
 timeintervals = zeros(1,size(timeData,1) - 1);
@@ -217,6 +230,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -231,7 +251,12 @@ plot(cell2mat(timeAxis(:,1)), cell2mat(velocityAxis(:,1)),'Color','b')
 grid on
 hold on
 line([0 timeEnd(end)],[max_velocity(1) max_velocity(1)],'Color', colorX, 'LineStyle', '--');
-line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color', colorX, 'LineStyle', '--');                   
+line([0 timeEnd(end)],[min_velocity(1) min_velocity(1)],'Color', colorX, 'LineStyle', '--');
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
 hold off
 xticks(0:0.5:timeEnd(end))
 ax = gca;
@@ -263,7 +288,12 @@ plot(cell2mat(timeAxis(:,1)), cell2mat(accelerationAxis(:,1)),'Color', colorY)
 grid on
 hold on
 line([0 timeEnd(end)],[max_acceleration(1) max_acceleration(1)],'Color', colorY, 'LineStyle', '--');
-line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color', colorY, 'LineStyle', '--');     
+line([0 timeEnd(end)],[min_acceleration(1) min_acceleration(1)],'Color', colorY, 'LineStyle', '--'); 
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
 hold off
 xticks(0:0.5:timeEnd(end))
 ax = gca;
@@ -308,6 +338,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -339,6 +376,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -367,6 +411,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -397,6 +448,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -426,6 +484,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -457,6 +522,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -486,6 +558,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -516,6 +595,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -545,6 +631,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -577,6 +670,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -605,6 +705,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -635,6 +742,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -664,6 +778,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -695,6 +816,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -724,6 +852,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -754,6 +889,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -783,6 +925,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -815,6 +964,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -844,6 +1000,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -874,6 +1037,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;
@@ -903,6 +1073,13 @@ for i=2:length(labels)
     deleteElements = 3;
 
 end
+hold on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', 'black', 'LineStyle', '--');
+    end
+end
+hold off
 ax.XAxis.TickLabels = labels;
 ax.XAxis.FontSize = FontsizeXTicklabels;
 ax.YAxis.FontSize = FontsizeYTicklabels;

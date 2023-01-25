@@ -87,7 +87,7 @@ AccData_time(end) = [];
 
 %%================================= EINFÜGEN ==============================
 
-lineTimeFileBoolean = false;
+lineTimeFileBoolean = true;
 
 %READ lineTimeFile
 lineTime = [];
@@ -96,6 +96,7 @@ if lineTimeFileBoolean
     for ss = 1:length(dataXLSX)
         lineTime(ss) = str2double(cell2mat(dataXLSX(ss))); 
     end
+    indicesOfClosestValues = findClosest(timeData,lineTime);
 end
 
 [splineX1, velocityX1, accelerationX1, ruckX1 , time1] =  splineOptimal(AccDatax2,AccData_time,false);
@@ -139,7 +140,7 @@ xticks(0:0.5:time(end))
 xlim([0 timeData(end)])
 if lineTimeFileBoolean
     for a = 1:length(lineTime)
-        xline([lineTime(1,a) lineTime(1,a)],'Color', colorTime, 'LineStyle', '--');
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', colorTime, 'LineStyle', '--');
     end
 end
 title('Bewegungsprofil im globalen Arbeitsraum-KOS')
@@ -178,7 +179,7 @@ xticks(0:0.5:time1(end))
 xlim([0 timeData(end)])
 if lineTimeFileBoolean
     for a = 1:length(lineTime)
-        xline([lineTime(1,a) lineTime(1,a)],'Color', colorTime, 'LineStyle', '--');
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', colorTime, 'LineStyle', '--');
     end
 end
 line([0 time1(end)],[2.7 2.7],'Color', colorY, 'LineStyle', '--');
@@ -201,7 +202,7 @@ hold off
 grid on
 if lineTimeFileBoolean
     for a = 1:length(lineTime)
-        xline([lineTime(1,a) lineTime(1,a)],'Color', colorTime, 'LineStyle', '--');
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', colorTime, 'LineStyle', '--');
     end
 end
 xticks(0:0.5:time(end))
@@ -227,7 +228,7 @@ xlim([0 timeData(end)])
 title('Ruck im TCP-KOS')
 if lineTimeFileBoolean
     for a = 1:length(lineTime)
-        xline([lineTime(1,a) lineTime(1,a)],'Color', colorTime, 'LineStyle', '--');
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', colorTime, 'LineStyle', '--');
     end
 end
 lgd3 = legend('X-Kor','Y-Kor','Z-Kor','Location','best');

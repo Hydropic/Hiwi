@@ -3,6 +3,8 @@ function [fig] = plotSWGBGraphXLSX(emiFile,excelFile)
 emiFile = 'input/InputSOBGB_opti_DG_Emily_TCP.txt';
 excelFile = 'input/InputSOBGB_opti_DG_SchwappWinkel.xlsx';
 AccFile = 'input/InputSOBGB_haendisch_DG_determinationAccelerationTCP.mat';
+lineTimeFile = 'input/BewegungsabschnittePunkten.txt';
+
 
 %READ XYZ
 lineOfEmi = regexp(fileread(emiFile),'\n','split');
@@ -83,15 +85,25 @@ AccData_time(:) = AccData.zeit_kurz();
 AccData_time(:) = AccData.zeit_kurz(2);
 AccData_time(end) = [];
 
-AccDataz2(1,16) = 3;
+%%================================= EINFÜGEN ==============================
+
+lineTimeFileBoolean = true;
+
+%READ lineTimeFile
+lineTime = [];
+if lineTimeFileBoolean
+    dataXLSX = regexp(fileread(lineTimeFile),'\n','split')
+    for ss = 1:length(dataXLSX)
+        lineTime(ss) = str2double(cell2mat(dataXLSX(ss))); 
+    end
+    indicesOfClosestValues = findClosest(timeData,lineTime);
+end
 
 [splineX1, velocityX1, accelerationX1, ruckX1 , time1] =  splineOptimal(AccDatax2,AccData_time,false);
 [splineY1, velocityY1, accelerationY1, ruckY1 , timeY1] =  splineOptimal(AccDatay2,AccData_time,false);
 [splineZ1, velocityZ1, accelerationZ1, ruckZ1 , timeZ1] =  splineOptimal(AccDataz2,AccData_time,false);
 
-velocityX1 = velocityX1*0.2;
-velocityY1 = velocityY1*0.2;
-velocityZ1 = velocityZ1*0.2;
+%%================================= EINFÜGEN ENDE =========================
 
 %Calculate Velocity,Acceleration and Path
 [splineX, velocityX2, accelerationX2, ruckX2 , time] =  splineOptimal(X,timeintervals,false);
@@ -110,6 +122,9 @@ colorY = sscanf(stry(2:end),'%2x%2x%2x',[1 3])/255;
 strz = '#EDB120';
 colorZ = sscanf(strz(2:end),'%2x%2x%2x',[1 3])/255;
 
+strTime = '#3b3b3b';
+colorTime = sscanf(strTime(2:end),'%2x%2x%2x',[1 3])/255;
+
 %Configure Figure and plot
 fig = figure(1);
 fig.Position = [100 100 1000 900]; 
@@ -123,7 +138,12 @@ hold off
 grid on
 xticks(0:0.5:time(end))
 xlim([0 timeData(end)])
-title('Strecke im Koordinatensystem des Arbeitsraums')
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', colorTime, 'LineStyle', '--');
+    end
+end
+title('Bewegungsprofil im globalen Arbeitsraum-KOS')
 lgd = legend('X-Kor','Y-Kor','Z-Kor','Location','best');
 lgd.FontSize = 7;
 xlabel 'Zeit [s]';
@@ -157,9 +177,14 @@ hold off
 grid on
 xticks(0:0.5:time1(end))
 xlim([0 timeData(end)])
-line([0 time1(end)],[2.5 2.5],'Color', colorY, 'LineStyle', '--');
-line([0 time1(end)],[-2.5 -2.5],'Color',colorY, 'LineStyle', '--');
-title('Beschleuinigung im TCP Koordinatensystem')
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', colorTime, 'LineStyle', '--');
+    end
+end
+line([0 time1(end)],[2.7 2.7],'Color', colorY, 'LineStyle', '--');
+line([0 time1(end)],[-2.7 -2.7],'Color',colorY, 'LineStyle', '--');
+title('Beschleuinigungprofil im TCP-KOS')
 lgd3 = legend('X-Kor','Y-Kor','Z-Kor','Location','best');
 lgd3.FontSize = 7;
 xlabel 'Zeit [s]';
@@ -175,9 +200,14 @@ hold on
 plot(timeIntervalsRot, ZRot, 'Color', colorZ)
 hold off
 grid on
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', colorTime, 'LineStyle', '--');
+    end
+end
 xticks(0:0.5:time(end))
 xlim([0 timeData(end)])
-title('Umorientierung der Kelle')
+title('Umorientierung der Kelle im TCP-KOS')
 lgd3 = legend('Y-Rot','Z-Rot','Location','best');
 lgd3.FontSize = 7;
 xlabel 'Zeit [s]';
@@ -195,13 +225,18 @@ hold off
 grid on
 xticks(0:0.5:time1(end))
 xlim([0 timeData(end)])
-title('Ruck im TCP Koordinatensystem')
+title('Ruck im TCP-KOS')
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([timeData(indicesOfClosestValues(a)) timeData(indicesOfClosestValues(a))],'Color', colorTime, 'LineStyle', '--');
+    end
+end
 lgd3 = legend('X-Kor','Y-Kor','Z-Kor','Location','best');
 lgd3.FontSize = 7;
 xlabel 'Zeit [s]';
 ylabel 'Ruck [mm/s³]'
-ylim([-12.0 12.0])
-yticks(-12:2:12)
+ylim([-8.0 8.0])
+yticks(-8:2:8)
 set(gca, 'XMinorGrid','on', 'YMinorGrid','on')
 
 
@@ -230,7 +265,12 @@ hold off
 grid on
 xticks(0:0.5:time(end))
 xlim([0 timeData(end)])
-title('Schwappwinkel')
+if lineTimeFileBoolean
+    for a = 1:length(lineTime)
+        xline([lineTime(1,a) lineTime(1,a)],'Color', colorTime, 'LineStyle', '--');
+    end
+end
+title('Schwappwinkel im TCP-KOS')
 line([0 time1(end)],[10 10],'Color', 'Black', 'LineStyle', '--');
 line([0 time1(end)],[-10 -10],'Color','Black', 'LineStyle', '--');
 lgd4 = legend('X-Rot','Y-Rot','Location','best');
