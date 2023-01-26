@@ -1,6 +1,6 @@
 function [fig] = plot_3DPath(emiFile,timePointsFile)
 emiFile = "C:\Users\Ayman\Desktop\Neuer Ordner (8)\Gemisch\Hiwi\Visualisierung\input\InputSOBGB_opti_DG_Emily_TCP_New.txt";
-timePointsFile = "C:\Users\Ayman\Desktop\Neuer Ordner (8)\Gemisch\Hiwi\Visualisierung\input\timepoints.txt";
+timePointsFile = "C:\Users\Ayman\Desktop\Neuer Ordner (8)\Gemisch\Hiwi\Visualisierung\input\BewegungsabschnittePunkten.txt";
 
 %SET VIEWS
 viewProjektionZY = [-90, 0];
@@ -36,7 +36,7 @@ timePoints = fscanf(fileID,formatSpec);
 indexOfPoints = [];
 
 for i = 1:length(timePoints)
-    indexOfPoints(end + 1) = find(timeData==timePoints(i))
+    indexOfPoints(end + 1) = findClosest(timeData,timePoints(i));
 end
 
 %Calculate distance between timeintervals
